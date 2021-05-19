@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallDataSourceTypeMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallDataSourceType">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_data_source_type-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="data_source_type_name" jdbcType="VARCHAR" property="dataSourceTypeName" />
+    <result column="data_source_driver" jdbcType="VARCHAR" property="dataSourceDriver" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, data_source_type_name, data_source_driver, remark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_data_source_type
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_data_source_type
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_data_source_type (data_source_type_name, data_source_driver, 
+      remark)
+    values (#{dataSourceTypeName,jdbcType=VARCHAR}, #{dataSourceDriver,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_data_source_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="dataSourceTypeName != null">
+        data_source_type_name,
+      </if>
+      <if test="dataSourceDriver != null">
+        data_source_driver,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="dataSourceTypeName != null">
+        #{dataSourceTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSourceDriver != null">
+        #{dataSourceDriver,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType">
+    <!--@mbg.generated-->
+    update waterfall_data_source_type
+    <set>
+      <if test="dataSourceTypeName != null">
+        data_source_type_name = #{dataSourceTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSourceDriver != null">
+        data_source_driver = #{dataSourceDriver,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType">
+    <!--@mbg.generated-->
+    update waterfall_data_source_type
+    set data_source_type_name = #{dataSourceTypeName,jdbcType=VARCHAR},
+      data_source_driver = #{dataSourceDriver,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
