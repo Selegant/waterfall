@@ -2,16 +2,15 @@ package org.jeecg.modules.datasources.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,10 +28,10 @@ public class DataSourceController {
     IDataSourceService dataSourceService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result<List<WaterfallDataSource>> list(HttpServletRequest request) {
-        Result<List<WaterfallDataSource>> result = new Result<>();
+    public Result<List<WaterfallDataSourceListDTO>> list(@RequestParam String purpose, HttpServletRequest request) {
+        Result<List<WaterfallDataSourceListDTO>> result = new Result<>();
         try {
-            result.setResult(dataSourceService.list());
+            result.setResult(dataSourceService.list(purpose));
             result.success("查询成功！");
         } catch (Exception e) {
             log.error(e.getMessage(),e);
@@ -69,5 +68,69 @@ public class DataSourceController {
         return result;
     }
 
+    @RequestMapping(value = "/update",method = RequestMethod.POST)
+    public Result<WaterfallDataSource> update(@RequestBody WaterfallDataSource dataSource, HttpServletRequest request){
+        Result<WaterfallDataSource> result = new Result<>();
+        try {
+            dataSourceService.updateDataSource(dataSource);
+            result.success("修改成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/delete",method = RequestMethod.POST)
+    public Result<String> delete(@RequestBody List<Integer> ids, HttpServletRequest request) {
+        Result<String> result = new Result<>();
+        try {
+            dataSourceService.deleteDataSource(ids);
+            result.success("删除成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/type/add", method = RequestMethod.POST)
+    public Result<WaterfallDataSourceType> addDataSourceType(@RequestBody WaterfallDataSourceType dataSourceType, HttpServletRequest request) {
+        Result<WaterfallDataSourceType> result = new Result<>();
+        try {
+            dataSourceService.addDataSourceType(dataSourceType);
+            result.success("添加成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/type/update", method = RequestMethod.POST)
+    public Result<WaterfallDataSourceType> updateDataSourceType(@RequestBody WaterfallDataSourceType dataSourceType, HttpServletRequest request) {
+        Result<WaterfallDataSourceType> result = new Result<>();
+        try {
+            dataSourceService.updateDataSourceType(dataSourceType);
+            result.success("修改成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/type/delete",method = RequestMethod.POST)
+    public Result<String> deleteDataSourceType(@RequestBody List<Integer> ids, HttpServletRequest request) {
+        Result<String> result = new Result<>();
+        try {
+            dataSourceService.deleteDataSourceType(ids);
+            result.success("删除成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
 
 }

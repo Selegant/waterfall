@@ -8,10 +8,11 @@
     <result column="data_source_type_name" jdbcType="VARCHAR" property="dataSourceTypeName" />
     <result column="data_source_driver" jdbcType="VARCHAR" property="dataSourceDriver" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="data_source_default_jdbc_url" jdbcType="VARCHAR" property="dataSourceDefaultJdbcUrl" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, data_source_type_name, data_source_driver, remark
+    id, data_source_type_name, data_source_driver, remark, data_source_default_jdbc_url
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -28,9 +29,9 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_data_source_type (data_source_type_name, data_source_driver, 
-      remark)
+      remark, data_source_default_jdbc_url)
     values (#{dataSourceTypeName,jdbcType=VARCHAR}, #{dataSourceDriver,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR})
+      #{remark,jdbcType=VARCHAR}, #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -45,6 +46,9 @@
       <if test="remark != null">
         remark,
       </if>
+      <if test="dataSourceDefaultJdbcUrl != null">
+        data_source_default_jdbc_url,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="dataSourceTypeName != null">
@@ -55,6 +59,9 @@
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSourceDefaultJdbcUrl != null">
+        #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -71,6 +78,9 @@
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="dataSourceDefaultJdbcUrl != null">
+        data_source_default_jdbc_url = #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -79,7 +89,8 @@
     update waterfall_data_source_type
     set data_source_type_name = #{dataSourceTypeName,jdbcType=VARCHAR},
       data_source_driver = #{dataSourceDriver,jdbcType=VARCHAR},
-      remark = #{remark,jdbcType=VARCHAR}
+      remark = #{remark,jdbcType=VARCHAR},
+      data_source_default_jdbc_url = #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
