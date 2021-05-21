@@ -62,4 +62,9 @@ public class WaterfallDataSource {
    * 数据库端口号
    */
   private String port;
+
+  /**
+   * 数据库名
+   */
+  private String database;
 }

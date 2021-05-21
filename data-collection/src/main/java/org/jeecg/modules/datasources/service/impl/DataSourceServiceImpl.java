@@ -81,7 +81,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public Boolean connection(WaterfallDataSource dataSource) {
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
         try {
-            if (MetaUtil.getTables(db).size() > 0) {
+            if (MetaUtil.getTables(db,dataSource.getDatabase()).size() > 0) {
                 return true;
             } else {
                 throw new RuntimeException("请设置具体数据库");
@@ -93,5 +93,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     }
 
+  @Override
+  public List<String> getTables(WaterfallDataSource dataSource) throws SQLException {
+    DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
+    return MetaUtil.getTables(db,dataSource.getDatabase());
+  }
 
 }

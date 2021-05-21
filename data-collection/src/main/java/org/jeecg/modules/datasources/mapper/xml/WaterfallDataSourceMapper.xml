@@ -50,6 +50,10 @@
       column="port"
       jdbcType="VARCHAR"
       property="port"/>
+    <result
+      column="database"
+      jdbcType="VARCHAR"
+      property="database"/>
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
@@ -131,6 +135,9 @@
       <if test="port != null">
         port,
       </if>
+      <if test="database != null">
+        database,
+      </if>
     </trim>
     <trim
       prefix="values ("
@@ -165,6 +172,9 @@
       </if>
       <if test="port != null">
         #{port,jdbcType=VARCHAR},
+      </if>
+      <if test="database != null">
+        #{database,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -203,6 +213,9 @@
       </if>
       <if test="port != null">
         port = #{port,jdbcType=VARCHAR},
+      </if>
+      <if test="database != null">
+        database = #{port,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

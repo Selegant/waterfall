@@ -1,5 +1,6 @@
 package org.jeecg.modules.datasources.service;
 
+import java.sql.SQLException;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
@@ -25,4 +26,6 @@ public interface IDataSourceService {
     void deleteDataSourceType(List<Integer> ids);
 
     Boolean connection(WaterfallDataSource dataSource);
+
+    List<String> getTables(WaterfallDataSource dataSource) throws SQLException;
 }

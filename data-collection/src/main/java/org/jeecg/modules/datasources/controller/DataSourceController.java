@@ -145,4 +145,18 @@ public class DataSourceController {
         }
         return result;
     }
+
+    @RequestMapping(value = "/getTables",method = RequestMethod.POST)
+    public Result<List<String>> getTables(@RequestBody WaterfallDataSource dataSource, HttpServletRequest request) {
+        Result<List<String>> result = new Result<>();
+        try {
+            result.setResult(dataSourceService.getTables(dataSource));
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
 }
