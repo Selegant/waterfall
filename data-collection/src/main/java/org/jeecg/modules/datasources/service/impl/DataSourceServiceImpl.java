@@ -1,6 +1,10 @@
 package org.jeecg.modules.datasources.service.impl;
 
+import cn.hutool.db.ds.simple.SimpleDataSource;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceTypeMapper;
@@ -26,6 +30,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public void saveDataSource(WaterfallDataSource dataSource) {
+        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
+        try {
+            db.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("连接不通过");
+        }
         waterfallDataSourceMapper.insertSelective(dataSource);
     }
 
@@ -41,6 +51,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public void updateDataSource(WaterfallDataSource dataSource) {
+        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
+        try {
+            db.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("连接不通过");
+        }
         waterfallDataSourceMapper.updateByPrimaryKeySelective(dataSource);
     }
 
@@ -63,4 +79,16 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public void deleteDataSourceType(List<Integer> ids) {
         waterfallDataSourceTypeMapper.deleteBatchIds(ids);
     }
+
+    @Override
+    public Boolean connection(WaterfallDataSource dataSource) {
+        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
+        try {
+            db.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("连接不通过");
+        }
+        return true;
+    }
+
 }

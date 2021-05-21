@@ -133,4 +133,16 @@ public class DataSourceController {
         return result;
     }
 
+    @RequestMapping(value = "/connection",method = RequestMethod.POST)
+    public Result<Boolean> connection(@RequestBody WaterfallDataSource dataSource, HttpServletRequest request) {
+        Result<Boolean> result = new Result<>();
+        try {
+            result.setResult(dataSourceService.connection(dataSource));
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
 }

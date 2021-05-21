@@ -23,4 +23,6 @@ public interface IDataSourceService {
     void updateDataSourceType(WaterfallDataSourceType dataSourceType);
 
     void deleteDataSourceType(List<Integer> ids);
+
+    Boolean connection(WaterfallDataSource dataSource);
 }
