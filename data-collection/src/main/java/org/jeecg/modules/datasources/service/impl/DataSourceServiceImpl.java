@@ -1,10 +1,16 @@
 package org.jeecg.modules.datasources.service.impl;
 
+import cn.hutool.db.Db;
+import cn.hutool.db.DbRuntimeException;
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.ds.simple.SimpleDataSource;
+import cn.hutool.db.meta.MetaUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceTypeMapper;
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author selegant
  */
+@Slf4j
 @Service
 public class DataSourceServiceImpl implements IDataSourceService {
 
@@ -30,12 +37,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public void saveDataSource(WaterfallDataSource dataSource) {
-        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
-        try {
-            db.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("连接不通过");
-        }
+        connection(dataSource);
         waterfallDataSourceMapper.insertSelective(dataSource);
     }
 
@@ -51,12 +53,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public void updateDataSource(WaterfallDataSource dataSource) {
-        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
-        try {
-            db.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("连接不通过");
-        }
+        connection(dataSource);
         waterfallDataSourceMapper.updateByPrimaryKeySelective(dataSource);
     }
 
@@ -84,11 +81,17 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public Boolean connection(WaterfallDataSource dataSource) {
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
         try {
-            db.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException("连接不通过");
+            if (MetaUtil.getTables(db).size() > 0) {
+                return true;
+            } else {
+                throw new RuntimeException("请设置具体数据库");
+            }
+        }catch (DbRuntimeException e){
+            log.error(e.getMessage(),e);
+            throw new RuntimeException("数据库连接失败");
         }
-        return true;
+
     }
+
 
 }
