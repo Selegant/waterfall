@@ -1,7 +1,9 @@
 package org.jeecg.modules.datasources.service;
 
 import java.sql.SQLException;
+import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
+import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 
@@ -28,4 +30,6 @@ public interface IDataSourceService {
     Boolean connection(WaterfallDataSource dataSource);
 
     List<String> getTables(WaterfallDataSource dataSource) throws SQLException;
+
+    List<TableColumnInfoDTO> getTableColumns(TableColumnInput input);
 }

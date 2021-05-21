@@ -4,19 +4,27 @@ import cn.hutool.db.Db;
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.ds.simple.SimpleDataSource;
+import cn.hutool.db.meta.Column;
 import cn.hutool.db.meta.MetaUtil;
+import cn.hutool.db.meta.Table;
+import cn.hutool.db.meta.TableType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
+import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceTypeMapper;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
+import org.jeecg.modules.datasources.util.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -93,10 +101,16 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     }
 
-  @Override
-  public List<String> getTables(WaterfallDataSource dataSource) throws SQLException {
-    DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
-    return MetaUtil.getTables(db,dataSource.getDatabase());
-  }
+    @Override
+    public List<String> getTables(WaterfallDataSource dataSource) throws SQLException {
+      DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
+      return MetaUtil.getTables(db,dataSource.getDatabase());
+    }
+
+    @Override
+    public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
+      DataSource db = new SimpleDataSource(input.getJdbcUrl(), input.getUsername(), input.getPassword());
+      return DBUtil.getTableMeta(db,input.getTableName(),input.getDatabase());
+    }
 
 }

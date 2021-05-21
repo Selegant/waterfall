@@ -2,7 +2,9 @@ package org.jeecg.modules.datasources.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
+import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
@@ -151,6 +153,19 @@ public class DataSourceController {
         Result<List<String>> result = new Result<>();
         try {
             result.setResult(dataSourceService.getTables(dataSource));
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/getTableColumns",method = RequestMethod.POST)
+    public Result<List<TableColumnInfoDTO>> getTableColumns(@RequestBody TableColumnInput input, HttpServletRequest request) {
+        Result<List<TableColumnInfoDTO>> result = new Result<>();
+        try {
+            result.setResult(dataSourceService.getTableColumns(input));
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(),e);
