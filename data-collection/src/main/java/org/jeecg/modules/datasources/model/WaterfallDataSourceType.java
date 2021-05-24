@@ -16,7 +16,7 @@ public class WaterfallDataSourceType {
   /**
    * 数据源类型名称
    */
-  private String dataSourceTypeName;
+  private String dbType;
 
   /**
    * 数据源驱动

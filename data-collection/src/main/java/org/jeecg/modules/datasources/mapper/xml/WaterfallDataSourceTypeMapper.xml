@@ -5,18 +5,18 @@
     <!--@mbg.generated-->
     <!--@Table waterfall_data_source_type-->
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="data_source_type_name" jdbcType="VARCHAR" property="dataSourceTypeName" />
+    <result column="db_type" jdbcType="VARCHAR" property="dbType" />
     <result column="data_source_driver" jdbcType="VARCHAR" property="dataSourceDriver" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="data_source_default_jdbc_url" jdbcType="VARCHAR" property="dataSourceDefaultJdbcUrl" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, data_source_type_name, data_source_driver, remark, data_source_default_jdbc_url
+    id, db_type, data_source_driver, remark, data_source_default_jdbc_url
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from waterfall_data_source_type
     where id = #{id,jdbcType=INTEGER}
@@ -28,17 +28,17 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_data_source_type (data_source_type_name, data_source_driver, 
+    insert into waterfall_data_source_type (db_type, data_source_driver,
       remark, data_source_default_jdbc_url)
-    values (#{dataSourceTypeName,jdbcType=VARCHAR}, #{dataSourceDriver,jdbcType=VARCHAR}, 
+    values (#{dbType,jdbcType=VARCHAR}, #{dataSourceDriver,jdbcType=VARCHAR},
       #{remark,jdbcType=VARCHAR}, #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_data_source_type
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="dataSourceTypeName != null">
-        data_source_type_name,
+      <if test="dbType != null">
+        db_type,
       </if>
       <if test="dataSourceDriver != null">
         data_source_driver,
@@ -51,8 +51,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="dataSourceTypeName != null">
-        #{dataSourceTypeName,jdbcType=VARCHAR},
+      <if test="dbType != null">
+        #{dbType,jdbcType=VARCHAR},
       </if>
       <if test="dataSourceDriver != null">
         #{dataSourceDriver,jdbcType=VARCHAR},
@@ -69,8 +69,8 @@
     <!--@mbg.generated-->
     update waterfall_data_source_type
     <set>
-      <if test="dataSourceTypeName != null">
-        data_source_type_name = #{dataSourceTypeName,jdbcType=VARCHAR},
+      <if test="dbType != null">
+        db_type = #{dbType,jdbcType=VARCHAR},
       </if>
       <if test="dataSourceDriver != null">
         data_source_driver = #{dataSourceDriver,jdbcType=VARCHAR},
@@ -87,7 +87,7 @@
   <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceType">
     <!--@mbg.generated-->
     update waterfall_data_source_type
-    set data_source_type_name = #{dataSourceTypeName,jdbcType=VARCHAR},
+    set db_type = #{dbType,jdbcType=VARCHAR},
       data_source_driver = #{dataSourceDriver,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       data_source_default_jdbc_url = #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR}
