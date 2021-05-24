@@ -3,11 +3,14 @@ package org.jeecg.modules.datasources.service.impl;
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
+import cn.hutool.db.meta.TableType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
@@ -87,10 +90,8 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Override
     public Boolean connection(WaterfallDataSource dataSource) throws Exception {
         dataSource.setJdbcUrl(concatUrl(dataSource));
-        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
-                dataSource.getPassword());
         try {
-            if (MetaUtil.getTables(db, dataSource.getDbName()).size() > 0) {
+            if (getTables(dataSource).size() > 0) {
                 return true;
             } else {
                 throw new RuntimeException("请设置具体数据库");
@@ -107,11 +108,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
-        if (MYSQL.equals(dataSource.getDbType())) {
-            return MetaUtil.getTables(db, dataSource.getDbName());
+        String type = dataSource.getDbType().toLowerCase();
+        if (MYSQL.equals(type)) {
+            return MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
         }
-        if (ORACLE.equals(dataSource.getDbType())) {
-            return MetaUtil.getTables(db, dataSource.getServerName());
+        if (ORACLE.equals(type)) {
+            return MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
         }
         return new ArrayList<>();
     }
