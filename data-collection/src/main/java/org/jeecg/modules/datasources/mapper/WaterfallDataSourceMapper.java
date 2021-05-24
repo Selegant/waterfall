@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 
-
 public interface WaterfallDataSourceMapper extends BaseMapper<WaterfallDataSource> {
 
     int deleteByPrimaryKey(Integer id);

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallDataSourceAmountMapper">
+  <resultMap
+    id="BaseResultMap"
+    type="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_data_source_amount-->
+    <result
+      column="id"
+      jdbcType="INTEGER"
+      property="id"/>
+    <result
+      column="db_id"
+      jdbcType="INTEGER"
+      property="dbId"/>
+    <result
+      column="amount"
+      jdbcType="INTEGER"
+      property="amount"/>
+    <result
+      column="update_time"
+      jdbcType="TIMESTAMP"
+      property="updateTime"/>
+    <result
+      column="required_time"
+      jdbcType="INTEGER"
+      property="requiredTime"/>
+    <result
+      column="create_time"
+      jdbcType="TIMESTAMP"
+      property="createTime"/>
+  </resultMap>
+  <insert
+    id="insert"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
+    <!--@mbg.generated-->
+    insert into waterfall_data_source_amount (id, db_id, amount,
+    update_time, required_time, create_time
+    )
+    values (#{id,jdbcType=INTEGER}, #{dbId,jdbcType=INTEGER}, #{amount,jdbcType=INTEGER},
+    #{updateTime,jdbcType=TIMESTAMP}, #{requiredTime,jdbcType=INTEGER},
+    #{createTime,jdbcType=TIMESTAMP}
+    )
+  </insert>
+  <insert
+    id="insertSelective"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
+    <!--@mbg.generated-->
+    insert into waterfall_data_source_amount
+    <trim
+      prefix="("
+      suffix=")"
+      suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="dbId != null">
+        db_id,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="requiredTime != null">
+        required_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim
+      prefix="values ("
+      suffix=")"
+      suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="dbId != null">
+        #{dbId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="requiredTime != null">
+        #{requiredTime,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

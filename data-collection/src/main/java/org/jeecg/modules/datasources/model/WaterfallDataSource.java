@@ -1,7 +1,6 @@
 package org.jeecg.modules.datasources.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import java.util.Date;
 import lombok.Data;
 
 @Data
@@ -10,7 +9,6 @@ public class WaterfallDataSource {
     /**
      * 自增主键
      */
-    @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -72,4 +70,14 @@ public class WaterfallDataSource {
      * oracle服务名
      */
     private String serverName;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
 }

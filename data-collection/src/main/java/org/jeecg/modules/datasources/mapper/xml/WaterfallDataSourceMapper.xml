@@ -7,21 +7,59 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="data_source_name" jdbcType="VARCHAR" property="dataSourceName" />
     <result column="jdbc_url" jdbcType="VARCHAR" property="jdbcUrl" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="db_type" jdbcType="VARCHAR" property="dbType" />
-    <result column="alive_flag" jdbcType="BOOLEAN" property="aliveFlag" />
-    <result column="purpose" jdbcType="INTEGER" property="purpose" />
-    <result column="host" jdbcType="VARCHAR" property="host" />
-    <result column="port" jdbcType="VARCHAR" property="port" />
-    <result column="db_name" jdbcType="VARCHAR" property="dbName" />
-    <result column="server_name" jdbcType="VARCHAR" property="serverName" />
+    <result
+      column="username"
+      jdbcType="VARCHAR"
+      property="username"/>
+    <result
+      column="password"
+      jdbcType="VARCHAR"
+      property="password"/>
+    <result
+      column="remark"
+      jdbcType="VARCHAR"
+      property="remark"/>
+    <result
+      column="db_type"
+      jdbcType="VARCHAR"
+      property="dbType"/>
+    <result
+      column="alive_flag"
+      jdbcType="BOOLEAN"
+      property="aliveFlag"/>
+    <result
+      column="purpose"
+      jdbcType="INTEGER"
+      property="purpose"/>
+    <result
+      column="host"
+      jdbcType="VARCHAR"
+      property="host"/>
+    <result
+      column="port"
+      jdbcType="VARCHAR"
+      property="port"/>
+    <result
+      column="db_name"
+      jdbcType="VARCHAR"
+      property="dbName"/>
+    <result
+      column="server_name"
+      jdbcType="VARCHAR"
+      property="serverName"/>
+    <result
+      column="create_time"
+      jdbcType="TIMESTAMP"
+      property="createTime"/>
+    <result
+      column="update_time"
+      jdbcType="TIMESTAMP"
+      property="updateTime"/>
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, data_source_name, jdbc_url, username, `password`, remark, db_type, alive_flag, 
-    purpose, `host`, port, db_name, `server_name`
+    id, data_source_name, jdbc_url, username, `password`, remark, db_type, alive_flag,
+    purpose, `host`, port, db_name, `server_name`, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -37,16 +75,17 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_data_source (data_source_name, jdbc_url, username, 
-      `password`, remark, db_type, 
-      alive_flag, purpose, `host`, 
-      port, db_name, `server_name`
-      )
-    values (#{dataSourceName,jdbcType=VARCHAR}, #{jdbcUrl,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
-      #{password,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{dbType,jdbcType=VARCHAR}, 
-      #{aliveFlag,jdbcType=BOOLEAN}, #{purpose,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR}, 
-      #{port,jdbcType=VARCHAR}, #{dbName,jdbcType=VARCHAR}, #{serverName,jdbcType=VARCHAR}
-      )
+    insert into waterfall_data_source (data_source_name, jdbc_url, username,
+    `password`, remark, db_type,
+    alive_flag, purpose, `host`,
+    port, db_name, `server_name`,
+    create_time, update_time)
+    values (#{dataSourceName,jdbcType=VARCHAR}, #{jdbcUrl,jdbcType=VARCHAR},
+    #{username,jdbcType=VARCHAR},
+    #{password,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{dbType,jdbcType=VARCHAR},
+    #{aliveFlag,jdbcType=BOOLEAN}, #{purpose,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR},
+    #{port,jdbcType=VARCHAR}, #{dbName,jdbcType=VARCHAR}, #{serverName,jdbcType=VARCHAR},
+    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -88,6 +127,12 @@
       <if test="serverName != null">
         `server_name`,
       </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="dataSourceName != null">
@@ -125,6 +170,12 @@
       </if>
       <if test="serverName != null">
         #{serverName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -168,6 +219,12 @@
       <if test="serverName != null">
         `server_name` = #{serverName,jdbcType=VARCHAR},
       </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -175,17 +232,19 @@
     <!--@mbg.generated-->
     update waterfall_data_source
     set data_source_name = #{dataSourceName,jdbcType=VARCHAR},
-      jdbc_url = #{jdbcUrl,jdbcType=VARCHAR},
-      username = #{username,jdbcType=VARCHAR},
-      `password` = #{password,jdbcType=VARCHAR},
-      remark = #{remark,jdbcType=VARCHAR},
-      db_type = #{dbType,jdbcType=VARCHAR},
-      alive_flag = #{aliveFlag,jdbcType=BOOLEAN},
-      purpose = #{purpose,jdbcType=INTEGER},
-      `host` = #{host,jdbcType=VARCHAR},
-      port = #{port,jdbcType=VARCHAR},
-      db_name = #{dbName,jdbcType=VARCHAR},
-      `server_name` = #{serverName,jdbcType=VARCHAR}
+    jdbc_url = #{jdbcUrl,jdbcType=VARCHAR},
+    username = #{username,jdbcType=VARCHAR},
+    `password` = #{password,jdbcType=VARCHAR},
+    remark = #{remark,jdbcType=VARCHAR},
+    db_type = #{dbType,jdbcType=VARCHAR},
+    alive_flag = #{aliveFlag,jdbcType=BOOLEAN},
+    purpose = #{purpose,jdbcType=INTEGER},
+    `host` = #{host,jdbcType=VARCHAR},
+    port = #{port,jdbcType=VARCHAR},
+    db_name = #{dbName,jdbcType=VARCHAR},
+    `server_name` = #{serverName,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
