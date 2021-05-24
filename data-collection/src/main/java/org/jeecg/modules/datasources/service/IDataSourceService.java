@@ -11,13 +11,13 @@ import java.util.List;
 
 public interface IDataSourceService {
 
-    void saveDataSource(WaterfallDataSource dataSource);
+    void saveDataSource(WaterfallDataSource dataSource) throws Exception;
 
     List<WaterfallDataSource> list(String purpose);
 
     List<WaterfallDataSourceType> dataSourceTypeList();
 
-    void updateDataSource(WaterfallDataSource dataSource);
+    void updateDataSource(WaterfallDataSource dataSource) throws Exception;
 
     void deleteDataSource(List<Integer> ids);
 
@@ -27,7 +27,7 @@ public interface IDataSourceService {
 
     void deleteDataSourceType(List<Integer> ids);
 
-    Boolean connection(WaterfallDataSource dataSource);
+    Boolean connection(WaterfallDataSource dataSource) throws Exception;
 
     List<String> getTables(WaterfallDataSource dataSource) throws SQLException;
 

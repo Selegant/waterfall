@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
@@ -45,7 +46,8 @@ public class DataSourceServiceImpl implements IDataSourceService {
     private WaterfallDataSourceTypeMapper waterfallDataSourceTypeMapper;
 
     @Override
-    public void saveDataSource(WaterfallDataSource dataSource) {
+    public void saveDataSource(WaterfallDataSource dataSource) throws Exception {
+        dataSource.setJdbcUrl(concatUrl(dataSource));
         connection(dataSource);
         waterfallDataSourceMapper.insertSelective(dataSource);
     }
@@ -63,7 +65,8 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void updateDataSource(WaterfallDataSource dataSource) {
+    public void updateDataSource(WaterfallDataSource dataSource) throws Exception{
+        dataSource.setJdbcUrl(concatUrl(dataSource));
         connection(dataSource);
         waterfallDataSourceMapper.updateByPrimaryKeySelective(dataSource);
     }
@@ -89,10 +92,11 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public Boolean connection(WaterfallDataSource dataSource) {
+    public Boolean connection(WaterfallDataSource dataSource) throws Exception{
+        dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
         try {
-            if (MetaUtil.getTables(db,dataSource.getDatabase()).size() > 0) {
+            if (MetaUtil.getTables(db,dataSource.getDbName()).size() > 0) {
                 return true;
             } else {
                 throw new RuntimeException("请设置具体数据库");
@@ -107,13 +111,29 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Override
     public List<String> getTables(WaterfallDataSource dataSource) throws SQLException {
       DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
-      return MetaUtil.getTables(db,dataSource.getDatabase());
+      return MetaUtil.getTables(db,dataSource.getDbName());
     }
 
     @Override
     public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
       DataSource db = new SimpleDataSource(input.getJdbcUrl(), input.getUsername(), input.getPassword());
       return DBUtil.getTableMeta(db,input.getTableName(),input.getDatabase());
+    }
+
+    private String concatUrl(WaterfallDataSource dataSource) throws RuntimeException{
+        if(!StringUtils.isNotBlank(dataSource.getDbType())){
+            throw new RuntimeException("dbType不能为空");
+        }
+        String type = dataSource.getDbType().toLowerCase();
+        if(type.equals("mysql")){
+            String mysqlUrl = "jdbc:mysql://%s:%s/%s";
+            return String.format(mysqlUrl, dataSource.getHost(),dataSource.getPort(),dataSource.getDbName());
+        }
+        if(type.equals("oracle")){
+            String oracleUrl = "jdbc:oracle:thin:%s:%s:%s";
+            return String.format(oracleUrl, dataSource.getHost(),dataSource.getPort(),dataSource.getServerName());
+        }
+        return "";
     }
 
 }

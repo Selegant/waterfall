@@ -1,110 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper">
-  <resultMap
-    id="BaseResultMap"
-    type="org.jeecg.modules.datasources.model.WaterfallDataSource">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallDataSource">
     <!--@mbg.generated-->
     <!--@Table waterfall_data_source-->
-    <id
-      column="id"
-      jdbcType="INTEGER"
-      property="id"/>
-    <result
-      column="data_source_name"
-      jdbcType="VARCHAR"
-      property="dataSourceName"/>
-    <result
-      column="jdbc_url"
-      jdbcType="VARCHAR"
-      property="jdbcUrl"/>
-    <result
-      column="username"
-      jdbcType="VARCHAR"
-      property="username"/>
-    <result
-      column="password"
-      jdbcType="VARCHAR"
-      property="password"/>
-    <result
-      column="remark"
-      jdbcType="VARCHAR"
-      property="remark"/>
-    <result
-      column="db_type"
-      jdbcType="INTEGER"
-      property="dbType"/>
-    <result
-      column="alive_flag"
-      jdbcType="BOOLEAN"
-      property="aliveFlag"/>
-    <result
-      column="purpose"
-      jdbcType="INTEGER"
-      property="purpose"/>
-    <result
-      column="host"
-      jdbcType="VARCHAR"
-      property="host"/>
-    <result
-      column="port"
-      jdbcType="VARCHAR"
-      property="port"/>
-    <result
-      column="database"
-      jdbcType="VARCHAR"
-      property="database"/>
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="data_source_name" jdbcType="VARCHAR" property="dataSourceName" />
+    <result column="jdbc_url" jdbcType="VARCHAR" property="jdbcUrl" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="db_type" jdbcType="VARCHAR" property="dbType" />
+    <result column="alive_flag" jdbcType="BOOLEAN" property="aliveFlag" />
+    <result column="purpose" jdbcType="INTEGER" property="purpose" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="port" jdbcType="VARCHAR" property="port" />
+    <result column="db_name" jdbcType="VARCHAR" property="dbName" />
+    <result column="server_name" jdbcType="VARCHAR" property="serverName" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, data_source_name, jdbc_url, username, `password`, remark, db_type, alive_flag,
-    purpose, `host`, port
+    id, data_source_name, jdbc_url, username, `password`, remark, db_type, alive_flag, 
+    purpose, `host`, port, db_name, `server_name`
   </sql>
-  <select
-    id="selectByPrimaryKey"
-    parameterType="java.lang.Integer"
-    resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select
-    <include refid="Base_Column_List"/>
+    select 
+    <include refid="Base_Column_List" />
     from waterfall_data_source
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete
-    id="deleteByPrimaryKey"
-    parameterType="java.lang.Integer">
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--@mbg.generated-->
     delete from waterfall_data_source
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert
-    id="insert"
-    keyColumn="id"
-    keyProperty="id"
-    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource"
-    useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_data_source (data_source_name, jdbc_url, username,
-    `password`, remark, db_type,
-    alive_flag, purpose, `host`,
-    port)
-    values (#{dataSourceName,jdbcType=VARCHAR}, #{jdbcUrl,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR},
-    #{password,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{dbType,jdbcType=VARCHAR},
-    #{aliveFlag,jdbcType=BOOLEAN}, #{purpose,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR},
-    #{port,jdbcType=VARCHAR})
+    insert into waterfall_data_source (data_source_name, jdbc_url, username, 
+      `password`, remark, db_type, 
+      alive_flag, purpose, `host`, 
+      port, db_name, `server_name`
+      )
+    values (#{dataSourceName,jdbcType=VARCHAR}, #{jdbcUrl,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{password,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{dbType,jdbcType=VARCHAR}, 
+      #{aliveFlag,jdbcType=BOOLEAN}, #{purpose,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR}, 
+      #{port,jdbcType=VARCHAR}, #{dbName,jdbcType=VARCHAR}, #{serverName,jdbcType=VARCHAR}
+      )
   </insert>
-  <insert
-    id="insertSelective"
-    keyColumn="id"
-    keyProperty="id"
-    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource"
-    useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_data_source
-    <trim
-      prefix="("
-      suffix=")"
-      suffixOverrides=",">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="dataSourceName != null">
         data_source_name,
       </if>
@@ -120,7 +67,7 @@
       <if test="remark != null">
         remark,
       </if>
-      <if test="dbType != null and dbType != ''">
+      <if test="dbType != null">
         db_type,
       </if>
       <if test="aliveFlag != null">
@@ -135,14 +82,14 @@
       <if test="port != null">
         port,
       </if>
-      <if test="database != null">
-        database,
+      <if test="dbName != null">
+        db_name,
+      </if>
+      <if test="serverName != null">
+        `server_name`,
       </if>
     </trim>
-    <trim
-      prefix="values ("
-      suffix=")"
-      suffixOverrides=",">
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="dataSourceName != null">
         #{dataSourceName,jdbcType=VARCHAR},
       </if>
@@ -173,14 +120,15 @@
       <if test="port != null">
         #{port,jdbcType=VARCHAR},
       </if>
-      <if test="database != null">
-        #{database,jdbcType=VARCHAR},
+      <if test="dbName != null">
+        #{dbName,jdbcType=VARCHAR},
+      </if>
+      <if test="serverName != null">
+        #{serverName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update
-    id="updateByPrimaryKeySelective"
-    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource">
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource">
     <!--@mbg.generated-->
     update waterfall_data_source
     <set>
@@ -214,33 +162,34 @@
       <if test="port != null">
         port = #{port,jdbcType=VARCHAR},
       </if>
-      <if test="database != null">
-        database = #{port,jdbcType=VARCHAR},
+      <if test="dbName != null">
+        db_name = #{dbName,jdbcType=VARCHAR},
+      </if>
+      <if test="serverName != null">
+        `server_name` = #{serverName,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update
-    id="updateByPrimaryKey"
-    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource">
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallDataSource">
     <!--@mbg.generated-->
     update waterfall_data_source
     set data_source_name = #{dataSourceName,jdbcType=VARCHAR},
-    jdbc_url = #{jdbcUrl,jdbcType=VARCHAR},
-    username = #{username,jdbcType=VARCHAR},
-    `password` = #{password,jdbcType=VARCHAR},
-    remark = #{remark,jdbcType=VARCHAR},
-    db_type = #{dbType,jdbcType=VARCHAR},
-    alive_flag = #{aliveFlag,jdbcType=BOOLEAN},
-    purpose = #{purpose,jdbcType=INTEGER},
-    `host` = #{host,jdbcType=VARCHAR},
-    port = #{port,jdbcType=VARCHAR}
+      jdbc_url = #{jdbcUrl,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      `password` = #{password,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      db_type = #{dbType,jdbcType=VARCHAR},
+      alive_flag = #{aliveFlag,jdbcType=BOOLEAN},
+      purpose = #{purpose,jdbcType=INTEGER},
+      `host` = #{host,jdbcType=VARCHAR},
+      port = #{port,jdbcType=VARCHAR},
+      db_name = #{dbName,jdbcType=VARCHAR},
+      `server_name` = #{serverName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select
-    id="list"
-    resultType="org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO">
+  <select id="list" resultType="org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO">
     SELECT
         t1.data_source_type_name AS dataSourceTypeName,
         t2.id AS id,
