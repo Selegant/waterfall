@@ -45,6 +45,9 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Autowired
     private WaterfallDataSourceTypeMapper waterfallDataSourceTypeMapper;
 
+    private static final String MYSQL = "mysql";
+    private static final String ORACLE = "oracle";
+
     @Override
     public void saveDataSource(WaterfallDataSource dataSource) throws Exception {
         dataSource.setJdbcUrl(concatUrl(dataSource));
@@ -125,12 +128,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
             throw new RuntimeException("dbType不能为空");
         }
         String type = dataSource.getDbType().toLowerCase();
-        if(type.equals("mysql")){
+        if(MYSQL.equals(type)){
             String mysqlUrl = "jdbc:mysql://%s:%s/%s";
             return String.format(mysqlUrl, dataSource.getHost(),dataSource.getPort(),dataSource.getDbName());
         }
-        if(type.equals("oracle")){
-            String oracleUrl = "jdbc:oracle:thin:%s:%s:%s";
+        if(ORACLE.equals(type)){
+            String oracleUrl = "jdbc:oracle:thin:@%s:%s/%s";
             return String.format(oracleUrl, dataSource.getHost(),dataSource.getPort(),dataSource.getServerName());
         }
         return "";
