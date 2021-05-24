@@ -30,8 +30,8 @@ public class DataSourceController {
     IDataSourceService dataSourceService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result<List<WaterfallDataSourceListDTO>> list(@RequestParam String purpose, HttpServletRequest request) {
-        Result<List<WaterfallDataSourceListDTO>> result = new Result<>();
+    public Result<List<WaterfallDataSource>> list(@RequestParam String purpose, HttpServletRequest request) {
+        Result<List<WaterfallDataSource>> result = new Result<>();
         try {
             result.setResult(dataSourceService.list(purpose));
             result.success("查询成功！");

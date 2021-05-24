@@ -8,6 +8,7 @@ import cn.hutool.db.meta.Column;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.Table;
 import cn.hutool.db.meta.TableType;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -50,8 +51,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public List<WaterfallDataSourceListDTO> list(String purpose) {
-       return waterfallDataSourceMapper.list(purpose);
+    public List<WaterfallDataSource> list(String purpose) {
+        QueryWrapper<WaterfallDataSource> wrapper = new QueryWrapper<>();
+        wrapper.eq("purpose",purpose);
+       return waterfallDataSourceMapper.selectList(wrapper);
     }
 
     @Override

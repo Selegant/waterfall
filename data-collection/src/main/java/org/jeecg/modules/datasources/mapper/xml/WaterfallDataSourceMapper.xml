@@ -31,9 +31,9 @@
       jdbcType="VARCHAR"
       property="remark"/>
     <result
-      column="type_id"
+      column="db_type"
       jdbcType="INTEGER"
-      property="typeId"/>
+      property="dbType"/>
     <result
       column="alive_flag"
       jdbcType="BOOLEAN"
@@ -57,7 +57,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, data_source_name, jdbc_url, username, `password`, remark, type_id, alive_flag,
+    id, data_source_name, jdbc_url, username, `password`, remark, db_type, alive_flag,
     purpose, `host`, port
   </sql>
   <select
@@ -85,11 +85,11 @@
     useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_data_source (data_source_name, jdbc_url, username,
-    `password`, remark, type_id,
+    `password`, remark, db_type,
     alive_flag, purpose, `host`,
     port)
     values (#{dataSourceName,jdbcType=VARCHAR}, #{jdbcUrl,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR},
-    #{password,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{typeId,jdbcType=INTEGER},
+    #{password,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{dbType,jdbcType=VARCHAR},
     #{aliveFlag,jdbcType=BOOLEAN}, #{purpose,jdbcType=INTEGER}, #{host,jdbcType=VARCHAR},
     #{port,jdbcType=VARCHAR})
   </insert>
@@ -120,8 +120,8 @@
       <if test="remark != null">
         remark,
       </if>
-      <if test="typeId != null">
-        type_id,
+      <if test="dbType != null and dbType != ''">
+        db_type,
       </if>
       <if test="aliveFlag != null">
         alive_flag,
@@ -158,8 +158,8 @@
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="typeId != null">
-        #{typeId,jdbcType=INTEGER},
+      <if test="dbType != null">
+        #{dbType,jdbcType=VARCHAR},
       </if>
       <if test="aliveFlag != null">
         #{aliveFlag,jdbcType=BOOLEAN},
@@ -199,8 +199,8 @@
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="typeId != null">
-        type_id = #{typeId,jdbcType=INTEGER},
+      <if test="dbType != null">
+        db_type = #{dbType,jdbcType=VARCHAR},
       </if>
       <if test="aliveFlag != null">
         alive_flag = #{aliveFlag,jdbcType=BOOLEAN},
@@ -230,7 +230,7 @@
     username = #{username,jdbcType=VARCHAR},
     `password` = #{password,jdbcType=VARCHAR},
     remark = #{remark,jdbcType=VARCHAR},
-    type_id = #{typeId,jdbcType=INTEGER},
+    db_type = #{dbType,jdbcType=VARCHAR},
     alive_flag = #{aliveFlag,jdbcType=BOOLEAN},
     purpose = #{purpose,jdbcType=INTEGER},
     `host` = #{host,jdbcType=VARCHAR},

@@ -41,7 +41,7 @@ public class WaterfallDataSource {
   /**
    * 数据库类型
    */
-  private Integer typeId;
+  private String dbType;
 
   /**
    * 是否可用 0不可用1可用

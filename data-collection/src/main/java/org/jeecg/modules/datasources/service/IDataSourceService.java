@@ -13,7 +13,7 @@ public interface IDataSourceService {
 
     void saveDataSource(WaterfallDataSource dataSource);
 
-    List<WaterfallDataSourceListDTO> list(String purpose);
+    List<WaterfallDataSource> list(String purpose);
 
     List<WaterfallDataSourceType> dataSourceTypeList();
 
