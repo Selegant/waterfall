@@ -5,6 +5,7 @@ import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
+import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 
 import java.util.List;
@@ -29,7 +30,11 @@ public interface IDataSourceService {
 
     Boolean connection(WaterfallDataSource dataSource) throws Exception;
 
-    List<String> getTables(WaterfallDataSource dataSource) throws SQLException;
+    List<String> getTables(WaterfallDataSource dataSource);
 
     List<TableColumnInfoDTO> getTableColumns(TableColumnInput input);
+
+    void asyncUpdateAmount(WaterfallDataSource dataSource);
+
+    List<WaterfallDataSourceAmount> getAmountList(Integer dbId);
 }

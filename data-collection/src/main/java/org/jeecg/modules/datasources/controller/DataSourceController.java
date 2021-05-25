@@ -6,6 +6,7 @@ import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
+import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,10 +169,39 @@ public class DataSourceController {
             result.setResult(dataSourceService.getTableColumns(input));
             result.success("操作成功！");
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             result.error500("操作失败");
         }
         return result;
     }
+
+    @RequestMapping(value = "/amountList", method = RequestMethod.GET)
+    public Result<List<WaterfallDataSourceAmount>> getAmountList(@RequestParam Integer dbId,
+            HttpServletRequest request) {
+        Result<List<WaterfallDataSourceAmount>> result = new Result<>();
+        try {
+            result.setResult(dataSourceService.getAmountList(dbId));
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/asyncAmount", method = RequestMethod.POST)
+    public Result<String> asyncAmount(@RequestBody WaterfallDataSource dataSource,
+            HttpServletRequest request) {
+        Result<String> result = new Result<>();
+        try {
+            dataSourceService.asyncUpdateAmount(dataSource);
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
 
 }

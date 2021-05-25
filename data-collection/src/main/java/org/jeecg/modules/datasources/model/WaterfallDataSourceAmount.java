@@ -1,5 +1,7 @@
 package org.jeecg.modules.datasources.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import java.util.Date;
 import lombok.Data;
 
@@ -9,6 +11,7 @@ public class WaterfallDataSourceAmount {
     /**
      * 自增主键
      */
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -35,4 +38,9 @@ public class WaterfallDataSourceAmount {
      * 创建时间
      */
     private Date createTime;
+
+    /**
+     * 表名
+     */
+    private String tableName;
 }

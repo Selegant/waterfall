@@ -6,7 +6,7 @@
     type="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
     <!--@mbg.generated-->
     <!--@Table waterfall_data_source_amount-->
-    <result
+    <id
       column="id"
       jdbcType="INTEGER"
       property="id"/>
@@ -30,18 +30,43 @@
       column="create_time"
       jdbcType="TIMESTAMP"
       property="createTime"/>
+    <result
+      column="table_name"
+      jdbcType="VARCHAR"
+      property="tableName"/>
   </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, db_id, amount, update_time, required_time, create_time, `table_name`
+  </sql>
+  <select
+    id="selectByPrimaryKey"
+    parameterType="java.lang.Integer"
+    resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List"/>
+    from waterfall_data_source_amount
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete
+    id="deleteByPrimaryKey"
+    parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_data_source_amount
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
   <insert
     id="insert"
     parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
     <!--@mbg.generated-->
     insert into waterfall_data_source_amount (id, db_id, amount,
-    update_time, required_time, create_time
-    )
+    update_time, required_time, create_time,
+    `table_name`)
     values (#{id,jdbcType=INTEGER}, #{dbId,jdbcType=INTEGER}, #{amount,jdbcType=INTEGER},
     #{updateTime,jdbcType=TIMESTAMP}, #{requiredTime,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP}
-    )
+    #{createTime,jdbcType=TIMESTAMP},
+    #{tableName,jdbcType=VARCHAR})
   </insert>
   <insert
     id="insertSelective"
@@ -70,6 +95,9 @@
       <if test="createTime != null">
         create_time,
       </if>
+      <if test="tableName != null">
+        `table_name`,
+      </if>
     </trim>
     <trim
       prefix="values ("
@@ -93,6 +121,60 @@
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="tableName != null">
+        #{tableName,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
+  <insert id="insertBatch">
+    INSERT waterfall_data_source_amount(db_id,table_name) INTO
+    <foreach
+      collection="addList"
+      item="model"
+      separator=","
+      close=";">
+      (#{model.dbId},#{model.tableName})
+    </foreach>
+
+  </insert>
+  <update
+    id="updateByPrimaryKeySelective"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
+    <!--@mbg.generated-->
+    update waterfall_data_source_amount
+    <set>
+      <if test="dbId != null">
+        db_id = #{dbId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="requiredTime != null">
+        required_time = #{requiredTime,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tableName != null">
+        `table_name` = #{tableName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update
+    id="updateByPrimaryKey"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallDataSourceAmount">
+    <!--@mbg.generated-->
+    update waterfall_data_source_amount
+    set db_id = #{dbId,jdbcType=INTEGER},
+    amount = #{amount,jdbcType=INTEGER},
+    update_time = #{updateTime,jdbcType=TIMESTAMP},
+    required_time = #{requiredTime,jdbcType=INTEGER},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    `table_name` = #{tableName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
 </mapper>
