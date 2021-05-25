@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -59,7 +59,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
     private static final String AMOUNT = "amount";
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(100));
+            new ArrayBlockingQueue<Runnable>(100));
 
     @Override
     public void saveDataSource(WaterfallDataSource dataSource) throws Exception {
