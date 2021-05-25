@@ -8,10 +8,13 @@ import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,7 @@ import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
+import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
 import org.jeecg.modules.datasources.util.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,8 +49,17 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Autowired
     private WaterfallDataSourceAmountMapper waterfallDataSourceAmountMapper;
 
+    @Autowired
+    private IWaterfallDataSourceAmountService waterfallDataSourceAmountService;
+
     private static final String MYSQL = "mysql";
+
     private static final String ORACLE = "oracle";
+
+    private static final String AMOUNT = "amount";
+
+    private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<Runnable>(100));
 
     @Override
     public void saveDataSource(WaterfallDataSource dataSource) throws Exception {
@@ -64,8 +77,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public List<WaterfallDataSourceType> dataSourceTypeList() {
-        return waterfallDataSourceTypeMapper
-                .selectList(new QueryWrapper<WaterfallDataSourceType>());
+        return waterfallDataSourceTypeMapper.selectList(new QueryWrapper<WaterfallDataSourceType>());
     }
 
     @Override
@@ -149,12 +161,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
                         Collectors.toList());
         List<String> removeList = new ArrayList<>();
         List<WaterfallDataSourceAmount> addList = new ArrayList<>();
-        for (String tableName : tablesInAmountDb) {
+        for (String tableName : tablesInAmountDb) { // 找出需要删除的表名
             if (!tables.contains(tableName)) {
                 removeList.add(tableName);
             }
         }
-        for (String tableName : tables) {
+        for (String tableName : tables) { // 找出需要添加的表名
             if (!tablesInAmountDb.contains(tableName)) {
                 WaterfallDataSourceAmount model = new WaterfallDataSourceAmount();
                 model.setDbId(dataSource.getId());
@@ -167,9 +179,23 @@ public class DataSourceServiceImpl implements IDataSourceService {
         waterfallDataSourceAmountMapper.delete(deleteWrapper);
         waterfallDataSourceAmountMapper.insertBatch(addList);
         // 更新完之后的所有的表
-        List<WaterfallDataSourceAmount> updatedTables = waterfallDataSourceAmountMapper
-                .selectList(wrapper);
-        // TODO
+        List<WaterfallDataSourceAmount> updatedTables = waterfallDataSourceAmountMapper.selectList(wrapper);
+        if (updatedTables.size() < 50) {
+            for (WaterfallDataSourceAmount amount : updatedTables) {
+                List<WaterfallDataSourceAmount> list = new ArrayList<>();
+                list.add(amount);
+                POOL.execute(() -> updateAmount(dataSource, list));
+            }
+        } else {
+            int j = updatedTables.size() / 10;
+            for (int i = 0; i < 10; i++) {
+                final int x = i;
+                POOL.execute(() -> updateAmount(dataSource, updatedTables.subList(x * j, (x + 1) * j)));
+            }
+            if (updatedTables.size() % 10 != 0) {
+                POOL.execute(() -> updateAmount(dataSource, updatedTables.subList(j * 10, updatedTables.size())));
+            }
+        }
     }
 
     @Override
@@ -179,18 +205,25 @@ public class DataSourceServiceImpl implements IDataSourceService {
         return waterfallDataSourceAmountMapper.selectList(wrapper);
     }
 
-    private List<WaterfallDataSourceAmount> setAmount(WaterfallDataSource dataSource,
-            List<WaterfallDataSourceAmount> lstAmount)
-            throws SQLException {
+    private void updateAmount(WaterfallDataSource dataSource, List<WaterfallDataSourceAmount> lstAmount) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
-        db.getConnection();
-        for (WaterfallDataSourceAmount amount : lstAmount) {
-            DbUtil.use(db).query("SELECT COUNT(*) AS amount FROM " + amount.getTableName());
-            // TODO
+        try {
+            db.getConnection();
+            for (WaterfallDataSourceAmount amount : lstAmount) {
+                Long start = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+                Entity entity = DbUtil.use(db).query("SELECT COUNT(*) AS " + AMOUNT + " FROM " + amount.getTableName())
+                        .get(0);
+                Long end = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+                amount.setAmount(Integer.valueOf(entity.get(AMOUNT).toString()));
+                amount.setRequiredTime((int) (end - start));
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            log.error("setAmount:数据库连接异常或查询异常");
         }
-        return lstAmount;
+        waterfallDataSourceAmountService.updateBatchById(lstAmount);
     }
 
     private String concatUrl(WaterfallDataSource dataSource) throws RuntimeException {
