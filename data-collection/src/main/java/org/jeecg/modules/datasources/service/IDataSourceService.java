@@ -1,6 +1,8 @@
 package org.jeecg.modules.datasources.service;
 
 import java.sql.SQLException;
+
+import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
@@ -30,11 +32,14 @@ public interface IDataSourceService {
 
     Boolean connection(WaterfallDataSource dataSource) throws Exception;
 
-    List<String> getTables(WaterfallDataSource dataSource);
+    List<String> getTables(Integer dbId,Integer typeId);
 
     List<TableColumnInfoDTO> getTableColumns(TableColumnInput input);
 
-    void asyncUpdateAmount(WaterfallDataSource dataSource);
+    void asyncUpdateAmount(Integer dbId);
 
     List<WaterfallDataSourceAmount> getAmountList(Integer dbId);
+
+    DatabaseTreeDTO treeList(String purpose);
+
 }

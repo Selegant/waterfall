@@ -1,7 +1,13 @@
 package org.jeecg.modules.datasources.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
+import org.jeecg.modules.datasources.dto.PageInfoDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
@@ -10,13 +16,10 @@ import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +38,20 @@ public class DataSourceController {
         Result<List<WaterfallDataSource>> result = new Result<>();
         try {
             result.setResult(dataSourceService.list(purpose));
+            result.success("查询成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+
+    @RequestMapping(value = "/tree/list", method = RequestMethod.GET)
+    public Result<DatabaseTreeDTO> treeList(@RequestParam String purpose, HttpServletRequest request) {
+        Result<DatabaseTreeDTO> result = new Result<>();
+        try {
+            result.setResult(dataSourceService.treeList(purpose));
             result.success("查询成功！");
         } catch (Exception e) {
             log.error(e.getMessage(),e);
@@ -149,11 +166,17 @@ public class DataSourceController {
         return result;
     }
 
-    @RequestMapping(value = "/getTables",method = RequestMethod.POST)
-    public Result<List<String>> getTables(@RequestBody WaterfallDataSource dataSource, HttpServletRequest request) {
+    @RequestMapping(value = "/getTables/{id}",method = RequestMethod.GET)
+    public Result<List<String>> getTables(@PathVariable(value = "id") String id, HttpServletRequest request) {
         Result<List<String>> result = new Result<>();
+        if(id.length()==1){
+            result.setResult(new ArrayList<>(16));
+            return result.success("操作成功！");
+        }
         try {
-            result.setResult(dataSourceService.getTables(dataSource));
+            Integer dbId = Integer.valueOf(id.split("-")[0]);
+            Integer typeId = Integer.valueOf(id.split("-")[1]);
+            result.setResult(dataSourceService.getTables(dbId,typeId));
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(),e);
@@ -175,12 +198,29 @@ public class DataSourceController {
         return result;
     }
 
-    @RequestMapping(value = "/amountList", method = RequestMethod.GET)
-    public Result<List<WaterfallDataSourceAmount>> getAmountList(@RequestParam Integer dbId,
-            HttpServletRequest request) {
-        Result<List<WaterfallDataSourceAmount>> result = new Result<>();
+    @RequestMapping(value = "/amountList/{dbId}", method = RequestMethod.GET)
+    public Result<PageInfoDTO> getAmountList(@PathVariable(value = "dbId") Integer dbId,
+                                             HttpServletRequest request) {
+        int pageNo = 1;
+        int pageSize = 1000;
+        Result<PageInfoDTO> result = new Result<>();
+        PageInfoDTO page = new PageInfoDTO();
+        page.setTotalPage(pageNo);
+        page.setTotalCount(0);
+        page.setPageNo(pageNo);
+        page.setPageSize(pageSize);
+        page.setData(new Object());
+        if(dbId<0){
+            page.setData(new ArrayList<>());
+            result.setResult(page);
+            result.success("操作成功！");
+            return result;
+        }
         try {
-            result.setResult(dataSourceService.getAmountList(dbId));
+            List<WaterfallDataSourceAmount> list = dataSourceService.getAmountList(dbId);
+            page.setData(list);
+            page.setTotalCount(list.size());
+            result.setResult(page);
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -189,12 +229,16 @@ public class DataSourceController {
         return result;
     }
 
-    @RequestMapping(value = "/asyncAmount", method = RequestMethod.POST)
-    public Result<String> asyncAmount(@RequestBody WaterfallDataSource dataSource,
+    @RequestMapping(value = "/asyncAmount/{dbId}", method = RequestMethod.GET)
+    public Result<String> asyncAmount(@PathVariable(value = "dbId") Integer dbId,
             HttpServletRequest request) {
         Result<String> result = new Result<>();
+        if(dbId<0){
+            result.error500("资源ID错误");
+            return result;
+        }
         try {
-            dataSourceService.asyncUpdateAmount(dataSource);
+            dataSourceService.asyncUpdateAmount(dbId);
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);

@@ -6,6 +6,7 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceAmountMapper;
@@ -124,6 +126,38 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
+    public List<String> getTables(Integer dbId,Integer typeId) {
+        return getTables(waterfallDataSourceMapper.selectByPrimaryKey(dbId),typeId);
+    }
+
+    public List<String> getTables(WaterfallDataSource dataSource,Integer typeId) {
+        dataSource.setJdbcUrl(concatUrl(dataSource));
+        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
+                dataSource.getPassword());
+        String type = dataSource.getDbType().toLowerCase();
+        List<String> result = new ArrayList<>();
+        if (MYSQL.equals(type)) {
+            if(typeId==1){
+                result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
+            }
+            if(typeId==2){
+                result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.VIEW);
+            }
+        }
+        if (ORACLE.equals(type)) {
+            if(typeId==1){
+                result = MetaUtil
+                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
+            }
+            if(typeId==2){
+                result = MetaUtil
+                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW);
+            }
+        }
+        result.sort(String::compareTo);
+        return result;
+    }
+
     public List<String> getTables(WaterfallDataSource dataSource) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
@@ -149,7 +183,8 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void asyncUpdateAmount(WaterfallDataSource dataSource) {
+    public void asyncUpdateAmount(Integer dbId) {
+        WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
         List<String> tables = getTables(dataSource); // 真实数据源的表集合
         QueryWrapper<WaterfallDataSourceAmount> wrapper = new QueryWrapper<>();
         wrapper.eq("db_id", dataSource.getId());
@@ -174,10 +209,14 @@ public class DataSourceServiceImpl implements IDataSourceService {
                 addList.add(model);
             }
         }
-        QueryWrapper<WaterfallDataSourceAmount> deleteWrapper = new QueryWrapper<>();
-        deleteWrapper.eq("db_id", dataSource.getId()).in("table_name", removeList);
-        waterfallDataSourceAmountMapper.delete(deleteWrapper);
-        waterfallDataSourceAmountMapper.insertBatch(addList);
+        if(!removeList.isEmpty()){
+            QueryWrapper<WaterfallDataSourceAmount> deleteWrapper = new QueryWrapper<>();
+            deleteWrapper.eq("db_id", dataSource.getId()).in("table_name", removeList);
+            waterfallDataSourceAmountMapper.delete(deleteWrapper);
+        }
+        if(!addList.isEmpty()){
+            waterfallDataSourceAmountMapper.insertBatch(addList);
+        }
         // 更新完之后的所有的表
         List<WaterfallDataSourceAmount> updatedTables = waterfallDataSourceAmountMapper.selectList(wrapper);
         if (updatedTables.size() < 50) {
@@ -203,6 +242,42 @@ public class DataSourceServiceImpl implements IDataSourceService {
         QueryWrapper<WaterfallDataSourceAmount> wrapper = new QueryWrapper<>();
         wrapper.eq("db_id", dbId).orderByAsc("table_name");
         return waterfallDataSourceAmountMapper.selectList(wrapper);
+    }
+
+    @Override
+    public DatabaseTreeDTO treeList(String purpose) {
+        QueryWrapper<WaterfallDataSource> wrapper = new QueryWrapper<>();
+        wrapper.eq("purpose", purpose);
+        List<WaterfallDataSource> list = waterfallDataSourceMapper.selectList(wrapper);
+        DatabaseTreeDTO databaseTree = new DatabaseTreeDTO();
+        List<DatabaseTreeDTO.Tree> trees = new ArrayList<>();
+        list.forEach(s->{
+            DatabaseTreeDTO.Tree db = new DatabaseTreeDTO.Tree();
+            db.setTitle(s.getDataSourceName());
+            db.setKey(s.getId().toString());
+            JSONObject object = new JSONObject();
+            object.put("icon",s.getDbType());
+            db.setSlots(object);
+            List<DatabaseTreeDTO.Tree> childrenTree = new ArrayList<>();
+            DatabaseTreeDTO.Tree table = new DatabaseTreeDTO.Tree();
+            table.setTitle("Table");
+            table.setKey(s.getId() + "-" + "1");
+            object = new JSONObject();
+            object.put("icon","table");
+            table.setSlots(object);
+            childrenTree.add(table);
+            table = new DatabaseTreeDTO.Tree();
+            table.setTitle("View");
+            table.setKey(s.getId() + "-" + "2");
+            object = new JSONObject();
+            object.put("icon","view");
+            table.setSlots(object);
+            childrenTree.add(table);
+            db.setChildren(childrenTree);
+            trees.add(db);
+        });
+        databaseTree.setTrees(trees);
+        return databaseTree;
     }
 
     private void updateAmount(WaterfallDataSource dataSource, List<WaterfallDataSourceAmount> lstAmount) {
