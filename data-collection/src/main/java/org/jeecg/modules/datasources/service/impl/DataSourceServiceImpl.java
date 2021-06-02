@@ -18,6 +18,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
@@ -59,6 +61,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
     private static final String ORACLE = "oracle";
 
     private static final String AMOUNT = "amount";
+
+    private static final int TABLE = 1;
+
+    private static final int VIEW = 2;
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(100));
@@ -183,11 +189,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void asyncUpdateAmount(Integer dbId) {
+    public void asyncUpdateAmount(Integer dbId, Integer type) {
         WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
-        List<String> tables = getTables(dataSource); // 真实数据源的表集合
+        List<String> tables = getTables(dataSource,type); // 真实数据源的表集合
         QueryWrapper<WaterfallDataSourceAmount> wrapper = new QueryWrapper<>();
         wrapper.eq("db_id", dataSource.getId());
+        wrapper.eq("type",type);
         List<WaterfallDataSourceAmount> amounts = waterfallDataSourceAmountMapper
                 .selectList(wrapper);
         // 在库里的表集合
@@ -215,7 +222,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
             waterfallDataSourceAmountMapper.delete(deleteWrapper);
         }
         if(!addList.isEmpty()){
-            waterfallDataSourceAmountMapper.insertBatch(addList);
+            waterfallDataSourceAmountMapper.insertBatch(addList,type);
         }
         // 更新完之后的所有的表
         List<WaterfallDataSourceAmount> updatedTables = waterfallDataSourceAmountMapper.selectList(wrapper);
@@ -238,9 +245,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public List<WaterfallDataSourceAmount> getAmountList(Integer dbId) {
+    public List<WaterfallDataSourceAmount> getAmountList(Integer dbId,Integer type) {
         QueryWrapper<WaterfallDataSourceAmount> wrapper = new QueryWrapper<>();
         wrapper.eq("db_id", dbId).orderByAsc("table_name");
+        wrapper.eq("type",type);
         return waterfallDataSourceAmountMapper.selectList(wrapper);
     }
 

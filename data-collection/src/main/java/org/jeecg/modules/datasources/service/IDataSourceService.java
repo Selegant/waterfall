@@ -36,9 +36,9 @@ public interface IDataSourceService {
 
     List<TableColumnInfoDTO> getTableColumns(TableColumnInput input);
 
-    void asyncUpdateAmount(Integer dbId);
+    void asyncUpdateAmount(Integer dbId,Integer type);
 
-    List<WaterfallDataSourceAmount> getAmountList(Integer dbId);
+    List<WaterfallDataSourceAmount> getAmountList(Integer dbId,Integer type);
 
     DatabaseTreeDTO treeList(String purpose);
 

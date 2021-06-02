@@ -198,8 +198,9 @@ public class DataSourceController {
         return result;
     }
 
-    @RequestMapping(value = "/amountList/{dbId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/amountList/{dbId}/{type}", method = RequestMethod.GET)
     public Result<PageInfoDTO> getAmountList(@PathVariable(value = "dbId") Integer dbId,
+                                             @PathVariable(value = "type") Integer type,
                                              HttpServletRequest request) {
         int pageNo = 1;
         int pageSize = 1000;
@@ -217,7 +218,7 @@ public class DataSourceController {
             return result;
         }
         try {
-            List<WaterfallDataSourceAmount> list = dataSourceService.getAmountList(dbId);
+            List<WaterfallDataSourceAmount> list = dataSourceService.getAmountList(dbId,type);
             page.setData(list);
             page.setTotalCount(list.size());
             result.setResult(page);
@@ -229,8 +230,9 @@ public class DataSourceController {
         return result;
     }
 
-    @RequestMapping(value = "/asyncAmount/{dbId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/asyncAmount/{dbId}/{type}", method = RequestMethod.GET)
     public Result<String> asyncAmount(@PathVariable(value = "dbId") Integer dbId,
+                                      @PathVariable(value = "type") Integer type,
             HttpServletRequest request) {
         Result<String> result = new Result<>();
         if(dbId<0){
@@ -238,7 +240,7 @@ public class DataSourceController {
             return result;
         }
         try {
-            dataSourceService.asyncUpdateAmount(dbId);
+            dataSourceService.asyncUpdateAmount(dbId,type);
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);

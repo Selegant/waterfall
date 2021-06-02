@@ -19,5 +19,5 @@ public interface WaterfallDataSourceAmountMapper extends BaseMapper<WaterfallDat
 
     int updateByPrimaryKey(WaterfallDataSourceAmount record);
 
-    void insertBatch(@Param("addList") List<WaterfallDataSourceAmount> addList);
+    void insertBatch(@Param("addList") List<WaterfallDataSourceAmount> addList,@Param("type") Integer type);
 }

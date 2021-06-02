@@ -127,12 +127,12 @@
     </trim>
   </insert>
   <insert id="insertBatch">
-    INSERT INTO waterfall_data_source_amount(db_id,`table_name`) VALUES
+    INSERT INTO waterfall_data_source_amount(db_id,`table_name`,`type`) VALUES
     <foreach
       collection="addList"
       item="model"
       separator=",">
-      (#{model.dbId},#{model.tableName})
+      (#{model.dbId},#{model.tableName},#{type})
     </foreach>
 
   </insert>

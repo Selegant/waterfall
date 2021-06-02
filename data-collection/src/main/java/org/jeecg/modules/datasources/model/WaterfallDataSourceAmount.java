@@ -43,4 +43,9 @@ public class WaterfallDataSourceAmount {
      * 表名
      */
     private String tableName;
+
+    /**
+     * 类型 1:表 2:视图
+     */
+    private Integer type;
 }
