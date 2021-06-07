@@ -1,23 +1,51 @@
 package org.jeecg.modules.datasources.util;
 
+import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_INITIALSIZE;
+import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_MAXACTIVE;
+import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_MAXWAIT;
+import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_PASSWORD;
+import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_URL;
+import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_USERNAME;
+
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.meta.Column;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.Table;
 import cn.hutool.db.meta.TableType;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
+import org.jeecg.modules.datasources.model.WaterfallDataSource;
 
-public class DBUtil {
+public class MyDBUtil {
+
+  private static final String INITIAL_SIZE = "20";
+
+  private static final String MAX_ACTIVE = "40";
+
+  private static final String MAX_WAIT = "3000";
+
+  public static DataSource createDruidPoolByHands(WaterfallDataSource dataSource) throws Exception {
+    Map<String, String> map = new HashMap<>();
+    map.put(PROP_URL, dataSource.getJdbcUrl());
+    map.put(PROP_USERNAME, dataSource.getUsername());
+    map.put(PROP_PASSWORD, dataSource.getPassword());
+    map.put(PROP_INITIALSIZE, INITIAL_SIZE);
+    map.put(PROP_MAXACTIVE, MAX_ACTIVE);
+    map.put(PROP_MAXWAIT, MAX_WAIT);
+    return DruidDataSourceFactory.createDataSource(map);
+  }
 
   public static List<TableColumnInfoDTO> getTableMeta(DataSource ds, String tableName, String database) {
     List<TableColumnInfoDTO> result = new LinkedList<>();

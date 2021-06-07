@@ -36,7 +36,7 @@ public interface IDataSourceService {
 
     List<TableColumnInfoDTO> getTableColumns(TableColumnInput input);
 
-    void asyncUpdateAmount(Integer dbId,Integer type);
+    void asyncUpdateAmount(Integer dbId, Integer type) throws Exception;
 
     List<WaterfallDataSourceAmount> getAmountList(Integer dbId,Integer type);
 

@@ -1,18 +1,23 @@
 package org.jeecg.modules.datasources.service.impl;
 
+import cn.hutool.db.Db;
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +38,7 @@ import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
-import org.jeecg.modules.datasources.util.DBUtil;
+import org.jeecg.modules.datasources.util.MyDBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +71,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     private static final int VIEW = 2;
 
-    private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
+    private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(20, 30, 10, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(100));
 
     @Override
@@ -185,16 +190,16 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
         DataSource db = new SimpleDataSource(input.getJdbcUrl(), input.getUsername(),
                 input.getPassword());
-        return DBUtil.getTableMeta(db, input.getTableName(), input.getDatabase());
+        return MyDBUtil.getTableMeta(db, input.getTableName(), input.getDatabase());
     }
 
     @Override
-    public void asyncUpdateAmount(Integer dbId, Integer type) {
+    public void asyncUpdateAmount(Integer dbId, Integer type) throws Exception {
         WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
-        List<String> tables = getTables(dataSource,type); // 真实数据源的表集合
+        List<String> tables = getTables(dataSource, type); // 真实数据源的表集合
         QueryWrapper<WaterfallDataSourceAmount> wrapper = new QueryWrapper<>();
         wrapper.eq("db_id", dataSource.getId());
-        wrapper.eq("type",type);
+        wrapper.eq("type", type);
         List<WaterfallDataSourceAmount> amounts = waterfallDataSourceAmountMapper
                 .selectList(wrapper);
         // 在库里的表集合
@@ -216,30 +221,33 @@ public class DataSourceServiceImpl implements IDataSourceService {
                 addList.add(model);
             }
         }
-        if(!removeList.isEmpty()){
+        if (!removeList.isEmpty()) {
             QueryWrapper<WaterfallDataSourceAmount> deleteWrapper = new QueryWrapper<>();
             deleteWrapper.eq("db_id", dataSource.getId()).in("table_name", removeList);
             waterfallDataSourceAmountMapper.delete(deleteWrapper);
         }
-        if(!addList.isEmpty()){
-            waterfallDataSourceAmountMapper.insertBatch(addList,type);
+        if (!addList.isEmpty()) {
+            waterfallDataSourceAmountMapper.insertBatch(addList, type);
         }
         // 更新完之后的所有的表
         List<WaterfallDataSourceAmount> updatedTables = waterfallDataSourceAmountMapper.selectList(wrapper);
+
+        DataSource ds = MyDBUtil.createDruidPoolByHands(dataSource); // 手动创建连接池
+
         if (updatedTables.size() < 50) {
             for (WaterfallDataSourceAmount amount : updatedTables) {
                 List<WaterfallDataSourceAmount> list = new ArrayList<>();
                 list.add(amount);
-                POOL.execute(() -> updateAmount(dataSource, list));
+                POOL.execute(() -> updateAmount(ds, list));
             }
         } else {
             int j = updatedTables.size() / 10;
             for (int i = 0; i < 10; i++) {
                 final int x = i;
-                POOL.execute(() -> updateAmount(dataSource, updatedTables.subList(x * j, (x + 1) * j)));
+                POOL.execute(() -> updateAmount(ds, updatedTables.subList(x * j, (x + 1) * j)));
             }
             if (updatedTables.size() % 10 != 0) {
-                POOL.execute(() -> updateAmount(dataSource, updatedTables.subList(j * 10, updatedTables.size())));
+                POOL.execute(() -> updateAmount(ds, updatedTables.subList(j * 10, updatedTables.size())));
             }
         }
     }
@@ -288,15 +296,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
         return databaseTree;
     }
 
-    private void updateAmount(WaterfallDataSource dataSource, List<WaterfallDataSourceAmount> lstAmount) {
-        dataSource.setJdbcUrl(concatUrl(dataSource));
-        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
-                dataSource.getPassword());
+    private void updateAmount(DataSource dataSource, List<WaterfallDataSourceAmount> lstAmount) {
         try {
-            db.getConnection();
             for (WaterfallDataSourceAmount amount : lstAmount) {
                 Long start = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
-                Entity entity = DbUtil.use(db).query("SELECT COUNT(*) AS " + AMOUNT + " FROM " + amount.getTableName())
+                Entity entity = DbUtil.use(dataSource)
+                        .query("SELECT COUNT(*) AS " + AMOUNT + " FROM " + amount.getTableName())
                         .get(0);
                 Long end = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
                 amount.setAmount(Integer.valueOf(entity.get(AMOUNT).toString()));
@@ -305,6 +310,8 @@ public class DataSourceServiceImpl implements IDataSourceService {
         } catch (SQLException e) {
             log.error(e.getMessage());
             log.error("setAmount:数据库连接异常或查询异常");
+        } finally {
+            DbUtil.close();
         }
         waterfallDataSourceAmountService.updateBatchById(lstAmount);
     }
