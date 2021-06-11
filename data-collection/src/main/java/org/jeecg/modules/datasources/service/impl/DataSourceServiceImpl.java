@@ -1,30 +1,23 @@
 package org.jeecg.modules.datasources.service.impl;
 
-import cn.hutool.db.Db;
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.pool.DruidDataSourceFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
@@ -137,30 +130,30 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public List<String> getTables(Integer dbId,Integer typeId) {
-        return getTables(waterfallDataSourceMapper.selectByPrimaryKey(dbId),typeId);
+    public List<String> getTables(Integer dbId, Integer typeId) {
+        return getTables(waterfallDataSourceMapper.selectByPrimaryKey(dbId), typeId);
     }
 
-    public List<String> getTables(WaterfallDataSource dataSource,Integer typeId) {
+    public List<String> getTables(WaterfallDataSource dataSource, Integer typeId) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
         String type = dataSource.getDbType().toLowerCase();
         List<String> result = new ArrayList<>();
         if (MYSQL.equals(type)) {
-            if(typeId==1){
+            if (typeId == 1) {
                 result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
             }
-            if(typeId==2){
+            if (typeId == 2) {
                 result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.VIEW);
             }
         }
         if (ORACLE.equals(type)) {
-            if(typeId==1){
+            if (typeId == 1) {
                 result = MetaUtil
                         .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
             }
-            if(typeId==2){
+            if (typeId == 2) {
                 result = MetaUtil
                         .getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW);
             }
@@ -188,9 +181,11 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
-        DataSource db = new SimpleDataSource(input.getJdbcUrl(), input.getUsername(),
-                input.getPassword());
-        return MyDBUtil.getTableMeta(db, input.getTableName(), input.getDatabase());
+        WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
+        DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
+        String serverName =
+                StringUtils.isBlank(waterfall.getServerName()) ? waterfall.getDbName() : waterfall.getServerName();
+        return MyDBUtil.getTableMeta(db, input.getTableName(), serverName);
     }
 
     @Override
@@ -253,10 +248,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public List<WaterfallDataSourceAmount> getAmountList(Integer dbId,Integer type) {
+    public List<WaterfallDataSourceAmount> getAmountList(Integer dbId, Integer type) {
         QueryWrapper<WaterfallDataSourceAmount> wrapper = new QueryWrapper<>();
         wrapper.eq("db_id", dbId).orderByAsc("table_name");
-        wrapper.eq("type",type);
+        wrapper.eq("type", type);
         return waterfallDataSourceAmountMapper.selectList(wrapper);
     }
 
@@ -267,26 +262,26 @@ public class DataSourceServiceImpl implements IDataSourceService {
         List<WaterfallDataSource> list = waterfallDataSourceMapper.selectList(wrapper);
         DatabaseTreeDTO databaseTree = new DatabaseTreeDTO();
         List<DatabaseTreeDTO.Tree> trees = new ArrayList<>();
-        list.forEach(s->{
+        list.forEach(s -> {
             DatabaseTreeDTO.Tree db = new DatabaseTreeDTO.Tree();
             db.setTitle(s.getDataSourceName());
             db.setKey(s.getId().toString());
             JSONObject object = new JSONObject();
-            object.put("icon",s.getDbType());
+            object.put("icon", s.getDbType());
             db.setSlots(object);
             List<DatabaseTreeDTO.Tree> childrenTree = new ArrayList<>();
             DatabaseTreeDTO.Tree table = new DatabaseTreeDTO.Tree();
             table.setTitle("Table");
             table.setKey(s.getId() + "-" + "1");
             object = new JSONObject();
-            object.put("icon","table");
+            object.put("icon", "table");
             table.setSlots(object);
             childrenTree.add(table);
             table = new DatabaseTreeDTO.Tree();
             table.setTitle("View");
             table.setKey(s.getId() + "-" + "2");
             object = new JSONObject();
-            object.put("icon","view");
+            object.put("icon", "view");
             table.setSlots(object);
             childrenTree.add(table);
             db.setChildren(childrenTree);

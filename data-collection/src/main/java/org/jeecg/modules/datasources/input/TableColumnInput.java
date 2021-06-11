@@ -4,25 +4,11 @@ import lombok.Data;
 
 @Data
 public class TableColumnInput {
-  /**
-   * 数据库地址
-   */
-  private String jdbcUrl;
 
   /**
-   * 用户名
+   * 数据源id
    */
-  private String username;
-
-  /**
-   * 密码
-   */
-  private String password;
-
-  /**
-   * 数据库名
-   */
-  private String database;
+  private Integer id;
 
   /**
    * 表名
