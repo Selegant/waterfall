@@ -141,7 +141,11 @@ public class DataSourceServiceImpl implements IDataSourceService {
         String type = dataSource.getDbType().toLowerCase();
         List<String> result = new ArrayList<>();
         if (MYSQL.equals(type)) {
-            if (typeId == 1) {
+            if(typeId==0){
+                result.addAll(MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE));
+                result.addAll(MetaUtil.getTables(db, dataSource.getDbName(), TableType.VIEW));
+            }
+            if(typeId==1){
                 result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
             }
             if (typeId == 2) {
@@ -149,8 +153,15 @@ public class DataSourceServiceImpl implements IDataSourceService {
             }
         }
         if (ORACLE.equals(type)) {
-            if (typeId == 1) {
-                result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
+            if(typeId==0){
+                result.addAll(MetaUtil
+                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE));
+                result.addAll(MetaUtil
+                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW));
+            }
+            if(typeId==1){
+                result = MetaUtil
+                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
             }
             if (typeId == 2) {
                 result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW);
