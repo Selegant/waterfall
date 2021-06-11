@@ -150,12 +150,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
         }
         if (ORACLE.equals(type)) {
             if (typeId == 1) {
-                result = MetaUtil
-                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
+                result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
             }
             if (typeId == 2) {
-                result = MetaUtil
-                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW);
+                result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW);
             }
         }
         result.sort(String::compareTo);
@@ -172,8 +170,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
             result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
         }
         if (ORACLE.equals(type)) {
-            result = MetaUtil
-                    .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
+            result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
         }
         result.sort(String::compareTo);
         return result;
@@ -198,9 +195,8 @@ public class DataSourceServiceImpl implements IDataSourceService {
         List<WaterfallDataSourceAmount> amounts = waterfallDataSourceAmountMapper
                 .selectList(wrapper);
         // 在库里的表集合
-        List<String> tablesInAmountDb = amounts.stream()
-                .map(WaterfallDataSourceAmount::getTableName).collect(
-                        Collectors.toList());
+        List<String> tablesInAmountDb = amounts.stream().map(WaterfallDataSourceAmount::getTableName)
+                .collect(Collectors.toList());
         List<String> removeList = new ArrayList<>();
         List<WaterfallDataSourceAmount> addList = new ArrayList<>();
         for (String tableName : tablesInAmountDb) { // 找出需要删除的表名
@@ -296,8 +292,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
             for (WaterfallDataSourceAmount amount : lstAmount) {
                 Long start = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
                 Entity entity = DbUtil.use(dataSource)
-                        .query("SELECT COUNT(*) AS " + AMOUNT + " FROM " + amount.getTableName())
-                        .get(0);
+                        .query("SELECT COUNT(*) AS " + AMOUNT + " FROM " + amount.getTableName()).get(0);
                 Long end = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
                 amount.setAmount(Integer.valueOf(entity.get(AMOUNT).toString()));
                 amount.setRequiredTime((int) (end - start));
