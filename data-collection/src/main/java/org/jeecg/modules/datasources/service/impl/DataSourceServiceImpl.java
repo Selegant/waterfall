@@ -191,8 +191,15 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
         DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
-        String serverName =
-                StringUtils.isBlank(waterfall.getServerName()) ? waterfall.getDbName() : waterfall.getServerName();
+        String serverName = "";
+        if (StringUtils.isNotBlank(waterfall.getDbType())) {
+            if (MYSQL.equals(StringUtils.lowerCase(waterfall.getDbType()))) {
+                serverName = waterfall.getDbName();
+            }
+            if (ORACLE.equals(StringUtils.lowerCase(waterfall.getDbType()))) {
+                serverName = StringUtils.upperCase(waterfall.getUsername());
+            }
+        }
         return MyDBUtil.getTableMeta(db, input.getTableName(), serverName);
     }
 
