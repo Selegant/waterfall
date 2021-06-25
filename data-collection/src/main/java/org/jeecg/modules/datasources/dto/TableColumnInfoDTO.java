@@ -23,6 +23,11 @@ public class TableColumnInfoDTO {
 
     private Boolean primaryKey;
 
+    /**
+     * 是否为增量字段 0否 1是
+     */
+    private Integer incColumn;
+
 
     public void init(ResultSet columnMetaRs) throws SQLException {
 

@@ -7,6 +7,7 @@ import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_PASSWORD;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_URL;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_USERNAME;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.meta.Column;
@@ -18,12 +19,8 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
@@ -35,6 +32,8 @@ public class MyDBUtil {
   private static final String MAX_ACTIVE = "40";
 
   private static final String MAX_WAIT = "3000";
+
+  private static final String DATE = "date";
 
   public static DataSource createDruidPoolByHands(WaterfallDataSource dataSource) throws Exception {
     Map<String, String> map = new HashMap<>();
@@ -96,6 +95,17 @@ public class MyDBUtil {
     } finally {
       DbUtil.close(conn);
     }
+//    result.stream().sorted(Comparator.comparing(TableColumnInfoDTO::getColumnName)).collect(Collectors.toList());
+    result = CollUtil.sortByProperty(result,"columnName");
+    result.forEach(c->{
+      c.setIncColumn(0);
+      if (!Objects.isNull(c.getPrimaryKey()) && c.getPrimaryKey()) {
+        c.setIncColumn(1);
+      }
+      if (c.getColumnType().toLowerCase(Locale.ROOT).contains(DATE)) {
+        c.setIncColumn(1);
+      }
+    });
 
     return result;
   }
