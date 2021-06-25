@@ -3,9 +3,6 @@ package org.jeecg.modules.datasources.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.datasources.model.WaterfallOfflineTask;
 
-/**
- * @author selegant
- */
 public interface WaterfallOfflineTaskMapper extends BaseMapper<WaterfallOfflineTask> {
     int deleteByPrimaryKey(Integer id);
 

@@ -6,7 +6,7 @@
     <!--@Table waterfall_offline_task-->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="task_name" jdbcType="VARCHAR" property="taskName" />
-    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="task_desc" jdbcType="VARCHAR" property="taskDesc" />
     <result column="task_execute_params" jdbcType="LONGVARCHAR" property="taskExecuteParams" />
     <result column="task_corn" jdbcType="VARCHAR" property="taskCorn" />
     <result column="task_execute_time" jdbcType="TIMESTAMP" property="taskExecuteTime" />
@@ -21,7 +21,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, task_name, `desc`, task_execute_params, task_corn, task_execute_time, create_time, 
+    id, task_name, task_desc, task_execute_params, task_corn, task_execute_time, create_time, 
     update_time, mapping_columns, collection_type, original_id, original_table, target_id, 
     target_table
   </sql>
@@ -39,12 +39,12 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallOfflineTask" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_offline_task (task_name, `desc`, task_execute_params, 
+    insert into waterfall_offline_task (task_name, task_desc, task_execute_params, 
       task_corn, task_execute_time, create_time, 
       update_time, mapping_columns, collection_type, 
       original_id, original_table, target_id, 
       target_table)
-    values (#{taskName,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, #{taskExecuteParams,jdbcType=LONGVARCHAR}, 
+    values (#{taskName,jdbcType=VARCHAR}, #{taskDesc,jdbcType=VARCHAR}, #{taskExecuteParams,jdbcType=LONGVARCHAR}, 
       #{taskCorn,jdbcType=VARCHAR}, #{taskExecuteTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP}, #{mappingColumns,jdbcType=LONGVARCHAR}, #{collectionType,jdbcType=INTEGER}, 
       #{originalId,jdbcType=INTEGER}, #{originalTable,jdbcType=VARCHAR}, #{targetId,jdbcType=INTEGER}, 
@@ -57,8 +57,8 @@
       <if test="taskName != null">
         task_name,
       </if>
-      <if test="desc != null">
-        `desc`,
+      <if test="taskDesc != null">
+        task_desc,
       </if>
       <if test="taskExecuteParams != null">
         task_execute_params,
@@ -98,8 +98,8 @@
       <if test="taskName != null">
         #{taskName,jdbcType=VARCHAR},
       </if>
-      <if test="desc != null">
-        #{desc,jdbcType=VARCHAR},
+      <if test="taskDesc != null">
+        #{taskDesc,jdbcType=VARCHAR},
       </if>
       <if test="taskExecuteParams != null">
         #{taskExecuteParams,jdbcType=LONGVARCHAR},
@@ -143,8 +143,8 @@
       <if test="taskName != null">
         task_name = #{taskName,jdbcType=VARCHAR},
       </if>
-      <if test="desc != null">
-        `desc` = #{desc,jdbcType=VARCHAR},
+      <if test="taskDesc != null">
+        task_desc = #{taskDesc,jdbcType=VARCHAR},
       </if>
       <if test="taskExecuteParams != null">
         task_execute_params = #{taskExecuteParams,jdbcType=LONGVARCHAR},
@@ -186,7 +186,7 @@
     <!--@mbg.generated-->
     update waterfall_offline_task
     set task_name = #{taskName,jdbcType=VARCHAR},
-      `desc` = #{desc,jdbcType=VARCHAR},
+      task_desc = #{taskDesc,jdbcType=VARCHAR},
       task_execute_params = #{taskExecuteParams,jdbcType=LONGVARCHAR},
       task_corn = #{taskCorn,jdbcType=VARCHAR},
       task_execute_time = #{taskExecuteTime,jdbcType=TIMESTAMP},
