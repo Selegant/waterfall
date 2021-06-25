@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallModelMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallModel">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_model-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="folder_id" jdbcType="INTEGER" property="folderId" />
+    <result column="model_name" jdbcType="VARCHAR" property="modelName" />
+    <result column="model_type_code" jdbcType="INTEGER" property="modelTypeCode" />
+    <result column="model_status_code" jdbcType="INTEGER" property="modelStatusCode" />
+    <result column="model_status_name" jdbcType="VARCHAR" property="modelStatusName" />
+    <result column="export_type_code" jdbcType="INTEGER" property="exportTypeCode" />
+    <result column="export_type_name" jdbcType="VARCHAR" property="exportTypeName" />
+    <result column="ramark" jdbcType="VARCHAR" property="ramark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, folder_id, model_name, model_type_code, model_status_code, model_status_name, 
+    export_type_code, export_type_name, ramark, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_model
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_model
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_model (folder_id, model_name, model_type_code, 
+      model_status_code, model_status_name, export_type_code, 
+      export_type_name, ramark, create_time, 
+      update_time)
+    values (#{folderId,jdbcType=INTEGER}, #{modelName,jdbcType=VARCHAR}, #{modelTypeCode,jdbcType=INTEGER}, 
+      #{modelStatusCode,jdbcType=INTEGER}, #{modelStatusName,jdbcType=VARCHAR}, #{exportTypeCode,jdbcType=INTEGER}, 
+      #{exportTypeName,jdbcType=VARCHAR}, #{ramark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_model
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="folderId != null">
+        folder_id,
+      </if>
+      <if test="modelName != null">
+        model_name,
+      </if>
+      <if test="modelTypeCode != null">
+        model_type_code,
+      </if>
+      <if test="modelStatusCode != null">
+        model_status_code,
+      </if>
+      <if test="modelStatusName != null">
+        model_status_name,
+      </if>
+      <if test="exportTypeCode != null">
+        export_type_code,
+      </if>
+      <if test="exportTypeName != null">
+        export_type_name,
+      </if>
+      <if test="ramark != null">
+        ramark,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="folderId != null">
+        #{folderId,jdbcType=INTEGER},
+      </if>
+      <if test="modelName != null">
+        #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelTypeCode != null">
+        #{modelTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="modelStatusCode != null">
+        #{modelStatusCode,jdbcType=INTEGER},
+      </if>
+      <if test="modelStatusName != null">
+        #{modelStatusName,jdbcType=VARCHAR},
+      </if>
+      <if test="exportTypeCode != null">
+        #{exportTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="exportTypeName != null">
+        #{exportTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="ramark != null">
+        #{ramark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallModel">
+    <!--@mbg.generated-->
+    update waterfall_model
+    <set>
+      <if test="folderId != null">
+        folder_id = #{folderId,jdbcType=INTEGER},
+      </if>
+      <if test="modelName != null">
+        model_name = #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelTypeCode != null">
+        model_type_code = #{modelTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="modelStatusCode != null">
+        model_status_code = #{modelStatusCode,jdbcType=INTEGER},
+      </if>
+      <if test="modelStatusName != null">
+        model_status_name = #{modelStatusName,jdbcType=VARCHAR},
+      </if>
+      <if test="exportTypeCode != null">
+        export_type_code = #{exportTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="exportTypeName != null">
+        export_type_name = #{exportTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="ramark != null">
+        ramark = #{ramark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallModel">
+    <!--@mbg.generated-->
+    update waterfall_model
+    set folder_id = #{folderId,jdbcType=INTEGER},
+      model_name = #{modelName,jdbcType=VARCHAR},
+      model_type_code = #{modelTypeCode,jdbcType=INTEGER},
+      model_status_code = #{modelStatusCode,jdbcType=INTEGER},
+      model_status_name = #{modelStatusName,jdbcType=VARCHAR},
+      export_type_code = #{exportTypeCode,jdbcType=INTEGER},
+      export_type_name = #{exportTypeName,jdbcType=VARCHAR},
+      ramark = #{ramark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

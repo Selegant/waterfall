@@ -13,12 +13,12 @@ public class WaterfallDictModelType {
     /**
     * 数据模型类目代码
     */
-    private Integer modelTypecode;
+    private Integer modelTypeCode;
 
     /**
     * 数据模型类目名
     */
-    private String modelTypename;
+    private String modelTypeName;
 
     /**
     * 创建时间
