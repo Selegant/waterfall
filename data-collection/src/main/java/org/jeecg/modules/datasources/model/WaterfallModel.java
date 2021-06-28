@@ -13,7 +13,7 @@ public class WaterfallModel {
     /**
     * 层级id
     */
-    private Integer folderId;
+    private Integer folderId;
 
     /**
     * 数据模型名称
