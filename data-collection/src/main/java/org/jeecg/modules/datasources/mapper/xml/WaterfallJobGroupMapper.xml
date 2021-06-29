@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallJobGroupMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_job_group-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="order" jdbcType="INTEGER" property="order" />
+    <result column="address_type" jdbcType="TINYINT" property="addressType" />
+    <result column="address_list" jdbcType="VARCHAR" property="addressList" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, app_name, title, `order`, address_type, address_list
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_job_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_job_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_group (app_name, title, `order`, 
+      address_type, address_list)
+    values (#{appName,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER}, 
+      #{addressType,jdbcType=TINYINT}, #{addressList,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appName != null">
+        app_name,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="order != null">
+        `order`,
+      </if>
+      <if test="addressType != null">
+        address_type,
+      </if>
+      <if test="addressList != null">
+        address_list,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appName != null">
+        #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null">
+        #{order,jdbcType=INTEGER},
+      </if>
+      <if test="addressType != null">
+        #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="addressList != null">
+        #{addressList,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+    <!--@mbg.generated-->
+    update waterfall_job_group
+    <set>
+      <if test="appName != null">
+        app_name = #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null">
+        `order` = #{order,jdbcType=INTEGER},
+      </if>
+      <if test="addressType != null">
+        address_type = #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="addressList != null">
+        address_list = #{addressList,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+    <!--@mbg.generated-->
+    update waterfall_job_group
+    set app_name = #{appName,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      `order` = #{order,jdbcType=INTEGER},
+      address_type = #{addressType,jdbcType=TINYINT},
+      address_list = #{addressList,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

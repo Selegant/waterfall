@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallJobLogReportMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallJobLogReport">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_job_log_report-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="trigger_day" jdbcType="TIMESTAMP" property="triggerDay" />
+    <result column="running_count" jdbcType="INTEGER" property="runningCount" />
+    <result column="suc_count" jdbcType="INTEGER" property="sucCount" />
+    <result column="fail_count" jdbcType="INTEGER" property="failCount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, trigger_day, running_count, suc_count, fail_count
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_job_log_report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_job_log_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_log_report (trigger_day, running_count, suc_count, 
+      fail_count)
+    values (#{triggerDay,jdbcType=TIMESTAMP}, #{runningCount,jdbcType=INTEGER}, #{sucCount,jdbcType=INTEGER}, 
+      #{failCount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_log_report
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="triggerDay != null">
+        trigger_day,
+      </if>
+      <if test="runningCount != null">
+        running_count,
+      </if>
+      <if test="sucCount != null">
+        suc_count,
+      </if>
+      <if test="failCount != null">
+        fail_count,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="triggerDay != null">
+        #{triggerDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="runningCount != null">
+        #{runningCount,jdbcType=INTEGER},
+      </if>
+      <if test="sucCount != null">
+        #{sucCount,jdbcType=INTEGER},
+      </if>
+      <if test="failCount != null">
+        #{failCount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport">
+    <!--@mbg.generated-->
+    update waterfall_job_log_report
+    <set>
+      <if test="triggerDay != null">
+        trigger_day = #{triggerDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="runningCount != null">
+        running_count = #{runningCount,jdbcType=INTEGER},
+      </if>
+      <if test="sucCount != null">
+        suc_count = #{sucCount,jdbcType=INTEGER},
+      </if>
+      <if test="failCount != null">
+        fail_count = #{failCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport">
+    <!--@mbg.generated-->
+    update waterfall_job_log_report
+    set trigger_day = #{triggerDay,jdbcType=TIMESTAMP},
+      running_count = #{runningCount,jdbcType=INTEGER},
+      suc_count = #{sucCount,jdbcType=INTEGER},
+      fail_count = #{failCount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

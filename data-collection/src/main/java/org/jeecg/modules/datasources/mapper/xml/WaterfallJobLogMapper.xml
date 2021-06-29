@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallJobLogMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallJobLog">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_job_log-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="job_group" jdbcType="INTEGER" property="jobGroup" />
+    <result column="job_id" jdbcType="INTEGER" property="jobId" />
+    <result column="executor_address" jdbcType="VARCHAR" property="executorAddress" />
+    <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
+    <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
+    <result column="executor_sharding_param" jdbcType="VARCHAR" property="executorShardingParam" />
+    <result column="executor_fail_retry_count" jdbcType="INTEGER" property="executorFailRetryCount" />
+    <result column="trigger_time" jdbcType="TIMESTAMP" property="triggerTime" />
+    <result column="trigger_code" jdbcType="INTEGER" property="triggerCode" />
+    <result column="trigger_msg" jdbcType="LONGVARCHAR" property="triggerMsg" />
+    <result column="handle_time" jdbcType="TIMESTAMP" property="handleTime" />
+    <result column="handle_code" jdbcType="INTEGER" property="handleCode" />
+    <result column="handle_msg" jdbcType="LONGVARCHAR" property="handleMsg" />
+    <result column="alarm_status" jdbcType="TINYINT" property="alarmStatus" />
+    <result column="process_id" jdbcType="VARCHAR" property="processId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, job_group, job_id, executor_address, executor_handler, executor_param, executor_sharding_param, 
+    executor_fail_retry_count, trigger_time, trigger_code, trigger_msg, handle_time, 
+    handle_code, handle_msg, alarm_status, process_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_job_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from waterfall_job_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_log (job_group, job_id, executor_address, 
+      executor_handler, executor_param, executor_sharding_param, 
+      executor_fail_retry_count, trigger_time, 
+      trigger_code, trigger_msg, handle_time, 
+      handle_code, handle_msg, alarm_status, 
+      process_id)
+    values (#{jobGroup,jdbcType=INTEGER}, #{jobId,jdbcType=INTEGER}, #{executorAddress,jdbcType=VARCHAR}, 
+      #{executorHandler,jdbcType=VARCHAR}, #{executorParam,jdbcType=VARCHAR}, #{executorShardingParam,jdbcType=VARCHAR}, 
+      #{executorFailRetryCount,jdbcType=INTEGER}, #{triggerTime,jdbcType=TIMESTAMP}, 
+      #{triggerCode,jdbcType=INTEGER}, #{triggerMsg,jdbcType=LONGVARCHAR}, #{handleTime,jdbcType=TIMESTAMP}, 
+      #{handleCode,jdbcType=INTEGER}, #{handleMsg,jdbcType=LONGVARCHAR}, #{alarmStatus,jdbcType=TINYINT}, 
+      #{processId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="jobGroup != null">
+        job_group,
+      </if>
+      <if test="jobId != null">
+        job_id,
+      </if>
+      <if test="executorAddress != null">
+        executor_address,
+      </if>
+      <if test="executorHandler != null">
+        executor_handler,
+      </if>
+      <if test="executorParam != null">
+        executor_param,
+      </if>
+      <if test="executorShardingParam != null">
+        executor_sharding_param,
+      </if>
+      <if test="executorFailRetryCount != null">
+        executor_fail_retry_count,
+      </if>
+      <if test="triggerTime != null">
+        trigger_time,
+      </if>
+      <if test="triggerCode != null">
+        trigger_code,
+      </if>
+      <if test="triggerMsg != null">
+        trigger_msg,
+      </if>
+      <if test="handleTime != null">
+        handle_time,
+      </if>
+      <if test="handleCode != null">
+        handle_code,
+      </if>
+      <if test="handleMsg != null">
+        handle_msg,
+      </if>
+      <if test="alarmStatus != null">
+        alarm_status,
+      </if>
+      <if test="processId != null">
+        process_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="jobGroup != null">
+        #{jobGroup,jdbcType=INTEGER},
+      </if>
+      <if test="jobId != null">
+        #{jobId,jdbcType=INTEGER},
+      </if>
+      <if test="executorAddress != null">
+        #{executorAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="executorHandler != null">
+        #{executorHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="executorParam != null">
+        #{executorParam,jdbcType=VARCHAR},
+      </if>
+      <if test="executorShardingParam != null">
+        #{executorShardingParam,jdbcType=VARCHAR},
+      </if>
+      <if test="executorFailRetryCount != null">
+        #{executorFailRetryCount,jdbcType=INTEGER},
+      </if>
+      <if test="triggerTime != null">
+        #{triggerTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="triggerCode != null">
+        #{triggerCode,jdbcType=INTEGER},
+      </if>
+      <if test="triggerMsg != null">
+        #{triggerMsg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="handleTime != null">
+        #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleCode != null">
+        #{handleCode,jdbcType=INTEGER},
+      </if>
+      <if test="handleMsg != null">
+        #{handleMsg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="alarmStatus != null">
+        #{alarmStatus,jdbcType=TINYINT},
+      </if>
+      <if test="processId != null">
+        #{processId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog">
+    <!--@mbg.generated-->
+    update waterfall_job_log
+    <set>
+      <if test="jobGroup != null">
+        job_group = #{jobGroup,jdbcType=INTEGER},
+      </if>
+      <if test="jobId != null">
+        job_id = #{jobId,jdbcType=INTEGER},
+      </if>
+      <if test="executorAddress != null">
+        executor_address = #{executorAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="executorHandler != null">
+        executor_handler = #{executorHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="executorParam != null">
+        executor_param = #{executorParam,jdbcType=VARCHAR},
+      </if>
+      <if test="executorShardingParam != null">
+        executor_sharding_param = #{executorShardingParam,jdbcType=VARCHAR},
+      </if>
+      <if test="executorFailRetryCount != null">
+        executor_fail_retry_count = #{executorFailRetryCount,jdbcType=INTEGER},
+      </if>
+      <if test="triggerTime != null">
+        trigger_time = #{triggerTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="triggerCode != null">
+        trigger_code = #{triggerCode,jdbcType=INTEGER},
+      </if>
+      <if test="triggerMsg != null">
+        trigger_msg = #{triggerMsg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="handleTime != null">
+        handle_time = #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleCode != null">
+        handle_code = #{handleCode,jdbcType=INTEGER},
+      </if>
+      <if test="handleMsg != null">
+        handle_msg = #{handleMsg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="alarmStatus != null">
+        alarm_status = #{alarmStatus,jdbcType=TINYINT},
+      </if>
+      <if test="processId != null">
+        process_id = #{processId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog">
+    <!--@mbg.generated-->
+    update waterfall_job_log
+    set job_group = #{jobGroup,jdbcType=INTEGER},
+      job_id = #{jobId,jdbcType=INTEGER},
+      executor_address = #{executorAddress,jdbcType=VARCHAR},
+      executor_handler = #{executorHandler,jdbcType=VARCHAR},
+      executor_param = #{executorParam,jdbcType=VARCHAR},
+      executor_sharding_param = #{executorShardingParam,jdbcType=VARCHAR},
+      executor_fail_retry_count = #{executorFailRetryCount,jdbcType=INTEGER},
+      trigger_time = #{triggerTime,jdbcType=TIMESTAMP},
+      trigger_code = #{triggerCode,jdbcType=INTEGER},
+      trigger_msg = #{triggerMsg,jdbcType=LONGVARCHAR},
+      handle_time = #{handleTime,jdbcType=TIMESTAMP},
+      handle_code = #{handleCode,jdbcType=INTEGER},
+      handle_msg = #{handleMsg,jdbcType=LONGVARCHAR},
+      alarm_status = #{alarmStatus,jdbcType=TINYINT},
+      process_id = #{processId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

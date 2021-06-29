@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallJobRegistryMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallJobRegistry">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_job_registry-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="registry_group" jdbcType="VARCHAR" property="registryGroup" />
+    <result column="registry_key" jdbcType="VARCHAR" property="registryKey" />
+    <result column="registry_value" jdbcType="VARCHAR" property="registryValue" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, registry_group, registry_key, registry_value, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_job_registry
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_job_registry
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobRegistry" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_registry (registry_group, registry_key, registry_value, 
+      update_time)
+    values (#{registryGroup,jdbcType=VARCHAR}, #{registryKey,jdbcType=VARCHAR}, #{registryValue,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobRegistry" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_job_registry
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="registryGroup != null">
+        registry_group,
+      </if>
+      <if test="registryKey != null">
+        registry_key,
+      </if>
+      <if test="registryValue != null">
+        registry_value,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="registryGroup != null">
+        #{registryGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="registryKey != null">
+        #{registryKey,jdbcType=VARCHAR},
+      </if>
+      <if test="registryValue != null">
+        #{registryValue,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobRegistry">
+    <!--@mbg.generated-->
+    update waterfall_job_registry
+    <set>
+      <if test="registryGroup != null">
+        registry_group = #{registryGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="registryKey != null">
+        registry_key = #{registryKey,jdbcType=VARCHAR},
+      </if>
+      <if test="registryValue != null">
+        registry_value = #{registryValue,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallJobRegistry">
+    <!--@mbg.generated-->
+    update waterfall_job_registry
+    set registry_group = #{registryGroup,jdbcType=VARCHAR},
+      registry_key = #{registryKey,jdbcType=VARCHAR},
+      registry_value = #{registryValue,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

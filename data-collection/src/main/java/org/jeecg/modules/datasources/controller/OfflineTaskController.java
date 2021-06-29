@@ -1,5 +1,6 @@
 package org.jeecg.modules.datasources.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,10 +13,7 @@ import org.jeecg.modules.datasources.dto.OfflineTaskDTO;
 import org.jeecg.modules.datasources.dto.PageInfoDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
-import org.jeecg.modules.datasources.model.WaterfallDataSource;
-import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
-import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
-import org.jeecg.modules.datasources.model.WaterfallOfflineTask;
+import org.jeecg.modules.datasources.model.*;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IOfflineTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +35,16 @@ public class OfflineTaskController {
     IOfflineTaskService offlineTaskService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result<PageInfoResponse> queryPageList(WaterfallOfflineTask task, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                                  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize, HttpServletRequest req) {
+    public Result<PageInfoResponse> queryPageList(WaterfallJobInfo task, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                  @RequestParam(name="queryParam", required = false) String queryParam, HttpServletRequest req) {
         Result<PageInfoResponse> result = new Result<>();
-        QueryWrapper<WaterfallOfflineTask> queryWrapper = new QueryWrapper<>();
-        Page<WaterfallOfflineTask> page = new Page<>(pageNo, pageSize);
-        IPage<WaterfallOfflineTask> pageList = offlineTaskService.page(page, queryWrapper);
+        QueryWrapper<WaterfallJobInfo> queryWrapper = new QueryWrapper<>();
+        if(StrUtil.isNotBlank(queryParam)){
+            queryWrapper.like("task_name",queryParam).or().like("original_table",queryParam).or().like("target_table",queryParam);
+        }
+        Page<WaterfallJobInfo> page = new Page<>(pageNo, pageSize);
+        IPage<WaterfallJobInfo> pageList = offlineTaskService.page(page, queryWrapper);
         PageInfoResponse info = new PageInfoResponse();
         info.setData(pageList.getRecords());
         info.setTotalCount(pageList.getTotal());
