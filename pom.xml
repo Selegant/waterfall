@@ -49,8 +49,8 @@
 		<hessian.version>4.0.63</hessian.version>
 		<spring.version>5.1.7.RELEASE</spring.version>
 		<groovy.version>2.5.8</groovy.version>
-		<jna.version>4.1.0</jna.version>
-		<oshi.core.version>3.5.0</oshi.core.version>
+		<jna.version>5.5.0</jna.version>
+		<oshi.core.version>5.4.1</oshi.core.version>
 	</properties>
 
 	<modules>
@@ -58,6 +58,7 @@
         <module>jeecg-boot-module-demo</module>
         <module>jeecg-boot-module-system</module>
 		<module>data-collection</module>
+		<module>datax-executor</module>
 
        <!-- 需要微服务，请打开注释
        <module>jeecg-boot-starter</module>
@@ -96,11 +97,11 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-test</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

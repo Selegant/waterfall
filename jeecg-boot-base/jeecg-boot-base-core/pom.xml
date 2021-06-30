@@ -31,44 +31,11 @@
 
 
 	<dependencies>
-		<!--jeecg-rpc-->
+		<!--jeecg-datax-->
 		<dependency>
 			<groupId>org.jeecg</groupId>
-			<artifactId>rpc</artifactId>
+			<artifactId>datax</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<!--jeecg-tools-->
-		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-base-tools</artifactId>
-		</dependency>
-		<!-- groovy-all -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-			<version>${groovy.version}</version>
-		</dependency>
-		<!-- jna -->
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
-			<version>${jna.version}</version>
-		</dependency>
-		<!-- oshi-core -->
-		<dependency>
-			<groupId>com.github.oshi</groupId>
-			<artifactId>oshi-core</artifactId>
-			<version>${oshi.core.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jna</artifactId>
-					<groupId>net.java.dev.jna</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>

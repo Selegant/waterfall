@@ -1,12 +1,12 @@
-//package org.jeecg.datacollection;
+//package com.jeecg.executor;
 //
-////import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;
 //
 //@SpringBootTest
-//class DataCollectionApplicationTests {
+//class DataxExecutorApplicationTests {
 //
-////    @Test
+//    @Test
 //    void contextLoads() {
 //    }
 //

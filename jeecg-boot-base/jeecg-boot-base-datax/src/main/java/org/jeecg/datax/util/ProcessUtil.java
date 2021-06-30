@@ -1,9 +1,9 @@
 package org.jeecg.datax.util;
 
+import cn.hutool.core.util.StrUtil;
 import com.sun.jna.Platform;
 import org.jeecg.datax.log.JobLogger;
 import org.jeecg.datax.thread.JobThread;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class ProcessUtil {
      * @param pid 进程的PID
      */
     public static boolean killProcessByPid(String pid) {
-        if (StringUtils.isEmpty(pid) || "-1".equals(pid)) {
+        if (StrUtil.isEmpty(pid) || "-1".equals(pid)) {
             throw new RuntimeException("Pid ==" + pid);
         }
         Process process = null;
