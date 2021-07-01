@@ -14,4 +14,8 @@ public interface WaterfallJobLogReportMapper {
     int updateByPrimaryKeySelective(WaterfallJobLogReport record);
 
     int updateByPrimaryKey(WaterfallJobLogReport record);
+
+    int update(WaterfallJobLogReport xxlJobLogReport);
+
+    int save(WaterfallJobLogReport xxlJobLogReport);
 }

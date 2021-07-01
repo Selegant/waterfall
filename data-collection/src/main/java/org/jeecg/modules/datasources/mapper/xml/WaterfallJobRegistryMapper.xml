@@ -8,15 +8,19 @@
     <result column="registry_group" jdbcType="VARCHAR" property="registryGroup" />
     <result column="registry_key" jdbcType="VARCHAR" property="registryKey" />
     <result column="registry_value" jdbcType="VARCHAR" property="registryValue" />
+    <result column="cpu_usage" jdbcType="DOUBLE" property="cpuUsage" />
+    <result column="memory_usage" jdbcType="DOUBLE" property="memoryUsage" />
+    <result column="load_average" jdbcType="DOUBLE" property="loadAverage" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, registry_group, registry_key, registry_value, update_time
+    id, registry_group, registry_key, registry_value, cpu_usage, memory_usage, load_average,
+    update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from waterfall_job_registry
     where id = #{id,jdbcType=INTEGER}
@@ -28,9 +32,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobRegistry" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_job_registry (registry_group, registry_key, registry_value, 
+    insert into waterfall_job_registry (registry_group, registry_key, registry_value,
+      cpu_usage, memory_usage, load_average,
       update_time)
-    values (#{registryGroup,jdbcType=VARCHAR}, #{registryKey,jdbcType=VARCHAR}, #{registryValue,jdbcType=VARCHAR}, 
+    values (#{registryGroup,jdbcType=VARCHAR}, #{registryKey,jdbcType=VARCHAR}, #{registryValue,jdbcType=VARCHAR},
+      #{cpuUsage,jdbcType=DOUBLE}, #{memoryUsage,jdbcType=DOUBLE}, #{loadAverage,jdbcType=DOUBLE},
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobRegistry" useGeneratedKeys="true">
@@ -46,6 +52,15 @@
       <if test="registryValue != null">
         registry_value,
       </if>
+      <if test="cpuUsage != null">
+        cpu_usage,
+      </if>
+      <if test="memoryUsage != null">
+        memory_usage,
+      </if>
+      <if test="loadAverage != null">
+        load_average,
+      </if>
       <if test="updateTime != null">
         update_time,
       </if>
@@ -59,6 +74,15 @@
       </if>
       <if test="registryValue != null">
         #{registryValue,jdbcType=VARCHAR},
+      </if>
+      <if test="cpuUsage != null">
+        #{cpuUsage,jdbcType=DOUBLE},
+      </if>
+      <if test="memoryUsage != null">
+        #{memoryUsage,jdbcType=DOUBLE},
+      </if>
+      <if test="loadAverage != null">
+        #{loadAverage,jdbcType=DOUBLE},
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
@@ -78,6 +102,15 @@
       <if test="registryValue != null">
         registry_value = #{registryValue,jdbcType=VARCHAR},
       </if>
+      <if test="cpuUsage != null">
+        cpu_usage = #{cpuUsage,jdbcType=DOUBLE},
+      </if>
+      <if test="memoryUsage != null">
+        memory_usage = #{memoryUsage,jdbcType=DOUBLE},
+      </if>
+      <if test="loadAverage != null">
+        load_average = #{loadAverage,jdbcType=DOUBLE},
+      </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
@@ -90,7 +123,55 @@
     set registry_group = #{registryGroup,jdbcType=VARCHAR},
       registry_key = #{registryKey,jdbcType=VARCHAR},
       registry_value = #{registryValue,jdbcType=VARCHAR},
+      cpu_usage = #{cpuUsage,jdbcType=DOUBLE},
+      memory_usage = #{memoryUsage,jdbcType=DOUBLE},
+      load_average = #{loadAverage,jdbcType=DOUBLE},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="findDead" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+    SELECT t.id
+    FROM waterfall_job_registry AS t
+    WHERE t.update_time <![CDATA[ < ]]> DATE_ADD(#{nowTime},INTERVAL -#{timeout} SECOND)
+  </select>
+
+  <delete id="removeDead" parameterType="java.lang.Integer">
+    DELETE FROM waterfall_job_registry
+    WHERE id in
+    <foreach close=")" collection="ids" item="item" open="(" separator=",">
+      #{item}
+    </foreach>
+  </delete>
+
+  <select id="findAll" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM waterfall_job_registry AS t
+    WHERE t.update_time <![CDATA[ > ]]> DATE_ADD(#{nowTime},INTERVAL -#{timeout} SECOND)
+  </select>
+
+  <update id="registryUpdate">
+    UPDATE waterfall_job_registry
+    SET `update_time` = #{updateTime},
+    `cpu_usage`=#{cpuUsage},
+    `memory_usage`=#{memoryUsage},
+    `load_average`=#{loadAverage}
+    WHERE `registry_group` = #{registryGroup}
+    AND `registry_key` = #{registryKey}
+    AND `registry_value` = #{registryValue}
+  </update>
+
+  <insert id="registrySave">
+    INSERT INTO waterfall_job_registry( `registry_group` , `registry_key` , `registry_value`, `cpu_usage`,`memory_usage`,`load_average`,`update_time`)
+    VALUES( #{registryGroup}  , #{registryKey} , #{registryValue},#{cpuUsage}, #{memoryUsage},#{loadAverage},#{updateTime})
+  </insert>
+
+  <delete id="registryDelete">
+    DELETE FROM waterfall_job_registry
+    WHERE registry_group = #{registryGroup}
+    AND registry_key = #{registryKey}
+    AND registry_value = #{registryValue}
+  </delete>
+
 </mapper>

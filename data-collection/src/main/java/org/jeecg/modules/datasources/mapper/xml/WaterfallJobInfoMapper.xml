@@ -7,7 +7,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="task_name" jdbcType="VARCHAR" property="taskName" />
     <result column="task_desc" jdbcType="VARCHAR" property="taskDesc" />
-    <result column="task_execute_params" jdbcType="LONGVARCHAR" property="taskExecuteParams" />
+    <result column="task_execute_json" jdbcType="LONGVARCHAR" property="taskExecuteJson" />
     <result column="task_corn" jdbcType="VARCHAR" property="taskCorn" />
     <result column="task_execute_time" jdbcType="TIMESTAMP" property="taskExecuteTime" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -27,17 +27,34 @@
     <result column="inc_start_time" jdbcType="TIMESTAMP" property="incStartTime" />
     <result column="jvm_param" jdbcType="VARCHAR" property="jvmParam" />
     <result column="replace_param" jdbcType="VARCHAR" property="replaceParam" />
+    <result column="job_group" jdbcType="INTEGER" property="jobGroup" />
+    <result column="executor_route_strategy" jdbcType="VARCHAR" property="executorRouteStrategy" />
+    <result column="executor_block_strategy" jdbcType="VARCHAR" property="executorBlockStrategy" />
+    <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
+    <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
+    <result column="glue_type" jdbcType="VARCHAR" property="glueType" />
+    <result column="glue_source" jdbcType="LONGVARCHAR" property="glueSource" />
+    <result column="glue_remark" jdbcType="VARCHAR" property="glueRemark" />
+    <result column="glue_updatetime" jdbcType="TIMESTAMP" property="glueUpdatetime" />
+    <result column="last_handle_code" jdbcType="INTEGER" property="lastHandleCode" />
+    <result column="project_id" jdbcType="INTEGER" property="projectId" />
+    <result column="increment_type" jdbcType="INTEGER" property="incrementType" />
+    <result column="child_job_id" jdbcType="VARCHAR" property="childJobId" />
+    <result column="inc_start_id" jdbcType="VARCHAR" property="incStartId" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, task_name, task_desc, task_execute_params, task_corn, task_execute_time, create_time, 
-    update_time, mapping_columns, collection_type, original_id, original_table, target_id, 
-    target_table, alarm_email, executor_timeout, executor_fail_retry_count, trigger_status, 
-    trigger_last_time, trigger_next_time, inc_start_time, jvm_param, replace_param
+    id, task_name, task_desc, task_execute_json, task_corn, task_execute_time, create_time,
+    update_time, mapping_columns, collection_type, original_id, original_table, target_id,
+    target_table, alarm_email, executor_timeout, executor_fail_retry_count, trigger_status,
+    trigger_last_time, trigger_next_time, inc_start_time, jvm_param, replace_param, job_group,
+    executor_route_strategy, executor_block_strategy, executor_handler, executor_param,
+    glue_type, glue_source, glue_remark, glue_updatetime, last_handle_code, project_id,
+    increment_type, child_job_id, inc_start_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from waterfall_job_info
     where id = #{id,jdbcType=INTEGER}
@@ -49,22 +66,32 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_job_info (task_name, task_desc, task_execute_params, 
-      task_corn, task_execute_time, create_time, 
-      update_time, mapping_columns, collection_type, 
-      original_id, original_table, target_id, 
-      target_table, alarm_email, executor_timeout, 
-      executor_fail_retry_count, trigger_status, 
-      trigger_last_time, trigger_next_time, inc_start_time, 
-      jvm_param, replace_param)
-    values (#{taskName,jdbcType=VARCHAR}, #{taskDesc,jdbcType=VARCHAR}, #{taskExecuteParams,jdbcType=LONGVARCHAR}, 
-      #{taskCorn,jdbcType=VARCHAR}, #{taskExecuteTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{mappingColumns,jdbcType=LONGVARCHAR}, #{collectionType,jdbcType=INTEGER}, 
-      #{originalId,jdbcType=INTEGER}, #{originalTable,jdbcType=VARCHAR}, #{targetId,jdbcType=INTEGER}, 
-      #{targetTable,jdbcType=VARCHAR}, #{alarmEmail,jdbcType=VARCHAR}, #{executorTimeout,jdbcType=INTEGER}, 
-      #{executorFailRetryCount,jdbcType=INTEGER}, #{triggerStatus,jdbcType=INTEGER}, 
-      #{triggerLastTime,jdbcType=BIGINT}, #{triggerNextTime,jdbcType=BIGINT}, #{incStartTime,jdbcType=TIMESTAMP}, 
-      #{jvmParam,jdbcType=VARCHAR}, #{replaceParam,jdbcType=VARCHAR})
+    insert into waterfall_job_info (task_name, task_desc, task_execute_json,
+      task_corn, task_execute_time, create_time,
+      update_time, mapping_columns, collection_type,
+      original_id, original_table, target_id,
+      target_table, alarm_email, executor_timeout,
+      executor_fail_retry_count, trigger_status,
+      trigger_last_time, trigger_next_time, inc_start_time,
+      jvm_param, replace_param, job_group,
+      executor_route_strategy, executor_block_strategy,
+      executor_handler, executor_param, glue_type,
+      glue_source, glue_remark, glue_updatetime,
+      last_handle_code, project_id, increment_type,
+      child_job_id, inc_start_id)
+    values (#{taskName,jdbcType=VARCHAR}, #{taskDesc,jdbcType=VARCHAR}, #{taskExecuteJson,jdbcType=LONGVARCHAR},
+      #{taskCorn,jdbcType=VARCHAR}, #{taskExecuteTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{mappingColumns,jdbcType=LONGVARCHAR}, #{collectionType,jdbcType=INTEGER},
+      #{originalId,jdbcType=INTEGER}, #{originalTable,jdbcType=VARCHAR}, #{targetId,jdbcType=INTEGER},
+      #{targetTable,jdbcType=VARCHAR}, #{alarmEmail,jdbcType=VARCHAR}, #{executorTimeout,jdbcType=INTEGER},
+      #{executorFailRetryCount,jdbcType=INTEGER}, #{triggerStatus,jdbcType=INTEGER},
+      #{triggerLastTime,jdbcType=BIGINT}, #{triggerNextTime,jdbcType=BIGINT}, #{incStartTime,jdbcType=TIMESTAMP},
+      #{jvmParam,jdbcType=VARCHAR}, #{replaceParam,jdbcType=VARCHAR}, #{jobGroup,jdbcType=INTEGER},
+      #{executorRouteStrategy,jdbcType=VARCHAR}, #{executorBlockStrategy,jdbcType=VARCHAR},
+      #{executorHandler,jdbcType=VARCHAR}, #{executorParam,jdbcType=VARCHAR}, #{glueType,jdbcType=VARCHAR},
+      #{glueSource,jdbcType=LONGVARCHAR}, #{glueRemark,jdbcType=VARCHAR}, #{glueUpdatetime,jdbcType=TIMESTAMP},
+      #{lastHandleCode,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, #{incrementType,jdbcType=INTEGER},
+      #{childJobId,jdbcType=VARCHAR}, #{incStartId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -76,8 +103,8 @@
       <if test="taskDesc != null">
         task_desc,
       </if>
-      <if test="taskExecuteParams != null">
-        task_execute_params,
+      <if test="taskExecuteJson != null">
+        task_execute_json,
       </if>
       <if test="taskCorn != null">
         task_corn,
@@ -136,6 +163,48 @@
       <if test="replaceParam != null">
         replace_param,
       </if>
+      <if test="jobGroup != null">
+        job_group,
+      </if>
+      <if test="executorRouteStrategy != null">
+        executor_route_strategy,
+      </if>
+      <if test="executorBlockStrategy != null">
+        executor_block_strategy,
+      </if>
+      <if test="executorHandler != null">
+        executor_handler,
+      </if>
+      <if test="executorParam != null">
+        executor_param,
+      </if>
+      <if test="glueType != null">
+        glue_type,
+      </if>
+      <if test="glueSource != null">
+        glue_source,
+      </if>
+      <if test="glueRemark != null">
+        glue_remark,
+      </if>
+      <if test="glueUpdatetime != null">
+        glue_updatetime,
+      </if>
+      <if test="lastHandleCode != null">
+        last_handle_code,
+      </if>
+      <if test="projectId != null">
+        project_id,
+      </if>
+      <if test="incrementType != null">
+        increment_type,
+      </if>
+      <if test="childJobId != null">
+        child_job_id,
+      </if>
+      <if test="incStartId != null">
+        inc_start_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="taskName != null">
@@ -144,8 +213,8 @@
       <if test="taskDesc != null">
         #{taskDesc,jdbcType=VARCHAR},
       </if>
-      <if test="taskExecuteParams != null">
-        #{taskExecuteParams,jdbcType=LONGVARCHAR},
+      <if test="taskExecuteJson != null">
+        #{taskExecuteJson,jdbcType=LONGVARCHAR},
       </if>
       <if test="taskCorn != null">
         #{taskCorn,jdbcType=VARCHAR},
@@ -204,6 +273,48 @@
       <if test="replaceParam != null">
         #{replaceParam,jdbcType=VARCHAR},
       </if>
+      <if test="jobGroup != null">
+        #{jobGroup,jdbcType=INTEGER},
+      </if>
+      <if test="executorRouteStrategy != null">
+        #{executorRouteStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="executorBlockStrategy != null">
+        #{executorBlockStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="executorHandler != null">
+        #{executorHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="executorParam != null">
+        #{executorParam,jdbcType=VARCHAR},
+      </if>
+      <if test="glueType != null">
+        #{glueType,jdbcType=VARCHAR},
+      </if>
+      <if test="glueSource != null">
+        #{glueSource,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="glueRemark != null">
+        #{glueRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="glueUpdatetime != null">
+        #{glueUpdatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastHandleCode != null">
+        #{lastHandleCode,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="incrementType != null">
+        #{incrementType,jdbcType=INTEGER},
+      </if>
+      <if test="childJobId != null">
+        #{childJobId,jdbcType=VARCHAR},
+      </if>
+      <if test="incStartId != null">
+        #{incStartId,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobInfo">
@@ -216,8 +327,8 @@
       <if test="taskDesc != null">
         task_desc = #{taskDesc,jdbcType=VARCHAR},
       </if>
-      <if test="taskExecuteParams != null">
-        task_execute_params = #{taskExecuteParams,jdbcType=LONGVARCHAR},
+      <if test="taskExecuteJson != null">
+        task_execute_json = #{taskExecuteJson,jdbcType=LONGVARCHAR},
       </if>
       <if test="taskCorn != null">
         task_corn = #{taskCorn,jdbcType=VARCHAR},
@@ -276,6 +387,48 @@
       <if test="replaceParam != null">
         replace_param = #{replaceParam,jdbcType=VARCHAR},
       </if>
+      <if test="jobGroup != null">
+        job_group = #{jobGroup,jdbcType=INTEGER},
+      </if>
+      <if test="executorRouteStrategy != null">
+        executor_route_strategy = #{executorRouteStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="executorBlockStrategy != null">
+        executor_block_strategy = #{executorBlockStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="executorHandler != null">
+        executor_handler = #{executorHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="executorParam != null">
+        executor_param = #{executorParam,jdbcType=VARCHAR},
+      </if>
+      <if test="glueType != null">
+        glue_type = #{glueType,jdbcType=VARCHAR},
+      </if>
+      <if test="glueSource != null">
+        glue_source = #{glueSource,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="glueRemark != null">
+        glue_remark = #{glueRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="glueUpdatetime != null">
+        glue_updatetime = #{glueUpdatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastHandleCode != null">
+        last_handle_code = #{lastHandleCode,jdbcType=INTEGER},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="incrementType != null">
+        increment_type = #{incrementType,jdbcType=INTEGER},
+      </if>
+      <if test="childJobId != null">
+        child_job_id = #{childJobId,jdbcType=VARCHAR},
+      </if>
+      <if test="incStartId != null">
+        inc_start_id = #{incStartId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -284,7 +437,7 @@
     update waterfall_job_info
     set task_name = #{taskName,jdbcType=VARCHAR},
       task_desc = #{taskDesc,jdbcType=VARCHAR},
-      task_execute_params = #{taskExecuteParams,jdbcType=LONGVARCHAR},
+      task_execute_json = #{taskExecuteJson,jdbcType=LONGVARCHAR},
       task_corn = #{taskCorn,jdbcType=VARCHAR},
       task_execute_time = #{taskExecuteTime,jdbcType=TIMESTAMP},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -303,7 +456,66 @@
       trigger_next_time = #{triggerNextTime,jdbcType=BIGINT},
       inc_start_time = #{incStartTime,jdbcType=TIMESTAMP},
       jvm_param = #{jvmParam,jdbcType=VARCHAR},
-      replace_param = #{replaceParam,jdbcType=VARCHAR}
+      replace_param = #{replaceParam,jdbcType=VARCHAR},
+      job_group = #{jobGroup,jdbcType=INTEGER},
+      executor_route_strategy = #{executorRouteStrategy,jdbcType=VARCHAR},
+      executor_block_strategy = #{executorBlockStrategy,jdbcType=VARCHAR},
+      executor_handler = #{executorHandler,jdbcType=VARCHAR},
+      executor_param = #{executorParam,jdbcType=VARCHAR},
+      glue_type = #{glueType,jdbcType=VARCHAR},
+      glue_source = #{glueSource,jdbcType=LONGVARCHAR},
+      glue_remark = #{glueRemark,jdbcType=VARCHAR},
+      glue_updatetime = #{glueUpdatetime,jdbcType=TIMESTAMP},
+      last_handle_code = #{lastHandleCode,jdbcType=INTEGER},
+      project_id = #{projectId,jdbcType=INTEGER},
+      increment_type = #{incrementType,jdbcType=INTEGER},
+      child_job_id = #{childJobId,jdbcType=VARCHAR},
+      inc_start_id = #{incStartId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="scheduleJobQuery" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM waterfall_job_info AS t
+    WHERE t.trigger_status = 1
+    and t.trigger_next_time <![CDATA[ <= ]]> #{maxNextTime}
+    ORDER BY id ASC
+    LIMIT #{pagesize}
+  </select>
+
+  <update id="scheduleUpdate" parameterType="org.jeecg.modules.datasources.model.WaterfallJobInfo">
+    UPDATE waterfall_job_info
+    SET
+    trigger_last_time = #{triggerLastTime},
+    trigger_next_time = #{triggerNextTime},
+    trigger_status = #{triggerStatus}
+    WHERE id = #{id}
+  </update>
+
+  <select id="loadById" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    FROM waterfall_job_info AS t
+    WHERE t.id = #{id}
+  </select>
+
+  <update id="updateLastHandleCode" parameterType="java.util.HashMap">
+    UPDATE waterfall_job_info
+    SET
+    last_handle_code = #{lastHandleCode}
+    WHERE id = #{id}
+  </update>
+
+  <update id="incrementIdUpdate" parameterType="java.util.HashMap">
+    UPDATE waterfall_job_info
+    SET
+    inc_start_id = #{incStartId}
+    WHERE id = #{id}
+  </update>
+
+  <update id="incrementTimeUpdate" parameterType="java.util.HashMap">
+    UPDATE waterfall_job_info
+    SET
+    inc_start_time = #{incStartTime}
+    WHERE id = #{id}
   </update>
 </mapper>

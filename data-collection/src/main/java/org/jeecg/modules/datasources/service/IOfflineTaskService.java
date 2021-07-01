@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.datasources.dto.OfflineTaskDTO;
 import org.jeecg.modules.datasources.model.WaterfallJobInfo;
-import org.jeecg.modules.datasources.model.WaterfallOfflineTask;
-import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 /**
  * @author selegant

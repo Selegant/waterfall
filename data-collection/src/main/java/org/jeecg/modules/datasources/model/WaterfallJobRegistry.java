@@ -3,9 +3,6 @@ package org.jeecg.modules.datasources.model;
 import java.util.Date;
 import lombok.Data;
 
-/**
-    * 任务注册表
-    */
 @Data
 public class WaterfallJobRegistry {
     private Integer id;
@@ -15,6 +12,12 @@ public class WaterfallJobRegistry {
     private String registryKey;
 
     private String registryValue;
+
+    private Double cpuUsage;
+
+    private Double memoryUsage;
+
+    private Double loadAverage;
 
     private Date updateTime;
 }

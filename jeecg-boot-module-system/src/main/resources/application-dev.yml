@@ -288,3 +288,24 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+
+
+
+#datax-job, access token
+datax:
+  job:
+    accessToken:
+    #i18n (default empty as chinese, "en" as english)
+    i18n:
+    ## triggerpool max size
+    triggerpool:
+      fast:
+        max: 200
+      slow:
+        max: 100
+      ### log retention days
+    logretentiondays: 30
+
+datasource:
+  aes:
+    key: AD42F6697B035B75

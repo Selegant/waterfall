@@ -16,7 +16,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from waterfall_job_log_report
     where id = #{id,jdbcType=INTEGER}
@@ -28,9 +28,9 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_job_log_report (trigger_day, running_count, suc_count, 
+    insert into waterfall_job_log_report (trigger_day, running_count, suc_count,
       fail_count)
-    values (#{triggerDay,jdbcType=TIMESTAMP}, #{runningCount,jdbcType=INTEGER}, #{sucCount,jdbcType=INTEGER}, 
+    values (#{triggerDay,jdbcType=TIMESTAMP}, #{runningCount,jdbcType=INTEGER}, #{sucCount,jdbcType=INTEGER},
       #{failCount,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport" useGeneratedKeys="true">
@@ -93,4 +93,29 @@
       fail_count = #{failCount,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="update" >
+    UPDATE waterfall_job_log_report
+    SET `running_count` = #{runningCount},
+    `suc_count` = #{sucCount},
+    `fail_count` = #{failCount}
+    WHERE `trigger_day` = #{triggerDay}
+  </update>
+
+  <insert id="save" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLogReport" useGeneratedKeys="true" keyProperty="id" >
+    INSERT INTO waterfall_job_log_report (
+    `trigger_day`,
+    `running_count`,
+    `suc_count`,
+    `fail_count`
+    ) VALUES (
+    #{triggerDay},
+    #{runningCount},
+    #{sucCount},
+    #{failCount}
+    );
+    <!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+        SELECT LAST_INSERT_ID()
+    </selectKey>-->
+  </insert>
 </mapper>

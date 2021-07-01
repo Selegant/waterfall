@@ -17,7 +17,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from waterfall_job_group
     where id = #{id,jdbcType=INTEGER}
@@ -29,9 +29,9 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_job_group (app_name, title, `order`, 
+    insert into waterfall_job_group (app_name, title, `order`,
       address_type, address_list)
-    values (#{appName,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER}, 
+    values (#{appName,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER},
       #{addressType,jdbcType=TINYINT}, #{addressList,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup" useGeneratedKeys="true">
@@ -103,5 +103,30 @@
       address_type = #{addressType,jdbcType=TINYINT},
       address_list = #{addressList,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="load" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM waterfall_job_group AS t
+    WHERE t.id = #{id}
+  </select>
+
+  <select id="findByAddressType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM waterfall_job_group AS t
+    WHERE t.address_type = #{addressType}
+    ORDER BY t.order ASC
+  </select>
+
+  <update id="update" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+    UPDATE waterfall_job_group
+    SET `app_name` = #{appName},
+    `title` = #{title},
+    `order` = #{order},
+    `address_type` = #{addressType},
+    `address_list` = #{addressList}
+    WHERE id = #{id}
   </update>
 </mapper>

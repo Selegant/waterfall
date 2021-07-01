@@ -7,12 +7,10 @@ import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallJobInfoMapper;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallJobInfo;
-import org.jeecg.modules.datasources.model.WaterfallOfflineTask;
 import org.jeecg.modules.datasources.service.IOfflineTaskService;
 import org.jeecg.modules.datasources.util.JobJsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 
 /**
