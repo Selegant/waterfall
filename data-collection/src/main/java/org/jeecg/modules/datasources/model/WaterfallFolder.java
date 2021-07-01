@@ -1,6 +1,9 @@
 package org.jeecg.modules.datasources.model;
 
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -8,6 +11,8 @@ import lombok.Data;
     */
 @Data
 public class WaterfallFolder {
+
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -21,9 +26,9 @@ public class WaterfallFolder {
     private String folderName;
 
     /**
-    * 层级类型
+    * 层级类型 1文件夹 2文件
     */
-    private String folderType;
+    private Integer folderType;
 
     /**
     * 层级标识
@@ -44,4 +49,9 @@ public class WaterfallFolder {
     * 最后修改时间
     */
     private Date updateTime;
+
+    /**
+     * 删除标识
+     */
+    private Boolean delFlag;
 }

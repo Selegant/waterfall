@@ -16,11 +16,12 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="field_sort" jdbcType="INTEGER" property="fieldSort" />
+    <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, model_id, field_name, field_type_id, remark, metadata_id, primarykey_flag, empty_flag, 
-    `length`, create_time, update_time, field_sort
+    `length`, create_time, update_time, field_sort, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -39,13 +40,13 @@
     insert into waterfall_model_field (id, model_id, field_name, 
       field_type_id, remark, metadata_id, 
       primarykey_flag, empty_flag, `length`, 
-      create_time, update_time, field_sort
+      create_time, update_time, field_sort, del_flag
       )
     values (#{id,jdbcType=INTEGER}, #{modelId,jdbcType=INTEGER}, #{fieldName,jdbcType=VARCHAR}, 
       #{fieldTypeId,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{metadataId,jdbcType=INTEGER}, 
       #{primarykeyFlag,jdbcType=BOOLEAN}, #{emptyFlag,jdbcType=BOOLEAN}, #{length,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{fieldSort,jdbcType=INTEGER}
-      )
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{fieldSort,jdbcType=INTEGER},
+      #{delFlag, jdbcType=BOOLEAN})
   </insert>
   <insert id="insertSelective" parameterType="org.jeecg.modules.datasources.model.WaterfallModelField">
     <!--@mbg.generated-->
@@ -87,6 +88,9 @@
       <if test="fieldSort != null">
         field_sort,
       </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -124,6 +128,9 @@
       </if>
       <if test="fieldSort != null">
         #{fieldSort,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BOOLEAN},
       </if>
     </trim>
   </insert>
@@ -164,6 +171,9 @@
       <if test="fieldSort != null">
         field_sort = #{fieldSort,jdbcType=INTEGER},
       </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BOOLEAN},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -180,7 +190,8 @@
       `length` = #{length,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      field_sort = #{fieldSort,jdbcType=INTEGER}
+      field_sort = #{fieldSort,jdbcType=INTEGER},
+      del_flag = #{delFlag,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

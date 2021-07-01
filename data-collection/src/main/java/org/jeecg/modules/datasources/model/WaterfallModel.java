@@ -1,6 +1,9 @@
 package org.jeecg.modules.datasources.model;
 
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -8,6 +11,8 @@ import lombok.Data;
     */
 @Data
 public class WaterfallModel {
+
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -59,4 +64,9 @@ public class WaterfallModel {
     * 更新时间
     */
     private Date updateTime;
+
+    /**
+     * 删除标识
+     */
+    private Boolean delFlag;
 }

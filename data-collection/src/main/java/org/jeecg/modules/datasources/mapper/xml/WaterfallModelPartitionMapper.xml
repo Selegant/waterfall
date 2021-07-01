@@ -12,11 +12,12 @@
     <result column="metadata_id" jdbcType="INTEGER" property="metadataId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, model_id, partition_name, partition_type_id, remark, metadata_id, create_time, 
-    update_time
+    update_time, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -34,10 +35,10 @@
     <!--@mbg.generated-->
     insert into waterfall_model_partition (model_id, partition_name, partition_type_id, 
       remark, metadata_id, create_time, 
-      update_time)
+      update_time, del_flag)
     values (#{modelId,jdbcType=INTEGER}, #{partitionName,jdbcType=VARCHAR}, #{partitionTypeId,jdbcType=INTEGER}, 
       #{remark,jdbcType=VARCHAR}, #{metadataId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{updateTime,jdbcType=TIMESTAMP}, #{delFlag, jdbcType=BOOLEAN})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallModelPartition" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -64,6 +65,9 @@
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="modelId != null">
@@ -86,6 +90,9 @@
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BOOLEAN},
       </if>
     </trim>
   </insert>
@@ -114,6 +121,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BOOLEAN},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -126,7 +136,8 @@
       remark = #{remark,jdbcType=VARCHAR},
       metadata_id = #{metadataId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      del_flag = #{delFlag,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

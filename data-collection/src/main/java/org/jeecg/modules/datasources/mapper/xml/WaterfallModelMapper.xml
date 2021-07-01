@@ -15,11 +15,12 @@
     <result column="ramark" jdbcType="VARCHAR" property="ramark" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, folder_id, model_name, model_type_code, model_status_code, model_status_name,
-    export_type_code, export_type_name, ramark, create_time, update_time
+    export_type_code, export_type_name, ramark, create_time, update_time, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -38,11 +39,11 @@
     insert into waterfall_model (folder_id, model_name, model_type_code,
       model_status_code, model_status_name, export_type_code,
       export_type_name, ramark, create_time,
-      update_time)
+      update_time, del_flag)
     values (#{folderId,jdbcType=INTEGER}, #{modelName,jdbcType=VARCHAR}, #{modelTypeCode,jdbcType=INTEGER},
       #{modelStatusCode,jdbcType=INTEGER}, #{modelStatusName,jdbcType=VARCHAR}, #{exportTypeCode,jdbcType=INTEGER},
       #{exportTypeName,jdbcType=VARCHAR}, #{ramark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{updateTime,jdbcType=TIMESTAMP}, #{delFlag, jdbcType=BOOLEAN})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallModel" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -78,6 +79,9 @@
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="folderId != null">
@@ -109,6 +113,9 @@
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BOOLEAN},
       </if>
     </trim>
   </insert>
@@ -146,6 +153,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BOOLEAN},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -161,7 +171,8 @@
       export_type_name = #{exportTypeName,jdbcType=VARCHAR},
       ramark = #{ramark,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      del_flag = #{delFlag,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
