@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.PageInfoResponse;
 import org.jeecg.common.api.vo.Result;
@@ -70,4 +71,31 @@ public class OfflineTaskController {
     }
 
 
+    @PostMapping(value = "/remove/{id}")
+    @ApiOperation("移除任务")
+    public Result<String> remove(@PathVariable(value = "id") Integer id) {
+        Result<String> result = new Result<>();
+        try {
+            offlineTaskService.removeTask(id);
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/stop", method = RequestMethod.POST)
+    @ApiOperation("停止任务")
+    public Result<String> pause(Integer id) {
+        Result<String> result = new Result<>();
+        try {
+            offlineTaskService.stop(id);
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
 }

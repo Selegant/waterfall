@@ -101,12 +101,12 @@ public class WaterfallJobInfo {
     /**
      * 上次调度时间
      */
-    private Date triggerLastTime;
+    private Long triggerLastTime;
 
     /**
      * 下次调度时间
      */
-    private Date triggerNextTime;
+    private Long triggerNextTime;
 
     /**
      * 增量初始时间

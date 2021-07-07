@@ -19,4 +19,8 @@ public interface IOfflineTaskService extends IService<WaterfallJobInfo> {
     Boolean saveOfflineTask(OfflineTaskDTO offlineTask);
 
     String getJobJson(OfflineTaskDTO input);
+
+    void removeTask(Integer id);
+
+    void stop(Integer id);
 }

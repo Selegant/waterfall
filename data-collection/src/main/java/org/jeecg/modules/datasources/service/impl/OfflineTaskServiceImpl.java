@@ -65,7 +65,7 @@ public class OfflineTaskServiceImpl extends
             CronExpression cronExpression = new CronExpression(offlineTask.getTaskCorn());
             Date lastTime = new Date();
             lastTime = cronExpression.getNextValidTimeAfter(lastTime);
-            task.setTriggerNextTime(lastTime);
+            task.setTriggerNextTime(lastTime.toInstant().getEpochSecond());
         } catch (ParseException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -90,5 +90,26 @@ public class OfflineTaskServiceImpl extends
             throw new RuntimeException("源数据表或目标表不存在");
         }
         return JobJsonUtil.assembleJobJson(original, target, input).toString();
+    }
+
+    @Override
+    public void removeTask(Integer id) {
+        WaterfallJobInfo jobInfo = jobInfoMapper.loadById(id);
+        if (jobInfo == null) {
+            return;
+        }
+        jobInfoMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public void stop(Integer id) {
+        WaterfallJobInfo jobInfo = jobInfoMapper.loadById(id);
+
+        jobInfo.setTriggerStatus(0);
+        jobInfo.setTriggerLastTime(0L);
+        jobInfo.setTriggerNextTime(0L);
+
+        jobInfo.setUpdateTime(new Date());
+        jobInfoMapper.updateByPrimaryKey(jobInfo);
     }
 }
