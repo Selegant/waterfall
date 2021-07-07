@@ -18,23 +18,38 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select
-    <include refid="Base_Column_List" />
+    <include refid="Base_Column_List"/>
     from waterfall_job_group
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+  <delete
+    id="deleteByPrimaryKey"
+    parameterType="java.lang.Integer">
     <!--@mbg.generated-->
     delete from waterfall_job_group
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup" useGeneratedKeys="true">
+  <delete id="remove">
+    DELETE FROM waterfall_job_group WHERE id = #{id}
+  </delete>
+  <insert
+    id="insert"
+    keyColumn="id"
+    keyProperty="id"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup"
+    useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_job_group (app_name, title, `order`,
-      address_type, address_list)
+    address_type, address_list)
     values (#{appName,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER},
-      #{addressType,jdbcType=TINYINT}, #{addressList,jdbcType=VARCHAR})
+    #{addressType,jdbcType=TINYINT}, #{addressList,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup" useGeneratedKeys="true">
+  <insert
+    id="insertSelective"
+    keyColumn="id"
+    keyProperty="id"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup"
+    useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_job_group
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -72,7 +87,13 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+  <insert id="save">
+    INSERT INTO waterfall_job_group ( `app_name`, `title`, `order`, `address_type`, `address_list`)
+    values ( #{appName}, #{title}, #{order}, #{addressType}, #{addressList});
+  </insert>
+  <update
+    id="updateByPrimaryKeySelective"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
     <!--@mbg.generated-->
     update waterfall_job_group
     <set>
@@ -112,15 +133,46 @@
     WHERE t.id = #{id}
   </select>
 
-  <select id="findByAddressType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select
+    id="findByAddressType"
+    parameterType="java.lang.Integer"
+    resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List"/>
     FROM waterfall_job_group AS t
     WHERE t.address_type = #{addressType}
     ORDER BY t.order ASC
   </select>
+  <select
+    id="findAll"
+    resultType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM waterfall_job_group AS t
+    ORDER BY t.order ASC
+  </select>
+  <select
+    id="find"
+    resultType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+    select
+    id,app_name,title,`order`,address_type,address_list
+    from waterfall_job_group
+    <where>
+      <if test="appName != null and appName != ''">
+        and app_name like concat('%',#{appName,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="title != null and title != ''">
+        and title like concat('%',#{title,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="addressList != null and addressList != ''">
+        and address_list like concat('%',#{addressList,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </select>
 
-  <update id="update" parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
+  <update
+    id="update"
+    parameterType="org.jeecg.modules.datasources.model.WaterfallJobGroup">
     UPDATE waterfall_job_group
     SET `app_name` = #{appName},
     `title` = #{title},

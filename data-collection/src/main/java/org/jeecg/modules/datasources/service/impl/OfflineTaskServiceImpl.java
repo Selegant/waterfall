@@ -2,6 +2,11 @@ package org.jeecg.modules.datasources.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import java.text.ParseException;
+import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
+import org.jeecg.modules.datasources.core.cron.CronExpression;
+import org.jeecg.modules.datasources.core.route.ExecutorRouteStrategyEnum;
+import org.jeecg.modules.datasources.core.util.I18nUtil;
 import org.jeecg.modules.datasources.dto.OfflineTaskDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallJobInfoMapper;
@@ -27,6 +32,10 @@ public class OfflineTaskServiceImpl extends
     @Autowired
     private WaterfallDataSourceMapper waterfallDataSourceMapper;
 
+    private static final Integer GROUP_ID = 1;
+
+    private static final Integer PROJECT_ID = 1;
+
     /**
      * 保存离线任务
      *
@@ -46,13 +55,40 @@ public class OfflineTaskServiceImpl extends
         task.setTargetTable(offlineTask.getTargetTable());
         task.setCreateTime(new Date());
         task.setUpdateTime(new Date());
+
+        task.setTaskExecuteJson(getJobJson(offlineTask));
+        task.setTaskExecuteTime(offlineTask.getTaskExecuteTime());
+        if (!CronExpression.isValidExpression(offlineTask.getTaskCorn())) {
+            throw new RuntimeException("CORN表达式不合法");
+        }
+        try {
+            CronExpression cronExpression = new CronExpression(offlineTask.getTaskCorn());
+            Date lastTime = new Date();
+            lastTime = cronExpression.getNextValidTimeAfter(lastTime);
+            task.setTriggerNextTime(lastTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        task.setIncStartId(offlineTask.getIncStartId());
+        task.setTaskCorn(offlineTask.getTaskCorn());
+        task.setAlarmEmail(offlineTask.getAlarmEmail());
+        task.setExecutorTimeout(offlineTask.getExecutorTimeout());
+        task.setExecutorFailRetryCount(offlineTask.getExecutorFailRetryCount());
+        task.setJobGroup(GROUP_ID);
+        task.setIncStartTime(offlineTask.getIncStartTime());
+        task.setExecutorRouteStrategy(ExecutorRouteStrategyEnum.FIRST.getTitle());
+        task.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.SERIAL_EXECUTION.getTitle());
+        task.setProjectId(PROJECT_ID);
         return jobInfoMapper.insertSelective(task) > 0;
     }
 
     @Override
-    public JSONObject getJobJson(OfflineTaskDTO input) {
+    public String getJobJson(OfflineTaskDTO input) {
         WaterfallDataSource original = waterfallDataSourceMapper.selectById(input.getOriginalId());
         WaterfallDataSource target = waterfallDataSourceMapper.selectById(input.getTargetId());
-        return JobJsonUtil.assembleJobJson(original, target, input);
+        if (original == null || target == null) {
+            throw new RuntimeException("源数据表或目标表不存在");
+        }
+        return JobJsonUtil.assembleJobJson(original, target, input).toString();
     }
 }

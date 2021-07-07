@@ -1,5 +1,9 @@
 package org.jeecg.modules.datasources.service.impl;
 
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.AMOUNT;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE;
+
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
@@ -53,16 +57,6 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Autowired
     private IWaterfallDataSourceAmountService waterfallDataSourceAmountService;
-
-    private static final String MYSQL = "mysql";
-
-    private static final String ORACLE = "oracle";
-
-    private static final String AMOUNT = "amount";
-
-    private static final int TABLE = 1;
-
-    private static final int VIEW = 2;
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(20, 30, 10, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(100));

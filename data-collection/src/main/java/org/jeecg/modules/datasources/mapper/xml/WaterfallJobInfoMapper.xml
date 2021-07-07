@@ -492,20 +492,67 @@
     WHERE id = #{id}
   </update>
 
-  <select id="loadById" parameterType="java.util.HashMap" resultMap="BaseResultMap">
-    SELECT <include refid="Base_Column_List" />
+  <select
+    id="loadById"
+    parameterType="java.util.HashMap"
+    resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
     FROM waterfall_job_info AS t
     WHERE t.id = #{id}
   </select>
+  <select
+    id="pageListCount"
+    resultType="java.lang.Integer">
+    SELECT count(1)
+    FROM waterfall_job_info AS t
+    INNER JOIN waterfall_job_project p on t.project_id=p.id
+    <trim
+      prefix="WHERE"
+      prefixOverrides="AND | OR">
+      <if test="jobGroup gt 0">
+        AND t.job_group = #{jobGroup}
+      </if>
+      <if test="triggerStatus gte 0">
+        AND t.trigger_status = #{triggerStatus}
+      </if>
+      <if test="jobDesc != null and jobDesc != ''">
+        AND t.job_desc like CONCAT(CONCAT('%', #{jobDesc}), '%')
+      </if>
+      <if test="glueType != null and glueType != ''">
+        AND t.glue_type like CONCAT(CONCAT('%', #{glueType}), '%')
+      </if>
+      <if test="userId gt 0">
+        AND t.user_id =#{userId}
+      </if>
+      <if test="projectIds != null and projectIds.length != 0">
+        AND t.project_id IN
+        <foreach
+          collection="projectIds"
+          item="projectId"
+          index="index"
+          open="("
+          close=")"
+          separator=",">
+          #{projectId}
+        </foreach>
+      </if>
+    </trim>
 
-  <update id="updateLastHandleCode" parameterType="java.util.HashMap">
+  </select>
+
+  <update
+    id="updateLastHandleCode"
+    parameterType="java.util.HashMap">
     UPDATE waterfall_job_info
     SET
     last_handle_code = #{lastHandleCode}
     WHERE id = #{id}
   </update>
 
-  <update id="incrementIdUpdate" parameterType="java.util.HashMap">
+  <update
+    id="incrementIdUpdate"
+    parameterType="java.util.HashMap">
     UPDATE waterfall_job_info
     SET
     inc_start_id = #{incStartId}

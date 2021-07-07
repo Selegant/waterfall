@@ -31,4 +31,13 @@ public interface WaterfallJobInfoMapper extends BaseMapper<WaterfallJobInfo> {
     void incrementIdUpdate(@Param("id") int id, @Param("incStartId") Long incStartId);
 
     int incrementTimeUpdate(@Param("id") int id, @Param("incStartTime") Date incStartTime);
+
+    int pageListCount(@Param("offset") int offset,
+            @Param("pagesize") int pagesize,
+            @Param("jobGroup") int jobGroup,
+            @Param("triggerStatus") int triggerStatus,
+            @Param("jobDesc") String jobDesc,
+            @Param("glueType") String glueType,
+            @Param("userId") int userId,
+            @Param("projectIds") Integer[] projectIds);
 }
