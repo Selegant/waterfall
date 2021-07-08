@@ -1,8 +1,11 @@
 package org.jeecg.modules.datasources.dto;
 
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.List;
 
@@ -52,6 +55,8 @@ public class OfflineTaskDTO {
     /**
      * 增量初始时间
      */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date incStartTime;
 
 

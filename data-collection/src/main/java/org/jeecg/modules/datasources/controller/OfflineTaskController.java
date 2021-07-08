@@ -39,23 +39,24 @@ public class OfflineTaskController {
     IOfflineTaskService offlineTaskService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public Result<PageInfoResponse> queryPageList(WaterfallJobInfo task, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+    public Result<IPage<WaterfallJobInfo>> queryPageList(WaterfallJobInfo task, @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                                   @RequestParam(name="queryParam", required = false) String queryParam, HttpServletRequest req) {
-        Result<PageInfoResponse> result = new Result<>();
+        Result<IPage<WaterfallJobInfo>> result = new Result<>();
         QueryWrapper<WaterfallJobInfo> queryWrapper = new QueryWrapper<>();
         if(StrUtil.isNotBlank(queryParam)){
             queryWrapper.like("task_name",queryParam).or().like("original_table",queryParam).or().like("target_table",queryParam);
         }
+        queryWrapper.orderByDesc("update_time");
         Page<WaterfallJobInfo> page = new Page<>(pageNo, pageSize);
         IPage<WaterfallJobInfo> pageList = offlineTaskService.page(page, queryWrapper);
-        PageInfoResponse info = new PageInfoResponse();
-        info.setData(pageList.getRecords());
-        info.setTotalCount(pageList.getTotal());
-        info.setPageNo(pageNo);
-        info.setPageSize(pageSize);
+//        PageInfoResponse info = new PageInfoResponse();
+//        info.setData(pageList.getRecords());
+//        info.setTotalCount(pageList.getTotal());
+//        info.setPageNo(pageNo);
+//        info.setPageSize(pageSize);
         result.setSuccess(true);
-        result.setResult(info);
+        result.setResult(pageList);
         return result;
     }
 

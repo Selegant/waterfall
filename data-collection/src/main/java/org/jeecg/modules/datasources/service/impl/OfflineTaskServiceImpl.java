@@ -75,6 +75,7 @@ public class OfflineTaskServiceImpl extends
         task.setExecutorRouteStrategy(ExecutorRouteStrategyEnum.FIRST.getTitle());
         task.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.SERIAL_EXECUTION.getTitle());
         task.setProjectId(PROJECT_ID);
+        task.setIncrementType(offlineTask.getIncrementType());
         return jobInfoMapper.insertSelective(task) > 0;
     }
 
