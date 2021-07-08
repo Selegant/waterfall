@@ -3,9 +3,11 @@ package org.jeecg.modules.datasources.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.text.ParseException;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
 import org.jeecg.modules.datasources.core.cron.CronExpression;
 import org.jeecg.modules.datasources.core.route.ExecutorRouteStrategyEnum;
+import org.jeecg.modules.datasources.core.thread.JobScheduleHelper;
 import org.jeecg.modules.datasources.core.util.I18nUtil;
 import org.jeecg.modules.datasources.dto.OfflineTaskDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
@@ -22,6 +24,7 @@ import java.util.Date;
  * @author selegant
  */
 @Service
+@Slf4j
 public class OfflineTaskServiceImpl extends
         ServiceImpl<WaterfallJobInfoMapper, WaterfallJobInfo> implements
         IOfflineTaskService {
@@ -108,6 +111,31 @@ public class OfflineTaskServiceImpl extends
         jobInfo.setTriggerStatus(0);
         jobInfo.setTriggerLastTime(0L);
         jobInfo.setTriggerNextTime(0L);
+
+        jobInfo.setUpdateTime(new Date());
+        jobInfoMapper.updateByPrimaryKey(jobInfo);
+    }
+
+    @Override
+    public void start(Integer id) {
+        WaterfallJobInfo jobInfo = jobInfoMapper.loadById(id);
+        long nextTriggerTime = 0;
+        try {
+            Date nextValidTime = new CronExpression(jobInfo.getTaskCorn())
+                    .getNextValidTimeAfter(new Date(System.currentTimeMillis() + JobScheduleHelper.PRE_READ_MS));
+            if (nextValidTime == null) {
+//                return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("jobinfo_field_cron_never_fire"));
+                throw new RuntimeException(I18nUtil.getString("jobinfo_field_cron_never_fire"));
+            }
+            nextTriggerTime = nextValidTime.getTime();
+        } catch (ParseException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(I18nUtil.getString("jobinfo_field_cron_invalid") + " | " + e.getMessage());
+        }
+
+        jobInfo.setTriggerStatus(1);
+        jobInfo.setTriggerLastTime(0L);
+        jobInfo.setTriggerNextTime(nextTriggerTime);
 
         jobInfo.setUpdateTime(new Date());
         jobInfoMapper.updateByPrimaryKey(jobInfo);

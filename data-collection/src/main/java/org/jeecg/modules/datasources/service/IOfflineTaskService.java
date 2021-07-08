@@ -23,4 +23,6 @@ public interface IOfflineTaskService extends IService<WaterfallJobInfo> {
     void removeTask(Integer id);
 
     void stop(Integer id);
+
+    void start(Integer id);
 }

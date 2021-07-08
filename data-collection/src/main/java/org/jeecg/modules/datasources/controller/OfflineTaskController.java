@@ -9,10 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.PageInfoResponse;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.modules.datasources.core.thread.JobTriggerPoolHelper;
+import org.jeecg.modules.datasources.core.trigger.TriggerTypeEnum;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.OfflineTaskDTO;
 import org.jeecg.modules.datasources.dto.PageInfoDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
+import org.jeecg.modules.datasources.dto.TriggerJobDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.*;
 import org.jeecg.modules.datasources.service.IDataSourceService;
@@ -85,12 +88,46 @@ public class OfflineTaskController {
         return result;
     }
 
-    @RequestMapping(value = "/stop", method = RequestMethod.POST)
+    @PostMapping(value = "/stop")
     @ApiOperation("停止任务")
     public Result<String> pause(Integer id) {
         Result<String> result = new Result<>();
         try {
             offlineTaskService.stop(id);
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/start")
+    @ApiOperation("开启任务")
+    public Result<String> start(Integer id) {
+        Result<String> result = new Result<>();
+        try {
+            offlineTaskService.start(id);
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
+    @PostMapping(value = "/trigger")
+    @ApiOperation("触发任务")
+    public Result<String> triggerJob(@RequestBody TriggerJobDTO dto) {
+        Result<String> result = new Result<>();
+        try {
+            // force cover job param
+            String executorParam = dto.getExecutorParam();
+            if (executorParam == null) {
+                executorParam = "";
+            }
+            JobTriggerPoolHelper.trigger(dto.getJobId(), TriggerTypeEnum.MANUAL, -1, null, executorParam);
+
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
