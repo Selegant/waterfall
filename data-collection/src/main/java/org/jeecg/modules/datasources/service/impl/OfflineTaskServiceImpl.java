@@ -64,14 +64,7 @@ public class OfflineTaskServiceImpl extends
         if (!CronExpression.isValidExpression(offlineTask.getTaskCorn())) {
             throw new RuntimeException("CORN表达式不合法");
         }
-        try {
-            CronExpression cronExpression = new CronExpression(offlineTask.getTaskCorn());
-            Date lastTime = new Date();
-            lastTime = cronExpression.getNextValidTimeAfter(lastTime);
-            task.setTriggerNextTime(lastTime.toInstant().getEpochSecond());
-        } catch (ParseException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+
         task.setIncStartId(offlineTask.getIncStartId());
         task.setTaskCorn(offlineTask.getTaskCorn());
         task.setAlarmEmail(offlineTask.getAlarmEmail());
