@@ -1,7 +1,7 @@
 package org.jeecg.modules.datasources.mapper;
 
-import org.apache.ibatis.annotations.Param;import org.jeecg.modules.datasources.model.WaterfallJobLog;
-
+import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.datasources.model.WaterfallJobLog;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,4 +44,6 @@ public interface WaterfallJobLogMapper {
                         @Param("processId") String processId);
 
     int updateHandleInfo(WaterfallJobLog jobLog);
+
+    long save(WaterfallJobLog jobLog);
 }

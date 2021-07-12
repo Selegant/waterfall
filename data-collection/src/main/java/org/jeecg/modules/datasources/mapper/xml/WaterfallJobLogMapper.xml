@@ -355,4 +355,25 @@
     `handle_msg`= #{handleMsg}
     WHERE `id`= #{id}
   </update>
+
+  <insert id="save" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true" keyProperty="id" >
+    INSERT INTO job_log (
+    `job_group`,
+    `job_id`,
+    `job_desc`,
+    `trigger_time`,
+    `trigger_code`,
+    `handle_code`
+    ) VALUES (
+    #{jobGroup},
+    #{jobId},
+    #{jobDesc},
+    #{triggerTime},
+    #{triggerCode},
+    #{handleCode}
+    );
+    <!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+        SELECT LAST_INSERT_ID()
+    </selectKey>-->
+  </insert>
 </mapper>
