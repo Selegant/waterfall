@@ -270,7 +270,7 @@
 
   <select id="load" parameterType="java.lang.Long" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List" />
-    FROM job_log AS t
+    FROM waterfall_job_log AS t
     WHERE t.id = #{id}
   </select>
 

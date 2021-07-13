@@ -52,7 +52,7 @@ public class WaterfallJobLog {
     /**
      * 调度-结果
      */
-    private Integer triggerCode;
+    private int triggerCode;
 
     /**
      * 调度-日志
@@ -67,7 +67,7 @@ public class WaterfallJobLog {
     /**
      * 执行-状态
      */
-    private Integer handleCode;
+    private int handleCode;
 
     /**
      * 执行-日志
