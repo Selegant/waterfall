@@ -357,7 +357,7 @@
   </update>
 
   <insert id="save" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true" keyProperty="id" >
-    INSERT INTO job_log (
+    INSERT INTO waterfall_job_log (
     `job_group`,
     `job_id`,
     `job_desc`,

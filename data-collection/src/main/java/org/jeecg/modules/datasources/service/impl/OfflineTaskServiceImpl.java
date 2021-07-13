@@ -25,8 +25,7 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class OfflineTaskServiceImpl extends
-        ServiceImpl<WaterfallJobInfoMapper, WaterfallJobInfo> implements
+public class OfflineTaskServiceImpl extends ServiceImpl<WaterfallJobInfoMapper, WaterfallJobInfo> implements
         IOfflineTaskService {
 
     @Autowired
@@ -38,6 +37,10 @@ public class OfflineTaskServiceImpl extends
     private static final Integer GROUP_ID = 1;
 
     private static final Integer PROJECT_ID = 1;
+
+    private static final Integer DEFAULT_RETRY_COUNT = 0;
+
+    private static final Integer DEFAULT_TIMEOUT = 1000 * 20;
 
     /**
      * 保存离线任务
@@ -72,10 +75,12 @@ public class OfflineTaskServiceImpl extends
         task.setExecutorFailRetryCount(offlineTask.getExecutorFailRetryCount());
         task.setJobGroup(GROUP_ID);
         task.setIncStartTime(offlineTask.getIncStartTime());
-        task.setExecutorRouteStrategy(ExecutorRouteStrategyEnum.FIRST.getTitle());
-        task.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.SERIAL_EXECUTION.getTitle());
+        task.setExecutorRouteStrategy(ExecutorRouteStrategyEnum.FIRST.name());
+        task.setExecutorBlockStrategy(ExecutorBlockStrategyEnum.SERIAL_EXECUTION.name());
         task.setProjectId(PROJECT_ID);
         task.setIncrementType(offlineTask.getIncrementType());
+        task.setExecutorFailRetryCount(DEFAULT_RETRY_COUNT);
+        task.setExecutorTimeout(DEFAULT_TIMEOUT);
         return jobInfoMapper.insertSelective(task) > 0;
     }
 
