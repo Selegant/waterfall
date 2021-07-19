@@ -136,4 +136,19 @@ public class OfflineTaskController {
         }
         return result;
     }
+
+    @GetMapping("/detail")
+    @ApiOperation("任务详情")
+    public Result<WaterfallJobInfo> getDetail(@RequestParam Integer id) {
+        Result<WaterfallJobInfo> result = new Result<>();
+        try {
+            result.setResult(offlineTaskService.getById(id));
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
 }

@@ -36,14 +36,30 @@ public interface WaterfallJobLogMapper {
                                @Param("jobId") int jobId,
                                @Param("clearBeforeTime") Date clearBeforeTime,
                                @Param("clearBeforeNum") int clearBeforeNum,
-                               @Param("pagesize") int pagesize);
+            @Param("pagesize") int pagesize);
 
     int clearLog(@Param("logIds") List<Long> logIds);
 
     int updateProcessId(@Param("id") long id,
-                        @Param("processId") String processId);
+            @Param("processId") String processId);
 
     int updateHandleInfo(WaterfallJobLog jobLog);
 
     long save(WaterfallJobLog jobLog);
+
+    List<WaterfallJobLog> pageList(@Param("offset") int offset,
+            @Param("pagesize") int pagesize,
+            @Param("jobGroup") int jobGroup,
+            @Param("jobId") int jobId,
+            @Param("triggerTimeStart") Date triggerTimeStart,
+            @Param("triggerTimeEnd") Date triggerTimeEnd,
+            @Param("logStatus") int logStatus);
+
+    int pageListCount(@Param("offset") int offset,
+            @Param("pagesize") int pagesize,
+            @Param("jobGroup") int jobGroup,
+            @Param("jobId") int jobId,
+            @Param("triggerTimeStart") Date triggerTimeStart,
+            @Param("triggerTimeEnd") Date triggerTimeEnd,
+            @Param("logStatus") int logStatus);
 }

@@ -108,7 +108,7 @@ public class ExecutorJobHandler extends IJobHandler {
         if (!FileUtil.exist(jsonPath)) {
             FileUtil.mkdir(jsonPath);
         }
-        tmpFilePath = jsonPath + "jobTmp-" + IdUtil.simpleUUID() + ".conf";
+        tmpFilePath = jsonPath + "jobTmp-" + IdUtil.simpleUUID() + ".json";
         // 根据json写入到临时本地文件
         try (PrintWriter writer = new PrintWriter(tmpFilePath, "UTF-8")) {
             writer.println(jobJson);
