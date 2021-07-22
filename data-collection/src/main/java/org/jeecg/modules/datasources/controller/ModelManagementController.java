@@ -37,7 +37,7 @@ public class ModelManagementController {
     public Result<Object> listFolder(@RequestParam(value = "parentId", required = false, defaultValue = "0") Integer parentId) {
         Result<Object> result = new Result<>();
         try {
-            result.setResult(modelManagementService.queryListWithParentId(parentId));
+            result.setResult(modelManagementService.queryList());
             result.success("query success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);

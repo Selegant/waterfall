@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
+import org.jeecg.modules.datasources.dto.ModelFolderDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallFolderMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallModelFieldMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallModelMapper;
@@ -20,13 +21,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class ModelManagementServiceImpl implements IModelManagementService {
+
+    private final int ZERO = 0;
 
     @Autowired
     private WaterfallFolderMapper waterfallFolderMapper;
@@ -53,6 +58,21 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                 .eq(WaterfallFolder::getParentId, parentId)
                 .eq(WaterfallFolder::getDelFlag, false);
         return waterfallFolderMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<ModelFolderDTO> queryList() {
+        LambdaQueryWrapper<WaterfallFolder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(WaterfallFolder::getId, WaterfallFolder::getParentId, WaterfallFolder::getFolderName, WaterfallFolder::getFolderType,
+                WaterfallFolder::getMark, WaterfallFolder::getRemark)
+                .eq(WaterfallFolder::getDelFlag, false);
+        List<WaterfallFolder> list = waterfallFolderMapper.selectList(queryWrapper);
+        List<WaterfallFolder> parentList = list.stream().filter(w->ZERO==w.getParentId()).collect(Collectors.toList());
+        List<ModelFolderDTO> result = new ArrayList<>();
+        parentList.forEach(p->{
+            result.add(new ModelFolderDTO(p,list.stream().filter(w->w.getParentId().equals(p.getId())).collect(Collectors.toList())));
+        });
+        return result;
     }
 
     @Override
@@ -209,16 +229,21 @@ public class ModelManagementServiceImpl implements IModelManagementService {
      */
     private LambdaQueryWrapper<WaterfallModel> modelQueryCondition(WaterfallModel waterfallModel) {
         LambdaQueryWrapper<WaterfallModel> queryWrapper = new LambdaQueryWrapper<>();
-        if (waterfallModel == null) return queryWrapper;
-
-        if (waterfallModel.getId() != null) queryWrapper.eq(WaterfallModel::getId, waterfallModel.getId());
-        if (waterfallModel.getFolderId() != null)
+        if (waterfallModel == null) {
+            return queryWrapper;
+        }
+        if (waterfallModel.getId() != null) {
+            queryWrapper.eq(WaterfallModel::getId, waterfallModel.getId());
+        }
+        if (waterfallModel.getFolderId() != null) {
             queryWrapper.eq(WaterfallModel::getFolderId, waterfallModel.getFolderId());
-        if (StringUtils.isNotBlank(waterfallModel.getModelName()))
+        }
+        if (StringUtils.isNotBlank(waterfallModel.getModelName())) {
             queryWrapper.like(WaterfallModel::getModelName, waterfallModel.getModelName());
-        if (waterfallModel.getDelFlag() != null)
+        }
+        if (waterfallModel.getDelFlag() != null) {
             queryWrapper.eq(WaterfallModel::getDelFlag, waterfallModel.getDelFlag());
-
+        }
         return queryWrapper;
     }
 

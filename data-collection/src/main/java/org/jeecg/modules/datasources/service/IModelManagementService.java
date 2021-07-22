@@ -3,6 +3,7 @@ package org.jeecg.modules.datasources.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
+import org.jeecg.modules.datasources.dto.ModelFolderDTO;
 import org.jeecg.modules.datasources.model.WaterfallFolder;
 import org.jeecg.modules.datasources.model.WaterfallModel;
 
@@ -13,6 +14,8 @@ public interface IModelManagementService {
     IPage<WaterfallFolder> queryListWithParentId(Integer parentId, int pageSize, int pageNo);
 
     List<WaterfallFolder> queryListWithParentId(Integer parentId);
+
+    List<ModelFolderDTO> queryList();
 
     void saveFolder(WaterfallFolder waterfallFolder);
 
