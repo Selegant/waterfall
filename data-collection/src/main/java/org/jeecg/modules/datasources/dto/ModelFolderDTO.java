@@ -17,12 +17,14 @@ public class ModelFolderDTO {
 
     private String title;
     private String key;
+    private String value;
     private SlotsBean slots;
     private List<ModelFolderDTO> children;
 
     public ModelFolderDTO(WaterfallFolder waterfallFolder) {
         this.setTitle(waterfallFolder.getFolderName());
         this.setKey(waterfallFolder.getId().toString());
+        this.setValue(waterfallFolder.getId().toString());
         this.setSlots(new SlotsBean());
     }
 
@@ -30,6 +32,7 @@ public class ModelFolderDTO {
         this.setTitle(waterfallFolder.getFolderName());
         this.setKey(waterfallFolder.getId().toString());
         this.setSlots(new SlotsBean());
+        this.setValue(waterfallFolder.getId().toString());
         List<ModelFolderDTO> list = new ArrayList<>();
         childrenList.forEach(c->{
             list.add(new ModelFolderDTO(c));
