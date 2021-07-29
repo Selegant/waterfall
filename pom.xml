@@ -51,6 +51,7 @@
 		<groovy.version>2.5.8</groovy.version>
 		<jna.version>5.5.0</jna.version>
 		<oshi.core.version>5.4.1</oshi.core.version>
+		<hive.version>2.3.6</hive.version>
 	</properties>
 
 	<modules>
