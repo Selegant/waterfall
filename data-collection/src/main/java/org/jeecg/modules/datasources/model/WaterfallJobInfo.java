@@ -196,4 +196,9 @@ public class WaterfallJobInfo {
      * 增量初始ID
      */
     private String incStartId;
+
+    /**
+     * 增量字段
+     */
+    private String incColumn;
 }

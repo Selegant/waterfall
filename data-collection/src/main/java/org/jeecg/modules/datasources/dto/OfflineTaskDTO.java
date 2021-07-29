@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 public class OfflineTaskDTO {
 
-
+    private Integer id;
     private String name;
     private String desc;
     private Integer originalId;

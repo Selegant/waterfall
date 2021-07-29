@@ -41,20 +41,21 @@
     <result column="increment_type" jdbcType="INTEGER" property="incrementType" />
     <result column="child_job_id" jdbcType="VARCHAR" property="childJobId" />
     <result column="inc_start_id" jdbcType="VARCHAR" property="incStartId" />
+    <result column="inc_column" jdbcType="VARCHAR" property="incColumn" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, task_name, task_desc, task_execute_json, task_corn, task_execute_time, create_time,
-    update_time, mapping_columns, collection_type, original_id, original_table, target_id,
-    target_table, alarm_email, executor_timeout, executor_fail_retry_count, trigger_status,
-    trigger_last_time, trigger_next_time, inc_start_time, jvm_param, replace_param, job_group,
-    executor_route_strategy, executor_block_strategy, executor_handler, executor_param,
-    glue_type, glue_source, glue_remark, glue_updatetime, last_handle_code, project_id,
-    increment_type, child_job_id, inc_start_id
+    id, task_name, task_desc, task_execute_json, task_corn, task_execute_time, create_time, 
+    update_time, mapping_columns, collection_type, original_id, original_table, target_id, 
+    target_table, alarm_email, executor_timeout, executor_fail_retry_count, trigger_status, 
+    trigger_last_time, trigger_next_time, inc_start_time, jvm_param, replace_param, job_group, 
+    executor_route_strategy, executor_block_strategy, executor_handler, executor_param, 
+    glue_type, glue_source, glue_remark, glue_updatetime, last_handle_code, project_id, 
+    increment_type, child_job_id, inc_start_id, inc_column
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select
+    select 
     <include refid="Base_Column_List" />
     from waterfall_job_info
     where id = #{id,jdbcType=INTEGER}
@@ -66,32 +67,34 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_job_info (task_name, task_desc, task_execute_json,
-      task_corn, task_execute_time, create_time,
-      update_time, mapping_columns, collection_type,
-      original_id, original_table, target_id,
-      target_table, alarm_email, executor_timeout,
-      executor_fail_retry_count, trigger_status,
-      trigger_last_time, trigger_next_time, inc_start_time,
-      jvm_param, replace_param, job_group,
-      executor_route_strategy, executor_block_strategy,
-      executor_handler, executor_param, glue_type,
-      glue_source, glue_remark, glue_updatetime,
-      last_handle_code, project_id, increment_type,
-      child_job_id, inc_start_id)
-    values (#{taskName,jdbcType=VARCHAR}, #{taskDesc,jdbcType=VARCHAR}, #{taskExecuteJson,jdbcType=LONGVARCHAR},
-      #{taskCorn,jdbcType=VARCHAR}, #{taskExecuteTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},
-      #{updateTime,jdbcType=TIMESTAMP}, #{mappingColumns,jdbcType=LONGVARCHAR}, #{collectionType,jdbcType=INTEGER},
-      #{originalId,jdbcType=INTEGER}, #{originalTable,jdbcType=VARCHAR}, #{targetId,jdbcType=INTEGER},
-      #{targetTable,jdbcType=VARCHAR}, #{alarmEmail,jdbcType=VARCHAR}, #{executorTimeout,jdbcType=INTEGER},
-      #{executorFailRetryCount,jdbcType=INTEGER}, #{triggerStatus,jdbcType=INTEGER},
-      #{triggerLastTime,jdbcType=BIGINT}, #{triggerNextTime,jdbcType=BIGINT}, #{incStartTime,jdbcType=TIMESTAMP},
-      #{jvmParam,jdbcType=VARCHAR}, #{replaceParam,jdbcType=VARCHAR}, #{jobGroup,jdbcType=INTEGER},
-      #{executorRouteStrategy,jdbcType=VARCHAR}, #{executorBlockStrategy,jdbcType=VARCHAR},
-      #{executorHandler,jdbcType=VARCHAR}, #{executorParam,jdbcType=VARCHAR}, #{glueType,jdbcType=VARCHAR},
-      #{glueSource,jdbcType=LONGVARCHAR}, #{glueRemark,jdbcType=VARCHAR}, #{glueUpdatetime,jdbcType=TIMESTAMP},
-      #{lastHandleCode,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, #{incrementType,jdbcType=INTEGER},
-      #{childJobId,jdbcType=VARCHAR}, #{incStartId,jdbcType=VARCHAR})
+    insert into waterfall_job_info (task_name, task_desc, task_execute_json, 
+      task_corn, task_execute_time, create_time, 
+      update_time, mapping_columns, collection_type, 
+      original_id, original_table, target_id, 
+      target_table, alarm_email, executor_timeout, 
+      executor_fail_retry_count, trigger_status, 
+      trigger_last_time, trigger_next_time, inc_start_time, 
+      jvm_param, replace_param, job_group, 
+      executor_route_strategy, executor_block_strategy, 
+      executor_handler, executor_param, glue_type, 
+      glue_source, glue_remark, glue_updatetime, 
+      last_handle_code, project_id, increment_type, 
+      child_job_id, inc_start_id, inc_column
+      )
+    values (#{taskName,jdbcType=VARCHAR}, #{taskDesc,jdbcType=VARCHAR}, #{taskExecuteJson,jdbcType=LONGVARCHAR}, 
+      #{taskCorn,jdbcType=VARCHAR}, #{taskExecuteTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{mappingColumns,jdbcType=LONGVARCHAR}, #{collectionType,jdbcType=INTEGER}, 
+      #{originalId,jdbcType=INTEGER}, #{originalTable,jdbcType=VARCHAR}, #{targetId,jdbcType=INTEGER}, 
+      #{targetTable,jdbcType=VARCHAR}, #{alarmEmail,jdbcType=VARCHAR}, #{executorTimeout,jdbcType=INTEGER}, 
+      #{executorFailRetryCount,jdbcType=INTEGER}, #{triggerStatus,jdbcType=INTEGER}, 
+      #{triggerLastTime,jdbcType=BIGINT}, #{triggerNextTime,jdbcType=BIGINT}, #{incStartTime,jdbcType=TIMESTAMP}, 
+      #{jvmParam,jdbcType=VARCHAR}, #{replaceParam,jdbcType=VARCHAR}, #{jobGroup,jdbcType=INTEGER}, 
+      #{executorRouteStrategy,jdbcType=VARCHAR}, #{executorBlockStrategy,jdbcType=VARCHAR}, 
+      #{executorHandler,jdbcType=VARCHAR}, #{executorParam,jdbcType=VARCHAR}, #{glueType,jdbcType=VARCHAR}, 
+      #{glueSource,jdbcType=LONGVARCHAR}, #{glueRemark,jdbcType=VARCHAR}, #{glueUpdatetime,jdbcType=TIMESTAMP}, 
+      #{lastHandleCode,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, #{incrementType,jdbcType=INTEGER}, 
+      #{childJobId,jdbcType=VARCHAR}, #{incStartId,jdbcType=VARCHAR}, #{incColumn,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -205,6 +208,9 @@
       <if test="incStartId != null">
         inc_start_id,
       </if>
+      <if test="incColumn != null">
+        inc_column,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="taskName != null">
@@ -314,6 +320,9 @@
       </if>
       <if test="incStartId != null">
         #{incStartId,jdbcType=VARCHAR},
+      </if>
+      <if test="incColumn != null">
+        #{incColumn,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -429,6 +438,9 @@
       <if test="incStartId != null">
         inc_start_id = #{incStartId,jdbcType=VARCHAR},
       </if>
+      <if test="incColumn != null">
+        inc_column = #{incColumn,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -470,7 +482,8 @@
       project_id = #{projectId,jdbcType=INTEGER},
       increment_type = #{incrementType,jdbcType=INTEGER},
       child_job_id = #{childJobId,jdbcType=VARCHAR},
-      inc_start_id = #{incStartId,jdbcType=VARCHAR}
+      inc_start_id = #{incStartId,jdbcType=VARCHAR},
+      inc_column = #{incColumn,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
@@ -492,24 +505,17 @@
     WHERE id = #{id}
   </update>
 
-  <select
-    id="loadById"
-    parameterType="java.util.HashMap"
-    resultMap="BaseResultMap">
+  <select id="loadById" parameterType="java.util.HashMap" resultMap="BaseResultMap">
     SELECT
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     FROM waterfall_job_info AS t
     WHERE t.id = #{id}
   </select>
-  <select
-    id="pageListCount"
-    resultType="java.lang.Integer">
+  <select id="pageListCount" resultType="java.lang.Integer">
     SELECT count(1)
     FROM waterfall_job_info AS t
     INNER JOIN waterfall_job_project p on t.project_id=p.id
-    <trim
-      prefix="WHERE"
-      prefixOverrides="AND | OR">
+    <trim prefix="WHERE" prefixOverrides="AND | OR">
       <if test="jobGroup gt 0">
         AND t.job_group = #{jobGroup}
       </if>
@@ -527,13 +533,7 @@
       </if>
       <if test="projectIds != null and projectIds.length != 0">
         AND t.project_id IN
-        <foreach
-          collection="projectIds"
-          item="projectId"
-          index="index"
-          open="("
-          close=")"
-          separator=",">
+        <foreach close=")" collection="projectIds" index="index" item="projectId" open="(" separator=",">
           #{projectId}
         </foreach>
       </if>
@@ -541,18 +541,14 @@
 
   </select>
 
-  <update
-    id="updateLastHandleCode"
-    parameterType="java.util.HashMap">
+  <update id="updateLastHandleCode" parameterType="java.util.HashMap">
     UPDATE waterfall_job_info
     SET
     last_handle_code = #{lastHandleCode}
     WHERE id = #{id}
   </update>
 
-  <update
-    id="incrementIdUpdate"
-    parameterType="java.util.HashMap">
+  <update id="incrementIdUpdate" parameterType="java.util.HashMap">
     UPDATE waterfall_job_info
     SET
     inc_start_id = #{incStartId}

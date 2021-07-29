@@ -1,8 +1,11 @@
 package org.jeecg.modules.datasources.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
 import java.text.ParseException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
 import org.jeecg.modules.datasources.core.cron.CronExpression;
@@ -18,6 +21,7 @@ import org.jeecg.modules.datasources.service.IOfflineTaskService;
 import org.jeecg.modules.datasources.util.JobJsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 
 /**
@@ -51,6 +55,9 @@ public class OfflineTaskServiceImpl extends ServiceImpl<WaterfallJobInfoMapper, 
     @Override
     public Boolean saveOfflineTask(OfflineTaskDTO offlineTask) {
         WaterfallJobInfo task = new WaterfallJobInfo();
+        if (ObjectUtil.isNotNull(offlineTask.getId())) {
+            task.setId(offlineTask.getId());
+        }
         task.setTaskName(offlineTask.getName());
         task.setTaskDesc(offlineTask.getDesc());
         task.setMappingColumns(JSONObject.toJSONString(offlineTask.getMappingColumns()));
@@ -81,7 +88,11 @@ public class OfflineTaskServiceImpl extends ServiceImpl<WaterfallJobInfoMapper, 
         task.setIncrementType(offlineTask.getIncrementType());
         task.setExecutorFailRetryCount(DEFAULT_RETRY_COUNT);
         task.setExecutorTimeout(DEFAULT_TIMEOUT);
-        return jobInfoMapper.insertSelective(task) > 0;
+        if (ObjectUtil.isNotNull(task.getId())) {
+            return jobInfoMapper.updateByPrimaryKeySelective(task) > 0;
+        } else {
+            return jobInfoMapper.insertSelective(task) > 0;
+        }
     }
 
     @Override
