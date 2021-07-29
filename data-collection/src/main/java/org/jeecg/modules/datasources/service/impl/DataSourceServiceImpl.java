@@ -1,8 +1,13 @@
 package org.jeecg.modules.datasources.service.impl;
 
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.AMOUNT;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.HIVE;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE_VIEW;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_VIEW;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.HIVE_DRIVER;
 
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
@@ -134,30 +139,29 @@ public class DataSourceServiceImpl implements IDataSourceService {
                 dataSource.getPassword());
         String type = dataSource.getDbType().toLowerCase();
         List<String> result = new ArrayList<>();
-        if (MYSQL.equals(type)) {
-            if(typeId==0){
+        if (MYSQL.equals(type) || HIVE.equals(type)) {
+            if (TYPE_TABLE_VIEW.equals(typeId)) {
                 result.addAll(MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE));
                 result.addAll(MetaUtil.getTables(db, dataSource.getDbName(), TableType.VIEW));
             }
-            if(typeId==1){
+            if (TYPE_TABLE.equals(typeId)) {
                 result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
             }
-            if (typeId == 2) {
+            if (TYPE_VIEW.equals(typeId)) {
                 result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.VIEW);
             }
         }
         if (ORACLE.equals(type)) {
-            if(typeId==0){
+            if (TYPE_TABLE_VIEW.equals(typeId)) {
                 result.addAll(MetaUtil
                         .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE));
                 result.addAll(MetaUtil
                         .getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW));
             }
-            if(typeId==1){
-                result = MetaUtil
-                        .getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
+            if (TYPE_TABLE.equals(typeId)) {
+                result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.TABLE);
             }
-            if (typeId == 2) {
+            if (TYPE_VIEW.equals(typeId)) {
                 result = MetaUtil.getTables(db, dataSource.getUsername().toUpperCase(), TableType.VIEW);
             }
         }
@@ -165,13 +169,19 @@ public class DataSourceServiceImpl implements IDataSourceService {
         return result;
     }
 
+
     public List<String> getTables(WaterfallDataSource dataSource) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
-        DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
-                dataSource.getPassword());
+        DataSource db;
         String type = dataSource.getDbType().toLowerCase();
+        if (HIVE.equals(type)) {
+            db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword(),
+                    HIVE_DRIVER);
+        } else {
+            db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
+        }
         List<String> result = new ArrayList<>();
-        if (MYSQL.equals(type)) {
+        if (MYSQL.equals(type) || HIVE.equals(type)) {
             result = MetaUtil.getTables(db, dataSource.getDbName(), TableType.TABLE);
         }
         if (ORACLE.equals(type)) {
@@ -186,11 +196,12 @@ public class DataSourceServiceImpl implements IDataSourceService {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
         DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
         String serverName = "";
+        String type = StringUtils.lowerCase(waterfall.getDbType());
         if (StringUtils.isNotBlank(waterfall.getDbType())) {
-            if (MYSQL.equals(StringUtils.lowerCase(waterfall.getDbType()))) {
+            if (MYSQL.equals(type) || HIVE.equals(type)) {
                 serverName = waterfall.getDbName();
             }
-            if (ORACLE.equals(StringUtils.lowerCase(waterfall.getDbType()))) {
+            if (ORACLE.equals(type)) {
                 serverName = StringUtils.upperCase(waterfall.getUsername());
             }
         }
@@ -332,6 +343,11 @@ public class DataSourceServiceImpl implements IDataSourceService {
             String oracleUrl = "jdbc:oracle:thin:@%s:%s/%s";
             return String.format(oracleUrl, dataSource.getHost(), dataSource.getPort(),
                     dataSource.getServerName());
+        }
+        if (HIVE.equals(type)) {
+            String hiveUrl = "jdbc:hive2://%s:%s/%s";
+            return String.format(hiveUrl, dataSource.getHost(), dataSource.getPort(),
+                    dataSource.getDbName());
         }
         return "";
     }

@@ -1,5 +1,8 @@
 package org.jeecg.modules.datasources.util;
 
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.HIVE;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.HIVE_READER;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.HIVE_WRITER;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL_READER;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL_WRITER;
@@ -12,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jeecg.modules.datasources.dto.JobResultDTO;
+import org.jeecg.modules.datasources.dto.JobResultDTO.ConnectionBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.ReaderBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.ReaderBean.ParameterBean;
-import org.jeecg.modules.datasources.dto.JobResultDTO.ConnectionBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.WriterBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.WriterBean.ParameterBeanX;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.WriterBean.ParameterBeanX.ConnectionBeanW;
@@ -64,6 +67,9 @@ public class JobJsonUtil {
         if (ORACLE.equals(originalType)) {
             readerName = ORACLE_READER;
         }
+        if (HIVE.equals(originalType)) {
+            readerName = HIVE_READER;
+        }
         readerBean.setName(readerName);
         // 源头表参数
         ParameterBean readerParameter = new ParameterBean();
@@ -97,6 +103,9 @@ public class JobJsonUtil {
         }
         if (ORACLE.equals(targetType)) {
             writerName = ORACLE_WRITER;
+        }
+        if (HIVE.equals(originalType)) {
+            writerName = HIVE_WRITER;
         }
         writerBean.setName(writerName);
         // 目标表参数
