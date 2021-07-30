@@ -8,7 +8,6 @@ import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TAB
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE_VIEW;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_VIEW;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.HIVE_DRIVER;
-
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
