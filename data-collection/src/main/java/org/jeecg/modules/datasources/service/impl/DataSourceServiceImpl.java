@@ -135,8 +135,9 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     public List<String> getTables(WaterfallDataSource dataSource, Integer typeId) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
+
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
-                dataSource.getPassword());
+                dataSource.getPassword(),waterfallDataSourceTypeMapper.getDriverByDbType(dataSource.getDbType()));
         String type = dataSource.getDbType().toLowerCase();
         List<String> result = new ArrayList<>();
         if (MYSQL.equals(type) || HIVE.equals(type)) {
@@ -194,7 +195,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Override
     public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
-        DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
+        DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword(),waterfallDataSourceTypeMapper.getDriverByDbType(waterfall.getDbType()));
         String serverName = "";
         String type = StringUtils.lowerCase(waterfall.getDbType());
         if (StringUtils.isNotBlank(waterfall.getDbType())) {

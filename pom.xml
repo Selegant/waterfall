@@ -27,7 +27,7 @@
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.21</mysql-connector-java.version>
 		<dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
-		<hutool-all.version>5.3.8</hutool-all.version>
+		<hutool-all.version>5.7.6</hutool-all.version>
 		<redisson.version>3.13.6</redisson.version>
 		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 		<guava.version>29.0-jre</guava.version>

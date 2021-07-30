@@ -93,4 +93,11 @@
       data_source_default_jdbc_url = #{dataSourceDefaultJdbcUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getDriverByDbType" resultType="java.lang.String">
+    select data_source_driver from waterfall_data_source_type
+    <where>
+      db_type=#{dbType,jdbcType=VARCHAR}
+    </where>
+  </select>
 </mapper>
