@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallDataTypeConvertMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallDataTypeConvert">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_data_type_convert-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="source_data_type" jdbcType="VARCHAR" property="sourceDataType" />
+    <result column="target" jdbcType="VARCHAR" property="target" />
+    <result column="target_data_type" jdbcType="VARCHAR" property="targetDataType" />
+    <result column="craete_time" jdbcType="TIMESTAMP" property="craeteTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `source`, source_data_type, target, target_data_type, craete_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_data_type_convert
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_data_type_convert
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataTypeConvert" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_data_type_convert (`source`, source_data_type, target, 
+      target_data_type, craete_time, update_time
+      )
+    values (#{source,jdbcType=VARCHAR}, #{sourceDataType,jdbcType=VARCHAR}, #{target,jdbcType=VARCHAR}, 
+      #{targetDataType,jdbcType=VARCHAR}, #{craeteTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataTypeConvert" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_data_type_convert
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="source != null">
+        `source`,
+      </if>
+      <if test="sourceDataType != null">
+        source_data_type,
+      </if>
+      <if test="target != null">
+        target,
+      </if>
+      <if test="targetDataType != null">
+        target_data_type,
+      </if>
+      <if test="craeteTime != null">
+        craete_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="source != null">
+        #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceDataType != null">
+        #{sourceDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="target != null">
+        #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="targetDataType != null">
+        #{targetDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="craeteTime != null">
+        #{craeteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallDataTypeConvert">
+    <!--@mbg.generated-->
+    update waterfall_data_type_convert
+    <set>
+      <if test="source != null">
+        `source` = #{source,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceDataType != null">
+        source_data_type = #{sourceDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="target != null">
+        target = #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="targetDataType != null">
+        target_data_type = #{targetDataType,jdbcType=VARCHAR},
+      </if>
+      <if test="craeteTime != null">
+        craete_time = #{craeteTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallDataTypeConvert">
+    <!--@mbg.generated-->
+    update waterfall_data_type_convert
+    set `source` = #{source,jdbcType=VARCHAR},
+      source_data_type = #{sourceDataType,jdbcType=VARCHAR},
+      target = #{target,jdbcType=VARCHAR},
+      target_data_type = #{targetDataType,jdbcType=VARCHAR},
+      craete_time = #{craeteTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
