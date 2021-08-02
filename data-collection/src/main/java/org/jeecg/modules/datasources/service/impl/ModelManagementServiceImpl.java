@@ -67,10 +67,10 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                 WaterfallFolder::getMark, WaterfallFolder::getRemark)
                 .eq(WaterfallFolder::getDelFlag, false);
         List<WaterfallFolder> list = waterfallFolderMapper.selectList(queryWrapper);
-        List<WaterfallFolder> parentList = list.stream().filter(w->ZERO==w.getParentId()).collect(Collectors.toList());
+        List<WaterfallFolder> parentList = list.stream().filter(w -> ZERO == w.getParentId()).collect(Collectors.toList());
         List<ModelFolderDTO> result = new ArrayList<>();
-        parentList.forEach(p->{
-            result.add(new ModelFolderDTO(p,list.stream().filter(w->w.getParentId().equals(p.getId())).collect(Collectors.toList())));
+        parentList.forEach(p -> {
+            result.add(new ModelFolderDTO(p, list.stream().filter(w -> w.getParentId().equals(p.getId())).collect(Collectors.toList())));
         });
         return result;
     }
@@ -81,6 +81,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         if (StringUtils.isEmpty(waterfallFolder.getRemark())) {
             waterfallFolder.setRemark("");
         }
+        waterfallFolder.setDelFlag(false);
         waterfallFolder.setCreateTime(new Date());
         waterfallFolder.setUpdateTime(new Date());
         waterfallFolderMapper.insertSelective(waterfallFolder);

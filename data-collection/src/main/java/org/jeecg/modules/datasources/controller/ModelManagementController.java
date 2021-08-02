@@ -3,6 +3,8 @@ package org.jeecg.modules.datasources.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
@@ -20,21 +22,16 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("modelManagement")
+@Api(tags = "模型管理")
 @Slf4j
 public class ModelManagementController {
-
 
     @Autowired
     private IModelManagementService modelManagementService;
 
-    /**
-     * 根据父层级查询直接子层级
-     *
-     * @param parentId
-     * @return
-     */
     @GetMapping("/folder")
-    public Result<Object> listFolder(@RequestParam(value = "parentId", required = false, defaultValue = "0") Integer parentId) {
+    @ApiOperation("查询层级树")
+    public Result<Object> folderTree() {
         Result<Object> result = new Result<>();
         try {
             result.setResult(modelManagementService.queryList());
@@ -46,17 +43,11 @@ public class ModelManagementController {
         return result;
     }
 
-    /**
-     * 添加文件夹
-     *
-     * @param waterfallFolder
-     * @return
-     */
     @PostMapping("/folder")
+    @ApiOperation("添加文件夹")
     public Result<Object> addFolder(@RequestBody WaterfallFolder waterfallFolder) {
         Result<Object> result = new Result<>();
         try {
-            waterfallFolder.setDelFlag(false);
             modelManagementService.saveFolder(waterfallFolder);
             result.success("add success！");
         } catch (Exception e) {
@@ -66,12 +57,8 @@ public class ModelManagementController {
         return result;
     }
 
-    /**
-     * 更新文件夹
-     *
-     * @return
-     */
     @PutMapping("/folder")
+    @ApiOperation("更新文件夹")
     public Result<Object> updateFolder(@RequestBody WaterfallFolder folder) {
         Result<Object> result = new Result<>();
 
@@ -93,6 +80,7 @@ public class ModelManagementController {
     }
 
     @DeleteMapping("/folder/{id}")
+    @ApiOperation("删除文件夹")
     public Result<Object> deleteFolder(@PathVariable Integer id) {
         Result<Object> result = new Result<>();
         try {
@@ -115,10 +103,8 @@ public class ModelManagementController {
         return result;
     }
 
-    /**
-     * 添加数据模型
-     */
     @PostMapping("/data-module")
+    @ApiOperation("添加数据模型")
     public Result<Object> addDataModule(@RequestBody DataModuleDTO dataModuleDTO) {
         Result<Object> result = new Result<>();
 
@@ -132,10 +118,9 @@ public class ModelManagementController {
         return result;
     }
 
-    /**
-     * 数据模型列表
-     */
+
     @GetMapping("/data-module")
+    @ApiOperation("数据模型列表")
     public Result<IPage<WaterfallModel>> dataModuleList(@RequestParam(value = "folderId") Integer folderId,
                                                         @RequestParam(value = "modelName", required = false) String modelName,
                                                         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
@@ -156,10 +141,8 @@ public class ModelManagementController {
     }
 
 
-    /**
-     * 修改数据模型
-     */
     @PutMapping("/data-module")
+    @ApiOperation("修改数据模型")
     public Result<Object> updateDataModule(@RequestBody DataModuleDTO dataModuleDTO) {
         Result<Object> result = new Result<>();
         try {
@@ -171,11 +154,8 @@ public class ModelManagementController {
         return result;
     }
 
-
-    /**
-     * 删除数据模型
-     */
     @DeleteMapping("/data-module/{id}")
+    @ApiOperation("删除数据模型")
     public Result<Object> deleteDataModule(@PathVariable Integer id) {
         Result<Object> result = new Result<>();
         DataModuleDTO dataModuleDTO = new DataModuleDTO();
@@ -191,13 +171,8 @@ public class ModelManagementController {
         return result;
     }
 
-
-    /**
-     * 数据模型详情
-     *
-     * @return
-     */
     @GetMapping("/data-module/{id}")
+    @ApiOperation("数据模型详情")
     public Result<Object> dataModuleInfo(@PathVariable Integer id) {
         Result<Object> result = new Result<>();
         try {
