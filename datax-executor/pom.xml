@@ -59,12 +59,12 @@
 
         <dependency>
             <groupId>org.jeecg</groupId>
-            <artifactId>datax</artifactId>
+            <artifactId>jeecg-boot-base-datax</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jeecg</groupId>
-            <artifactId>rpc</artifactId>
+            <artifactId>jeecg-boot-base-rpc</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

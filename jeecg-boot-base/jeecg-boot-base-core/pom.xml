@@ -34,7 +34,7 @@
         <!--jeecg-datax-->
         <dependency>
             <groupId>org.jeecg</groupId>
-            <artifactId>datax</artifactId>
+            <artifactId>jeecg-boot-base-datax</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!--集成springmvc框架并实现自动配置 -->

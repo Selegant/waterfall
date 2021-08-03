@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jeecg</groupId>
-    <artifactId>rpc</artifactId>
+    <artifactId>jeecg-boot-base-rpc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>jeecg-boot-base-rpc</name>
     <description>Demo project for Spring Boot</description>
@@ -28,7 +28,7 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-base-tools</artifactId>
         </dependency>
-        
+
         <!-- ********************** net + serialize + registry (default = netty + hessian + xxl-registry) ********************** -->
 
         <!-- netty -->
