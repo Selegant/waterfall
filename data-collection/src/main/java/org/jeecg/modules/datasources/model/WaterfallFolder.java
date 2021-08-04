@@ -4,54 +4,39 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-/**
-    * 层级
-    */
+
 @Data
+@Api(value = "文件夹层级")
 public class WaterfallFolder {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-    * 父级层级id,顶层为0
-    */
+    @ApiModelProperty("父级层级id,顶层为0")
     private Integer parentId;
 
-    /**
-    * 层级名称
-    */
+    @ApiModelProperty("层级名称")
     private String folderName;
 
-    /**
-    * 层级类型 1文件夹 2文件
-    */
+    @ApiModelProperty("层级类型 1文件夹 2文件")
     private Integer folderType;
 
-    /**
-    * 层级标识
-    */
+    @ApiModelProperty("层级标识")
     private String mark;
 
-    /**
-    * 描述
-    */
+    @ApiModelProperty("描述")
     private String remark;
 
-    /**
-    * 创建时间
-    */
+    @ApiModelProperty("创建时间")
     private Date createTime;
 
-    /**
-    * 最后修改时间
-    */
+    @ApiModelProperty("最后修改时间")
     private Date updateTime;
 
-    /**
-     * 删除标识
-     */
+    @ApiModelProperty("删除标识")
     private Boolean delFlag;
 }

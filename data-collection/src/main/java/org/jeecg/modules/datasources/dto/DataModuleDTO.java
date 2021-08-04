@@ -1,19 +1,18 @@
 package org.jeecg.modules.datasources.dto;
 
 import lombok.Data;
-import org.jeecg.modules.datasources.model.WaterfallModel;
+import lombok.NoArgsConstructor;
 import org.jeecg.modules.datasources.model.WaterfallModelField;
 import org.jeecg.modules.datasources.model.WaterfallModelPartition;
-
-import java.util.Date;
 import java.util.List;
 
 /**
  * @Author liansongye
  * @create 2021/6/28 1:44 下午
  */
+@NoArgsConstructor
 @Data
-public class DataModuleDTO {
+public class DataModuleDTO{
 
     private Integer id;
 
@@ -67,5 +66,11 @@ public class DataModuleDTO {
 
     //分区字段
     private List<WaterfallModelPartition> modelPartitions;
+
+    private String dbType;
+
+    private String sql;
+
+
 
 }

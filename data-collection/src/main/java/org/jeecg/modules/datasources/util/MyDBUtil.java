@@ -14,10 +14,8 @@ import cn.hutool.db.DbUtil;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -28,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.sql.DataSource;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
@@ -116,6 +115,27 @@ public class MyDBUtil {
         result = CollUtil.sortByProperty(result, "columnName");
 
         return result;
+    }
+
+    /**
+     * 获取建表ddl
+     */
+    public static String getCreateDdl(DataSource ds, String tableName, String database) {
+        String res = "";
+        Connection conn = null;
+        try {
+            conn = ds.getConnection();
+            String sql = "show create table " + "`" + database + "`." + "`" + tableName + "`;";
+            ResultSet resultSet = conn.createStatement().executeQuery(sql);
+            resultSet.next();
+            res = (String) resultSet.getObject(resultSet.getMetaData().getColumnLabel(2));
+        } catch (SQLException e) {
+            throw new DbRuntimeException("Get columns error!", e);
+        } finally {
+            DbUtil.close(conn);
+        }
+
+        return res;
     }
 
     @NotNull

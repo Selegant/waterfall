@@ -7,7 +7,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="model_id" jdbcType="INTEGER" property="modelId" />
     <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
-    <result column="field_type_id" jdbcType="INTEGER" property="fieldTypeId" />
+    <result column="field_type_name" jdbcType="VARCHAR" property="fieldTypeName" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="metadata_id" jdbcType="INTEGER" property="metadataId" />
     <result column="primarykey_flag" jdbcType="BOOLEAN" property="primarykeyFlag" />
@@ -20,7 +20,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, model_id, field_name, field_type_id, remark, metadata_id, primarykey_flag, empty_flag, 
+    id, model_id, field_name, field_type_name, remark, metadata_id, primarykey_flag, empty_flag,
     `length`, create_time, update_time, field_sort, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -38,12 +38,12 @@
   <insert id="insert" parameterType="org.jeecg.modules.datasources.model.WaterfallModelField">
     <!--@mbg.generated-->
     insert into waterfall_model_field (id, model_id, field_name, 
-      field_type_id, remark, metadata_id, 
+      field_type_name, remark, metadata_id,
       primarykey_flag, empty_flag, `length`, 
       create_time, update_time, field_sort, del_flag
       )
     values (#{id,jdbcType=INTEGER}, #{modelId,jdbcType=INTEGER}, #{fieldName,jdbcType=VARCHAR}, 
-      #{fieldTypeId,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{metadataId,jdbcType=INTEGER}, 
+      #{fieldTypeName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{metadataId,jdbcType=INTEGER},
       #{primarykeyFlag,jdbcType=BOOLEAN}, #{emptyFlag,jdbcType=BOOLEAN}, #{length,jdbcType=INTEGER}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{fieldSort,jdbcType=INTEGER},
       #{delFlag, jdbcType=BOOLEAN})
@@ -61,8 +61,8 @@
       <if test="fieldName != null">
         field_name,
       </if>
-      <if test="fieldTypeId != null">
-        field_type_id,
+      <if test="fieldTypeName != null">
+        field_type_name,
       </if>
       <if test="remark != null">
         remark,
@@ -102,8 +102,8 @@
       <if test="fieldName != null">
         #{fieldName,jdbcType=VARCHAR},
       </if>
-      <if test="fieldTypeId != null">
-        #{fieldTypeId,jdbcType=INTEGER},
+      <if test="fieldTypeName != null">
+        #{fieldTypeName,jdbcType=VARCHAR},
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
@@ -144,8 +144,8 @@
       <if test="fieldName != null">
         field_name = #{fieldName,jdbcType=VARCHAR},
       </if>
-      <if test="fieldTypeId != null">
-        field_type_id = #{fieldTypeId,jdbcType=INTEGER},
+      <if test="fieldTypeName != null">
+        field_type_name = #{fieldTypeName,jdbcType=VARCHAR},
       </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
@@ -182,7 +182,7 @@
     update waterfall_model_field
     set model_id = #{modelId,jdbcType=INTEGER},
       field_name = #{fieldName,jdbcType=VARCHAR},
-      field_type_id = #{fieldTypeId,jdbcType=INTEGER},
+      field_type_name = #{fieldTypeName,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       metadata_id = #{metadataId,jdbcType=INTEGER},
       primarykey_flag = #{primarykeyFlag,jdbcType=BOOLEAN},

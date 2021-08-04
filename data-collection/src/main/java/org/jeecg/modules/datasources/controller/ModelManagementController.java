@@ -187,4 +187,20 @@ public class ModelManagementController {
     }
 
 
+    @PostMapping("/data-module/ddl")
+    @ApiOperation("DDL生成数据模型")
+    public Result<Object> ddlToModel(@RequestBody DataModuleDTO dto) {
+        Result<Object> result = new Result<>();
+        try {
+            result.setResult(modelManagementService.ddlToModel(dto));
+            result.setMessage("query success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
+
 }

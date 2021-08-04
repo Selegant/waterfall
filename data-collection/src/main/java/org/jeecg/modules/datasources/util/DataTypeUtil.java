@@ -77,6 +77,6 @@ public class DataTypeUtil {
     }
 
     public static String parseDataTypeOne(String dbType, String sourceColumnType) {
-        return DATA_MAPPING.get(dbType).get(sourceColumnType);
+        return DATA_MAPPING.get(dbType).get(sourceColumnType.toUpperCase());
     }
 }

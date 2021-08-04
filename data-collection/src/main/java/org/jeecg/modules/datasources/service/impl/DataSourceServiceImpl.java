@@ -219,6 +219,23 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
+    public String getCreateDdl(TableColumnInput input) {
+        WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
+        DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
+        String serverName = "";
+        String type = StringUtils.lowerCase(waterfall.getDbType());
+        if (StringUtils.isNotBlank(waterfall.getDbType())) {
+            if (MYSQL.equals(type) || HIVE.equals(type)) {
+                serverName = waterfall.getDbName();
+            }
+            if (ORACLE.equals(type)) {
+                serverName = StringUtils.upperCase(waterfall.getUsername());
+            }
+        }
+        return MyDBUtil.getCreateDdl(db, input.getTableName(), serverName);
+    }
+
+    @Override
     public void asyncUpdateAmount(Integer dbId, Integer type) throws Exception {
         WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
         List<String> tables = getTables(dataSource, type); // 真实数据源的表集合

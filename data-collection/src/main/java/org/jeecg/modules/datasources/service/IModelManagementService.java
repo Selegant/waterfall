@@ -30,4 +30,6 @@ public interface IModelManagementService {
     void updateModuleWithConditionById(DataModuleDTO dataModuleDTO);
 
     DataModuleDTO queryDataMoudle(Integer id);
+
+    DataModuleDTO ddlToModel(DataModuleDTO dto);
 }

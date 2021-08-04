@@ -16,11 +16,13 @@ import org.jeecg.modules.datasources.model.WaterfallModel;
 import org.jeecg.modules.datasources.model.WaterfallModelField;
 import org.jeecg.modules.datasources.model.WaterfallModelPartition;
 import org.jeecg.modules.datasources.service.IModelManagementService;
+import org.jeecg.modules.datasources.util.DdlConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -121,7 +123,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                     WaterfallModelField modelField = new WaterfallModelField();
                     modelField.setModelId(waterfallModel.getId());
                     modelField.setFieldName(e.getFieldName());
-                    modelField.setFieldTypeId(e.getFieldTypeId());
+                    modelField.setFieldTypeName(e.getFieldTypeName());
                     modelField.setMetadataId(e.getMetadataId());
                     modelField.setPrimarykeyFlag(e.getPrimarykeyFlag());
                     modelField.setEmptyFlag(e.getEmptyFlag());
@@ -214,6 +216,18 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         res.setModelFields(modelFields);
         res.setModelPartitions(modulePartitions);
 
+        return res;
+    }
+
+    @Override
+    public DataModuleDTO ddlToModel(DataModuleDTO dto) {
+        DataModuleDTO res = null;
+        try {
+            res = DdlConvertUtil.mysqlToEntity(dto.getSql());
+            res.setRamark(dto.getRamark());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return res;
     }
 

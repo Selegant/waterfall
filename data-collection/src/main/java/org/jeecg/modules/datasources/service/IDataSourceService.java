@@ -44,4 +44,6 @@ public interface IDataSourceService {
     DatabaseTreeDTO treeList(String purpose);
 
     List<TargetTypeColumnDTO> getTargetTypeColumns(Integer sourceId, Integer targetId, String typeName);
+
+    String getCreateDdl(TableColumnInput input);
 }
