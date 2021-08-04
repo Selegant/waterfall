@@ -13,12 +13,15 @@ public class TableColumnInfoDTO {
 
     private Integer columnSize;
 
+    // 小数位数
     private Integer decimalDigits;
 
+    // 默认值
     private String columnDef;
 
     private String remarks;
 
+    // 是否运行空值
     private Boolean nullable;
 
     private Boolean primaryKey;

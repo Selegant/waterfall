@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
+import org.jeecg.modules.datasources.dto.TargetTypeColumnDTO;
 import org.jeecg.modules.datasources.dto.WaterfallDataSourceListDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
@@ -42,4 +43,5 @@ public interface IDataSourceService {
 
     DatabaseTreeDTO treeList(String purpose);
 
+    List<TargetTypeColumnDTO> getTargetTypeColumns(Integer sourceId, Integer targetId, String typeName);
 }

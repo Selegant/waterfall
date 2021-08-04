@@ -8,6 +8,8 @@ import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE_VIEW;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_VIEW;
+import static org.jeecg.modules.datasources.util.MyDBUtil.getTableColumnInfo;
+import static org.jeecg.modules.datasources.util.MyDBUtil.packageDDL;
 
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
+import org.jeecg.modules.datasources.dto.TargetTypeColumnDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceAmountMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
@@ -42,6 +45,7 @@ import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
+import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.datasources.util.MyDBUtil;
 import org.jeecg.modules.datasources.util.MyDatasourcePoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,6 +321,14 @@ public class DataSourceServiceImpl implements IDataSourceService {
         });
         databaseTree.setTrees(trees);
         return databaseTree;
+    }
+
+    @Override
+    public List<TargetTypeColumnDTO> getTargetTypeColumns(Integer sourceId, Integer targetId, String typeName) {
+        WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(sourceId);
+        List<TableColumnInfoDTO> sourceColumns = getTableColumns(
+                TableColumnInput.builder().id(sourceId).tableName(typeName).build());
+        return DataTypeUtil.transformDataType(waterfall.getDbType(), sourceColumns);
     }
 
     private void updateAmount(Connection connection, List<WaterfallDataSourceAmount> lstAmount) {
