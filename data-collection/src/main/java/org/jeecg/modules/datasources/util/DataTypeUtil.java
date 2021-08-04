@@ -76,4 +76,7 @@ public class DataTypeUtil {
         return result;
     }
 
+    public static String parseDataTypeOne(String dbType, String sourceColumnType) {
+        return DATA_MAPPING.get(dbType).get(sourceColumnType);
+    }
 }
