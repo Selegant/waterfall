@@ -39,7 +39,7 @@ public interface IDataSourceService {
 
     void asyncUpdateAmount(Integer dbId, Integer type) throws Exception;
 
-    List<WaterfallDataSourceAmount> getAmountList(Integer dbId,Integer type);
+    List<WaterfallDataSourceAmount> getAmountList(Integer dbId, Integer type);
 
     DatabaseTreeDTO treeList(String purpose);
 
@@ -48,4 +48,6 @@ public interface IDataSourceService {
     String getCreateDdl(TableColumnInput input);
 
     void createHiveTable(Integer dbId, String sql);
+
+    List<String> getColumnType(String dbType);
 }

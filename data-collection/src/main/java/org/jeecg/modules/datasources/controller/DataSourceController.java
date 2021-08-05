@@ -268,4 +268,18 @@ public class DataSourceController {
         return result;
     }
 
+    @RequestMapping(value = "/columnType/{dbType}", method = RequestMethod.GET)
+    public Result<List<String>> getTargetTypeColumns(@PathVariable(value = "dbType") String dbType) {
+        Result<List<String>> result = new Result<>();
+        try {
+            result.setResult(dataSourceService.getColumnType(dbType));
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
+
 }

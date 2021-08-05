@@ -38,9 +38,11 @@ import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceAmountMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceTypeMapper;
+import org.jeecg.modules.datasources.mapper.WaterfallDataTypeMapper;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
+import org.jeecg.modules.datasources.model.WaterfallDataType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
 import org.jeecg.modules.datasources.util.DataTypeUtil;
@@ -68,6 +70,9 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Autowired
     private IWaterfallDataSourceAmountService waterfallDataSourceAmountService;
+
+    @Autowired
+    private WaterfallDataTypeMapper waterfallDataTypeMapper;
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(20, 30, 10, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(100));
@@ -373,6 +378,15 @@ public class DataSourceServiceImpl implements IDataSourceService {
         } finally {
             instance.releaseConnection(connection);
         }
+    }
+
+    @Override
+    public List<String> getColumnType(String dbType) {
+        QueryWrapper<WaterfallDataType> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("db_type", dbType);
+        return waterfallDataTypeMapper.selectList(queryWrapper).stream().map(WaterfallDataType::getDataTypeName)
+                .collect(
+                        Collectors.toList());
     }
 
     private void updateAmount(MyDatasourcePoolUtil datasourcePool, List<WaterfallDataSourceAmount> lstAmount) {
