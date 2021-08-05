@@ -252,14 +252,14 @@ public class DataSourceController {
         return result;
     }
 
-    @RequestMapping(value = "/targetTypeColumns/{sourceId}/{targetId}/{typeName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/targetTypeColumns/{sourceId}/{targetId}/{tableName}", method = RequestMethod.GET)
     public Result<List<TargetTypeColumnDTO>> getTargetTypeColumns(@PathVariable(value = "sourceId") Integer sourceId,
             @PathVariable(value = "targetId") Integer targetId,
-            @PathVariable(value = "typeName", required = false) String typeName,
+            @PathVariable(value = "tableName", required = false) String tableName,
             HttpServletRequest request) {
         Result<List<TargetTypeColumnDTO>> result = new Result<>();
         try {
-            result.setResult(dataSourceService.getTargetTypeColumns(sourceId, targetId, typeName));
+            result.setResult(dataSourceService.getTargetTypeColumns(sourceId, targetId, tableName));
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);

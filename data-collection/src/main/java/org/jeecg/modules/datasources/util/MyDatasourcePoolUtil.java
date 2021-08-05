@@ -7,27 +7,36 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 public class MyDatasourcePoolUtil {
 
-
     // 活动连接队列
-    private static LinkedBlockingQueue<Connection> active = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<Connection> active = new LinkedBlockingQueue<>();
 
     // 空闲连接队列
-    private static LinkedBlockingQueue<Connection> idle = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<Connection> idle = new LinkedBlockingQueue<>();
 
     // 已创建的连接数
-    private static AtomicInteger createdCount = new AtomicInteger(0);
+    private AtomicInteger createdCount = new AtomicInteger(10);
 
     // 最大连接数 后面改成可配置
-    private static int maxConnection = 100;
+    private int maxConnection = 100;
 
     // 最大等待毫秒数 后面改成可配置
-    private static int maxWaitTimeout = 3000;
+    private int maxWaitTimeout = 3000;
+
+    // 初始连接池大小
+    private int initPoolSize = 10;
+
+    private DataSource dataSource;
+
+    public void init(DataSource dataSource) throws SQLException {
+        this.dataSource = dataSource;
+        for (int i = 0; i < initPoolSize; i++) {
+            idle.offer(dataSource.getConnection());
+        }
+    }
 
     /**
      * 创建连接
@@ -47,7 +56,7 @@ public class MyDatasourcePoolUtil {
         }
     }
 
-    public Connection getConnection(DataSource dataSource) throws SQLException {
+    public Connection getConnection() throws SQLException {
         // 尝试获取空闲连接
         Connection connection = idle.poll();
         if (connection == null) {

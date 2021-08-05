@@ -6,7 +6,7 @@ import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_MAXWAIT;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_PASSWORD;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_URL;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_USERNAME;
-import static org.jeecg.modules.datasources.constant.DataSourceConstant.*;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.db.DbRuntimeException;
@@ -110,20 +110,42 @@ public class MyDBUtil {
     /**
      * 获取表字段信息
      */
-    public static List<TableColumnInfoDTO> getTableMeta(DataSource ds, String tableName, String database) {
-        List<TableColumnInfoDTO> result = getTableColumnInfo(ds, tableName, database);
+    public static List<TableColumnInfoDTO> getTableMeta(MyDatasourcePoolUtil instance, String tableName,
+            String database) {
+        List<TableColumnInfoDTO> result = getTableColumnInfo(instance, tableName, database);
         result = CollUtil.sortByProperty(result, "columnName");
 
         return result;
     }
 
-    @NotNull
-    public static List<TableColumnInfoDTO> getTableColumnInfo(DataSource ds, String tableName, String database) {
-        List<TableColumnInfoDTO> result = new LinkedList<>();
+    /**
+     * 获取建表ddl
+     */
+    public static String getCreateDdl(MyDatasourcePoolUtil ds, String tableName, String database) {
+        String res = "";
         Connection conn = null;
         try {
             conn = ds.getConnection();
+            String sql = "show create table " + "`" + database + "`." + "`" + tableName + "`;";
+            ResultSet resultSet = conn.createStatement().executeQuery(sql);
+            resultSet.next();
+            res = (String) resultSet.getObject(resultSet.getMetaData().getColumnLabel(2));
+        } catch (SQLException e) {
+            throw new DbRuntimeException("Get columns error!", e);
+        } finally {
+            ds.releaseConnection(conn);
+        }
 
+        return res;
+    }
+
+    @NotNull
+    public static List<TableColumnInfoDTO> getTableColumnInfo(MyDatasourcePoolUtil instance, String tableName,
+            String database) {
+        List<TableColumnInfoDTO> result = new LinkedList<>();
+        Connection conn = null;
+        try {
+            conn = instance.getConnection();
             // catalog和schema获取失败默认使用null代替
             String catalog = MetaUtil.getCataLog(conn);
             final DatabaseMetaData metaData = conn.getMetaData();
@@ -165,7 +187,8 @@ public class MyDBUtil {
         } catch (SQLException e) {
             throw new DbRuntimeException("Get columns error!", e);
         } finally {
-            DbUtil.close(conn);
+//            DbUtil.close(conn);
+            instance.releaseConnection(conn);
         }
 //    result.stream().sorted(Comparator.comparing(TableColumnInfoDTO::getColumnName)).collect(Collectors.toList());
         result.forEach(c -> {

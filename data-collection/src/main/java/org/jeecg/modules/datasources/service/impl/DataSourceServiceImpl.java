@@ -8,8 +8,6 @@ import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TABLE_VIEW;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_VIEW;
-import static org.jeecg.modules.datasources.util.MyDBUtil.getTableColumnInfo;
-import static org.jeecg.modules.datasources.util.MyDBUtil.packageDDL;
 
 import cn.hutool.db.DbRuntimeException;
 import cn.hutool.db.DbUtil;
@@ -46,6 +44,7 @@ import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
 import org.jeecg.modules.datasources.util.DataTypeUtil;
+import org.jeecg.modules.datasources.util.DatasourcePool;
 import org.jeecg.modules.datasources.util.MyDBUtil;
 import org.jeecg.modules.datasources.util.MyDatasourcePoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +68,6 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Autowired
     private IWaterfallDataSourceAmountService waterfallDataSourceAmountService;
-
-    @Autowired
-    private MyDatasourcePoolUtil myDatasourcePoolUtil;
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(20, 30, 10, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(100));
@@ -147,7 +143,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
-        String type = dataSource.getDbType().toLowerCase();
+        String type = dataSource.getDbType().toUpperCase();
         List<String> result = new ArrayList<>();
         if (MYSQL.equals(type) || HIVE.equals(type)) {
             if (TYPE_TABLE_VIEW.equals(typeId)) {
@@ -183,7 +179,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public List<String> getTables(WaterfallDataSource dataSource) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db;
-        String type = dataSource.getDbType().toLowerCase();
+        String type = dataSource.getDbType().toUpperCase();
         if (HIVE.equals(type)) {
             db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword(),
                     HIVE_DRIVER);
@@ -204,7 +200,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Override
     public List<TableColumnInfoDTO> getTableColumns(TableColumnInput input) {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
-        DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
+        MyDatasourcePoolUtil instance = DatasourcePool.pool.get(waterfall.getId());
         String serverName = "";
         String type = StringUtils.lowerCase(waterfall.getDbType());
         if (StringUtils.isNotBlank(waterfall.getDbType())) {
@@ -215,13 +211,13 @@ public class DataSourceServiceImpl implements IDataSourceService {
                 serverName = StringUtils.upperCase(waterfall.getUsername());
             }
         }
-        return MyDBUtil.getTableMeta(db, input.getTableName(), serverName);
+        return MyDBUtil.getTableMeta(instance, input.getTableName(), serverName);
     }
 
     @Override
     public String getCreateDdl(TableColumnInput input) {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
-        DataSource db = new SimpleDataSource(waterfall.getJdbcUrl(), waterfall.getUsername(), waterfall.getPassword());
+        MyDatasourcePoolUtil instance = DatasourcePool.pool.get(waterfall.getId());
         String serverName = "";
         String type = StringUtils.lowerCase(waterfall.getDbType());
         if (StringUtils.isNotBlank(waterfall.getDbType())) {
@@ -232,10 +228,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
                 serverName = StringUtils.upperCase(waterfall.getUsername());
             }
         }
-        String res = "";
+        String res;
         Connection conn = null;
         try {
-            conn = db.getConnection();
+            conn = instance.getConnection();
             String sql = "show create table " + "`" + serverName + "`." + "`" + input.getTableName() + "`;";
             ResultSet resultSet = conn.createStatement().executeQuery(sql);
             resultSet.next();
@@ -243,10 +239,11 @@ public class DataSourceServiceImpl implements IDataSourceService {
         } catch (SQLException e) {
             throw new DbRuntimeException("Get ddl error!", e);
         } finally {
-            DbUtil.close(conn);
+            instance.releaseConnection(conn);
         }
 
         return res;
+
     }
 
     @Override
@@ -287,25 +284,23 @@ public class DataSourceServiceImpl implements IDataSourceService {
         // 更新完之后的所有的表
         List<WaterfallDataSourceAmount> updatedTables = waterfallDataSourceAmountMapper.selectList(wrapper);
 
-        DataSource ds = MyDBUtil.createDruidPoolByHands(dataSource); // 手动创建连接池
-
         if (updatedTables.size() < 50) {
             for (WaterfallDataSourceAmount amount : updatedTables) {
                 List<WaterfallDataSourceAmount> list = new ArrayList<>();
                 list.add(amount);
-                Connection connection = myDatasourcePoolUtil.getConnection(ds);
-                POOL.execute(() -> updateAmount(connection, list));
+                MyDatasourcePoolUtil datasourcePool = DatasourcePool.pool.get(dataSource.getId());
+                POOL.execute(() -> updateAmount(datasourcePool, list));
             }
         } else {
             int j = updatedTables.size() / 10;
             for (int i = 0; i < 10; i++) {
                 final int x = i;
-                Connection connection = myDatasourcePoolUtil.getConnection(ds);
-                POOL.execute(() -> updateAmount(connection, updatedTables.subList(x * j, (x + 1) * j)));
+                MyDatasourcePoolUtil datasourcePool = DatasourcePool.pool.get(dataSource.getId());
+                POOL.execute(() -> updateAmount(datasourcePool, updatedTables.subList(x * j, (x + 1) * j)));
             }
             if (updatedTables.size() % 10 != 0) {
-                Connection connection = myDatasourcePoolUtil.getConnection(ds);
-                POOL.execute(() -> updateAmount(connection, updatedTables.subList(j * 10, updatedTables.size())));
+                MyDatasourcePoolUtil datasourcePool = DatasourcePool.pool.get(dataSource.getId());
+                POOL.execute(() -> updateAmount(datasourcePool, updatedTables.subList(j * 10, updatedTables.size())));
             }
         }
     }
@@ -355,15 +350,35 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public List<TargetTypeColumnDTO> getTargetTypeColumns(Integer sourceId, Integer targetId, String typeName) {
+    public List<TargetTypeColumnDTO> getTargetTypeColumns(Integer sourceId, Integer targetId, String tableName) {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(sourceId);
         List<TableColumnInfoDTO> sourceColumns = getTableColumns(
-                TableColumnInput.builder().id(sourceId).tableName(typeName).build());
+                TableColumnInput.builder().id(sourceId).tableName(tableName).build());
         return DataTypeUtil.transformDataType(waterfall.getDbType(), sourceColumns);
     }
 
-    private void updateAmount(Connection connection, List<WaterfallDataSourceAmount> lstAmount) {
+    @Override
+    public void createHiveTable(Integer dbId, String sql) {
+        Connection connection = null;
+        WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
+        MyDatasourcePoolUtil instance = DatasourcePool.pool.get(dataSource.getId());
         try {
+            connection = instance.getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.executeUpdate();
+        } catch (SQLException se) {
+            log.error("创建Hive表错误-SQLException:{}", se.getMessage());
+        } catch (Exception e) {
+            log.error("创建Hive表错误-Exception:{}", e.getMessage());
+        } finally {
+            instance.releaseConnection(connection);
+        }
+    }
+
+    private void updateAmount(MyDatasourcePoolUtil datasourcePool, List<WaterfallDataSourceAmount> lstAmount) {
+        Connection connection = null;
+        try {
+            connection = datasourcePool.getConnection();
             for (WaterfallDataSourceAmount amount : lstAmount) {
                 Long start = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
                 PreparedStatement ps = connection
@@ -377,56 +392,18 @@ public class DataSourceServiceImpl implements IDataSourceService {
 //                log.info(amount.getTableName() + ":" + amount.getAmount() + "-" + amount.getRequiredTime());
             }
         } catch (SQLException e) {
-            log.error(e.getMessage());
-            log.error("setAmount:数据库连接异常或查询异常");
+            log.error("setAmount:数据库连接异常或查询异常:{}", e.getMessage());
         } finally {
-            DbUtil.close();
+            datasourcePool.releaseConnection(connection);
         }
         waterfallDataSourceAmountService.updateBatchById(lstAmount);
     }
-
-    @Override
-    public void createHiveTable(Integer dbId, String sql){
-        try {
-            WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
-            DataSource ds = MyDBUtil.createDruidPoolByHands(dataSource);
-            Connection connection = myDatasourcePoolUtil.getConnection(ds);
-            PreparedStatement ps = null;
-            ps = connection.prepareStatement(sql);
-            ps.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            DbUtil.close();
-        }
-    }
-
-    /*private void updateAmount(DataSource dataSource, List<WaterfallDataSourceAmount> lstAmount) {
-        try {
-            for (WaterfallDataSourceAmount amount : lstAmount) {
-                Long start = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
-                Entity entity = DbUtil.use(dataSource)
-                        .query("SELECT COUNT(*) AS " + AMOUNT + " FROM " + amount.getTableName()).get(0);
-                Long end = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
-                amount.setAmount(Integer.valueOf(entity.get(AMOUNT).toString()));
-                amount.setRequiredTime((int) (end - start));
-            }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            log.error("setAmount:数据库连接异常或查询异常");
-        } finally {
-            DbUtil.close();
-        }
-        waterfallDataSourceAmountService.updateBatchById(lstAmount);
-    }*/
 
     private String concatUrl(WaterfallDataSource dataSource) throws RuntimeException {
         if (!StringUtils.isNotBlank(dataSource.getDbType())) {
             throw new RuntimeException("dbType不能为空");
         }
-        String type = dataSource.getDbType().toLowerCase();
+        String type = dataSource.getDbType().toUpperCase();
         if (MYSQL.equals(type)) {
             String mysqlUrl = "jdbc:mysql://%s:%s/%s";
             return String.format(mysqlUrl, dataSource.getHost(), dataSource.getPort(),
