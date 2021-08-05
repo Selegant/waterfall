@@ -192,8 +192,7 @@ public class DataSourceController {
             HttpServletRequest request) {
         Result<List<TableColumnInfoDTO>> result = new Result<>();
         try {
-            dataSourceService.getCreateDdl(input);
-//            result.setResult(dataSourceService.getTableColumns(input));
+            result.setResult(dataSourceService.getTableColumns(input));
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
