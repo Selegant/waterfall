@@ -48,8 +48,8 @@ public class DataTypeUtil {
 
     public final static Map<String, Map<String, String>> DATA_MAPPING =new HashMap<String, Map<String, String>>() {
         {
-            put("Mysql",MYSQL_HIVE);
-            put("Oracle",ORACLE_HIVE);
+            put("MYSQL",MYSQL_HIVE);
+            put("ORACLE",ORACLE_HIVE);
         }
     };
 

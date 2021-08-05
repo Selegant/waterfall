@@ -43,7 +43,7 @@ public class DdlConvertUtil {
         for (MySqlParser.CreateDefinitionContext clounm : clounmsContext) {
             String id = clounm.getRuleContexts(MySqlParser.UidContext.class).get(0).getText().replace("`","");
             MySqlParser.ColumnDefinitionContext columnDefinition = clounm.getRuleContexts(MySqlParser.ColumnDefinitionContext.class).get(0);
-            String dataType = DataTypeUtil.parseDataTypeOne("Mysql",columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getChild(0).getText());
+            String dataType = DataTypeUtil.parseDataTypeOne("MYSQL",columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getChild(0).getText());
             List<MySqlParser.LengthOneDimensionContext> lenContexts = columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getRuleContexts(MySqlParser.LengthOneDimensionContext.class);
             Integer len = CollectionUtils.isEmpty(lenContexts) ? null : Integer.valueOf(lenContexts.get(0).getRuleContexts(MySqlParser.DecimalLiteralContext.class).get(0).getText());
             Boolean isPrimary = CollectionUtils.isEmpty(columnDefinition.getRuleContexts(MySqlParser.PrimaryKeyColumnConstraintContext.class)) ? false : true;

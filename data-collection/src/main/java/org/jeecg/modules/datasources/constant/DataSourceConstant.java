@@ -6,11 +6,11 @@ public class DataSourceConstant {
      * 数据库类型
      */
 
-    public static final String MYSQL = "mysql";
+    public static final String MYSQL = "MYSQL";
 
-    public static final String ORACLE = "oracle";
+    public static final String ORACLE = "ORACLE";
 
-    public static final String HIVE = "hive";
+    public static final String HIVE = "HIVE";
 
     /**
      * sql查询别名
