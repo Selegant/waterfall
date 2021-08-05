@@ -207,7 +207,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
         MyDatasourcePoolUtil instance = DatasourcePool.pool.get(waterfall.getId());
         String serverName = "";
-        String type = StringUtils.lowerCase(waterfall.getDbType());
+        String type = StringUtils.upperCase(waterfall.getDbType());
         if (StringUtils.isNotBlank(waterfall.getDbType())) {
             if (MYSQL.equals(type) || HIVE.equals(type)) {
                 serverName = waterfall.getDbName();
@@ -224,7 +224,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
         WaterfallDataSource waterfall = waterfallDataSourceMapper.selectById(input.getId());
         MyDatasourcePoolUtil instance = DatasourcePool.pool.get(waterfall.getId());
         String serverName = "";
-        String type = StringUtils.lowerCase(waterfall.getDbType());
+        String type = StringUtils.upperCase(waterfall.getDbType());
         if (StringUtils.isNotBlank(waterfall.getDbType())) {
             if (MYSQL.equals(type) || HIVE.equals(type)) {
                 serverName = waterfall.getDbName();
