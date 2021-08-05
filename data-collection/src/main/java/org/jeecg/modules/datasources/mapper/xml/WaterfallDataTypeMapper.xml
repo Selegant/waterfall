@@ -6,13 +6,13 @@
     <!--@Table waterfall_data_type-->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="db_type" jdbcType="VARCHAR" property="dbType" />
-    <result column="date_type_name" jdbcType="VARCHAR" property="dateTypeName" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="data_type_name" jdbcType="VARCHAR" property="dataTypeName" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, db_type, date_type_name, create_time, update_time
+    id, db_type, create_time, update_time, data_type_name
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -28,10 +28,10 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataType" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_data_type (db_type, date_type_name, create_time, 
-      update_time)
-    values (#{dbType,jdbcType=VARCHAR}, #{dateTypeName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+    insert into waterfall_data_type (db_type, create_time, update_time, 
+      data_type_name)
+    values (#{dbType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{dataTypeName,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallDataType" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -40,28 +40,28 @@
       <if test="dbType != null">
         db_type,
       </if>
-      <if test="dateTypeName != null">
-        date_type_name,
-      </if>
       <if test="createTime != null">
         create_time,
       </if>
       <if test="updateTime != null">
         update_time,
       </if>
+      <if test="dataTypeName != null">
+        data_type_name,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="dbType != null">
         #{dbType,jdbcType=VARCHAR},
-      </if>
-      <if test="dateTypeName != null">
-        #{dateTypeName,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataTypeName != null">
+        #{dataTypeName,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -72,14 +72,14 @@
       <if test="dbType != null">
         db_type = #{dbType,jdbcType=VARCHAR},
       </if>
-      <if test="dateTypeName != null">
-        date_type_name = #{dateTypeName,jdbcType=VARCHAR},
-      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataTypeName != null">
+        data_type_name = #{dataTypeName,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -88,9 +88,9 @@
     <!--@mbg.generated-->
     update waterfall_data_type
     set db_type = #{dbType,jdbcType=VARCHAR},
-      date_type_name = #{dateTypeName,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      data_type_name = #{dataTypeName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

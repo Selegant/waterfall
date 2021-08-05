@@ -3,7 +3,7 @@ package org.jeecg.modules.datasources.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.datasources.model.WaterfallDataType;
 
-public interface WaterfallDataTypeMapper extends BaseMapper<WaterfallDataType> {
+public interface WaterfallDataTypeMapper  extends BaseMapper<WaterfallDataType> {
     int deleteByPrimaryKey(Integer id);
 
     int insert(WaterfallDataType record);
