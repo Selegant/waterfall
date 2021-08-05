@@ -21,7 +21,13 @@ public interface IModelManagementService {
 
     void updateFolderWithConditionById(WaterfallFolder delFolder);
 
-    Boolean exsitById(Integer id);
+    Boolean exsitFolderById(Integer id);
+
+    Boolean exsitFolderByParentIdAndFolderName(Integer parentId, String folderName);
+
+    Boolean exsitModelByFolderIdAndModelName(Integer folderId, String modelName);
+
+    Boolean exsitModelFieldByModelIdAndFieldName(Integer modelId, String fieldName);
 
     void saveDataModule(DataModuleDTO dataModuleDTO);
 
@@ -32,4 +38,6 @@ public interface IModelManagementService {
     DataModuleDTO queryDataMoudle(Integer id);
 
     DataModuleDTO ddlToModel(DataModuleDTO dto);
+
+    void modelPublish(Integer dbId, Integer modelId);
 }

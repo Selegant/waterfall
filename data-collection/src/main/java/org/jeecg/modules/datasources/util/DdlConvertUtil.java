@@ -27,7 +27,7 @@ public class DdlConvertUtil {
     /**************************** Mysql ********************************/
 
     // todo 1、改到visitor或者listener  2、添加分区字段解析
-    public static DataModuleDTO mysqlToEntity(String sql) throws IOException {
+    public static DataModuleDTO mysqlToModel(String sql) throws IOException {
         MySqlParser parse = getParseTree(sql);
         DataModuleDTO ddl = new DataModuleDTO();
         MySqlParser.RootContext statement = parse.root();
@@ -78,54 +78,18 @@ public class DdlConvertUtil {
         return parser;
     }
 
-    //Mysql DDL实体转hive
-    public static String toHiveDdl(DataModuleDTO dto) {
+    //DDL实体转hive
+    public static String modelToHiveDdl(DataModuleDTO dto) {
         StringBuilder builder = new StringBuilder();
-        String ddl = "CREATE TABLE %s\n";
+        String ddl = "CREATE TABLE IF NOT EXISTS %s\n";
         builder.append(String.format(ddl, dto.getModelName()));
         builder.append("(");
         //id INT comment 'ss'
         String colStr = "%s\t%s\tCOMMENT\t%s";
         String collect = dto.getModelFields().stream().map(col -> {
-            String type = DataTypeUtil.MYSQL_HIVE.get(col.getFieldTypeName().toUpperCase());
-            if (type == null) {
-                throw new RuntimeException("未知数据类型");
-            }
-            return String.format(colStr, col.getFieldName(), type, col.getRemark());
+            return String.format(colStr, col.getFieldName(), col.getFieldTypeName(), col.getRemark());
         }).collect(Collectors.joining(","));
-        builder.append(collect +");");
+        builder.append(collect +")");
         return builder.toString();
     }
-
-    public static void main(String[] args) {
-        String sql = "CREATE TABLE `city_info` (\n" +
-                "  `id` INT(11) NOT NULL AUTO_INCREMENT,\n" +
-                "  `city` VARCHAR(16) COLLATE utf8_bin NOT NULL,\n" +
-                "  `name` VARCHAR(16) COLLATE utf8_bin NOT NULL,\n" +
-                "  `age` INT(11) DEFAULT NULL,\n" +
-                "  `addr` VARCHAR(128) COLLATE utf8_bin DEFAULT NULL,\n" +
-                "  PRIMARY KEY (`id`),\n" +
-                "  KEY `city` (`city`),\n" +
-                "  KEY `tt` (`city`,`name`)\n" +
-                ");";
-        String sql2 = "CREATE TABLE `test` (\n" +
-                "    id INT PRIMARY KEY COMMENT 'PK',\n" +
-                "    year_col INT\n" +
-                ")\n" +
-                "PARTITION BY RANGE (year_col) (\n" +
-                "    PARTITION p0 VALUES LESS THAN (1991),\n" +
-                "    PARTITION p1 VALUES LESS THAN (1995),\n" +
-                "    PARTITION p2 VALUES LESS THAN (1999),\n" +
-                "    PARTITION p3 VALUES LESS THAN (2003)\n" +
-                ");";
-        try {
-            System.out.println(toHiveDdl(mysqlToEntity(sql)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
 }

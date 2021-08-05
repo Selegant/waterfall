@@ -21,9 +21,6 @@ public class WaterfallModel {
     @ApiModelProperty("数据模型名称")
     private String modelName;
 
-    @ApiModelProperty("类目代码")
-    private Integer modelTypeCode;
-
     @ApiModelProperty("发布状态代码")
     private Integer modelStatusCode;
 

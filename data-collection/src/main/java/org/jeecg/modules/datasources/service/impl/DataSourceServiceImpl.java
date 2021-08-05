@@ -232,7 +232,21 @@ public class DataSourceServiceImpl implements IDataSourceService {
                 serverName = StringUtils.upperCase(waterfall.getUsername());
             }
         }
-        return MyDBUtil.getCreateDdl(db, input.getTableName(), serverName);
+        String res = "";
+        Connection conn = null;
+        try {
+            conn = db.getConnection();
+            String sql = "show create table " + "`" + serverName + "`." + "`" + input.getTableName() + "`;";
+            ResultSet resultSet = conn.createStatement().executeQuery(sql);
+            resultSet.next();
+            res = (String) resultSet.getObject(resultSet.getMetaData().getColumnLabel(2));
+        } catch (SQLException e) {
+            throw new DbRuntimeException("Get ddl error!", e);
+        } finally {
+            DbUtil.close(conn);
+        }
+
+        return res;
     }
 
     @Override
@@ -369,6 +383,24 @@ public class DataSourceServiceImpl implements IDataSourceService {
             DbUtil.close();
         }
         waterfallDataSourceAmountService.updateBatchById(lstAmount);
+    }
+
+    @Override
+    public void createHiveTable(Integer dbId, String sql){
+        try {
+            WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
+            DataSource ds = MyDBUtil.createDruidPoolByHands(dataSource);
+            Connection connection = myDatasourcePoolUtil.getConnection(ds);
+            PreparedStatement ps = null;
+            ps = connection.prepareStatement(sql);
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            DbUtil.close();
+        }
     }
 
     /*private void updateAmount(DataSource dataSource, List<WaterfallDataSourceAmount> lstAmount) {

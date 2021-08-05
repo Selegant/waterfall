@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.dto.ModelFolderDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallFolderMapper;
@@ -15,6 +16,7 @@ import org.jeecg.modules.datasources.model.WaterfallFolder;
 import org.jeecg.modules.datasources.model.WaterfallModel;
 import org.jeecg.modules.datasources.model.WaterfallModelField;
 import org.jeecg.modules.datasources.model.WaterfallModelPartition;
+import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IModelManagementService;
 import org.jeecg.modules.datasources.util.DdlConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,6 +46,9 @@ public class ModelManagementServiceImpl implements IModelManagementService {
 
     @Autowired
     private WaterfallModelPartitionMapper waterfallModelPartitionMapper;
+
+    @Autowired
+    private IDataSourceService dataSourceService;
 
     @Override
     public IPage<WaterfallFolder> queryListWithParentId(Integer parentId, int pageSize, int pageNo) {
@@ -79,6 +82,13 @@ public class ModelManagementServiceImpl implements IModelManagementService {
 
     @Override
     public void saveFolder(WaterfallFolder waterfallFolder) {
+        //检查
+        if (waterfallFolder.getParentId() != ZERO && !exsitFolderById(waterfallFolder.getParentId())) {
+            throw new JeecgBootException("父层级不存在！");
+        }
+        if (exsitFolderByParentIdAndFolderName(waterfallFolder.getParentId(), waterfallFolder.getFolderName())) {
+            throw new JeecgBootException("同层级该文件名已经存在！");
+        }
         checkParams(waterfallFolder);
         if (StringUtils.isEmpty(waterfallFolder.getRemark())) {
             waterfallFolder.setRemark("");
@@ -96,20 +106,54 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public Boolean exsitById(Integer id) {
+    public Boolean exsitFolderById(Integer id) {
         LambdaQueryWrapper<WaterfallFolder> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WaterfallFolder::getId, id);
+        queryWrapper.eq(WaterfallFolder::getId, id)
+                    .eq(WaterfallFolder::getDelFlag, false);
         return waterfallFolderMapper.selectCount(queryWrapper) > 0;
     }
 
     @Override
+    public Boolean exsitFolderByParentIdAndFolderName(Integer parentId, String folderName) {
+        LambdaQueryWrapper<WaterfallFolder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WaterfallFolder::getParentId, parentId)
+                .eq(WaterfallFolder::getFolderName, folderName)
+                .eq(WaterfallFolder::getDelFlag, false);
+        return waterfallFolderMapper.selectCount(queryWrapper) > 0;
+    }
+
+    @Override
+    public Boolean exsitModelByFolderIdAndModelName(Integer folderId, String modelName) {
+        LambdaQueryWrapper<WaterfallModel> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WaterfallModel::getId, folderId)
+                .eq(WaterfallModel::getModelName, modelName)
+                .eq(WaterfallModel::getDelFlag, false);
+        return waterfallModelMapper.selectCount(queryWrapper) > 0;
+    }
+
+    @Override
+    public Boolean exsitModelFieldByModelIdAndFieldName(Integer modelId, String fieldName) {
+        LambdaQueryWrapper<WaterfallModelField> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WaterfallModelField::getModelId, modelId)
+                .eq(WaterfallModelField::getFieldName, fieldName)
+                .eq(WaterfallModelField::getDelFlag, false);
+        return waterfallModelFieldMapper.selectCount(queryWrapper) > 0;
+    }
+
+    @Override
     public void saveDataModule(DataModuleDTO dataModuleDTO) {
+        if (!exsitFolderById(dataModuleDTO.getFolderId())) {
+            throw new JeecgBootException("所属层级不存在！");
+        }
+        //检查唯一性 folderId+modelName
+        if (exsitModelByFolderIdAndModelName(dataModuleDTO.getFolderId(), dataModuleDTO.getModelName())) {
+            throw new JeecgBootException("模型名已经存在！");
+        }
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setFolderId(dataModuleDTO.getFolderId());
         waterfallModel.setModelName(dataModuleDTO.getModelName());
-        waterfallModel.setModelTypeCode(dataModuleDTO.getModelTypeCode());
-        waterfallModel.setModelStatusCode(dataModuleDTO.getModelStatusCode());
-        waterfallModel.setModelStatusName(dataModuleDTO.getModelStatusName());
+        waterfallModel.setModelStatusCode(DataModuleDTO.UN_PUBLISHED);
+        waterfallModel.setModelStatusName(DataModuleDTO.UN_PUBLISHED_NAME);
         waterfallModel.setExportTypeCode(dataModuleDTO.getExportTypeCode());
         waterfallModel.setExportTypeName(dataModuleDTO.getExportTypeName());
         waterfallModel.setRamark(StringUtils.isEmpty(dataModuleDTO.getRamark()) ? "" : dataModuleDTO.getRamark());
@@ -117,8 +161,16 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         waterfallModel.setUpdateTime(new Date());
         waterfallModel.setDelFlag(false);
         if (waterfallModelMapper.insertSelective(waterfallModel) > 0) {
+            dataModuleDTO.setId(waterfallModel.getId());
             //字段信息
             if (dataModuleDTO.getModelFields() != null) {
+                Set<String> fieldSet = new HashSet<>();
+                dataModuleDTO.getModelFields().stream().forEach(e -> {
+                    fieldSet.add(e.getFieldName());
+                });
+                if (fieldSet.size() != dataModuleDTO.getModelFields().size()) {
+                    throw new JeecgBootException("字段名重复！");
+                }
                 dataModuleDTO.getModelFields().stream().forEach(e -> {
                     WaterfallModelField modelField = new WaterfallModelField();
                     modelField.setModelId(waterfallModel.getId());
@@ -168,7 +220,6 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         waterfallModel.setId(dataModuleDTO.getId());
         waterfallModel.setFolderId(dataModuleDTO.getFolderId());
         waterfallModel.setModelName(dataModuleDTO.getModelName());
-        waterfallModel.setModelTypeCode(dataModuleDTO.getModelTypeCode());
         waterfallModel.setModelStatusCode(dataModuleDTO.getModelStatusCode());
         waterfallModel.setModelStatusName(dataModuleDTO.getModelStatusName());
         waterfallModel.setExportTypeCode(dataModuleDTO.getExportTypeCode());
@@ -210,7 +261,6 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         res.setId(model.getId());
         res.setFolderId(model.getFolderId());
         res.setModelName(model.getModelName());
-        res.setModelTypeCode(model.getModelTypeCode());
         res.setModelStatusCode(model.getModelStatusCode());
         res.setModelStatusName(model.getModelStatusName());
         res.setModelFields(modelFields);
@@ -223,12 +273,26 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     public DataModuleDTO ddlToModel(DataModuleDTO dto) {
         DataModuleDTO res = null;
         try {
-            res = DdlConvertUtil.mysqlToEntity(dto.getSql());
+            res = DdlConvertUtil.mysqlToModel(dto.getSql());
             res.setRamark(dto.getRamark());
+            res.setFolderId(dto.getFolderId());
+            saveDataModule(res);
+            res = queryDataMoudle(res.getId());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return res;
+    }
+
+    @Override
+    public void modelPublish(Integer dbId, Integer modelId) {
+        DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
+        publishToHive(dbId, dataModuleDTO);
+    }
+
+    private void publishToHive(Integer dbId, DataModuleDTO dataModuleDTO) {
+        String sql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
+        dataSourceService.createHiveTable(dbId, sql);
     }
 
 

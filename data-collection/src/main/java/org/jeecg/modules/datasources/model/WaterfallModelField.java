@@ -21,7 +21,7 @@ public class WaterfallModelField {
     @ApiModelProperty("字段名称")
     private String fieldName;
 
-    @ApiModelProperty("字段类型名称")
+    @ApiModelProperty("字段类型")
     private String fieldTypeName;
 
     @ApiModelProperty("描述")

@@ -13,6 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class DataModuleDTO{
+    public static Integer UN_PUBLISHED = 1;
+    public static String  UN_PUBLISHED_NAME = "未发布";
+    public static Integer PUBLISHED = 2;
+    public static String  PUBLISHED_NAME = "已发布";
 
     private Integer id;
 
@@ -25,11 +29,6 @@ public class DataModuleDTO{
      * 数据模型名称
      */
     private String modelName;
-
-    /**
-     * 类目代码
-     */
-    private Integer modelTypeCode;
 
     /**
      * 发布状态代码

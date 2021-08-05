@@ -7,7 +7,6 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="folder_id" jdbcType="INTEGER" property="folderId" />
     <result column="model_name" jdbcType="VARCHAR" property="modelName" />
-    <result column="model_type_code" jdbcType="INTEGER" property="modelTypeCode" />
     <result column="model_status_code" jdbcType="INTEGER" property="modelStatusCode" />
     <result column="model_status_name" jdbcType="VARCHAR" property="modelStatusName" />
     <result column="export_type_code" jdbcType="INTEGER" property="exportTypeCode" />
@@ -19,7 +18,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, folder_id, model_name, model_type_code, model_status_code, model_status_name,
+    id, folder_id, model_name, model_status_code, model_status_name,
     export_type_code, export_type_name, ramark, create_time, update_time, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -36,11 +35,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallModel" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_model (folder_id, model_name, model_type_code,
+    insert into waterfall_model (folder_id, model_name,
       model_status_code, model_status_name, export_type_code,
       export_type_name, ramark, create_time,
       update_time, del_flag)
-    values (#{folderId,jdbcType=INTEGER}, #{modelName,jdbcType=VARCHAR}, #{modelTypeCode,jdbcType=INTEGER},
+    values (#{folderId,jdbcType=INTEGER}, #{modelName,jdbcType=VARCHAR},
       #{modelStatusCode,jdbcType=INTEGER}, #{modelStatusName,jdbcType=VARCHAR}, #{exportTypeCode,jdbcType=INTEGER},
       #{exportTypeName,jdbcType=VARCHAR}, #{ramark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{updateTime,jdbcType=TIMESTAMP}, #{delFlag, jdbcType=BOOLEAN})
@@ -54,9 +53,6 @@
       </if>
       <if test="modelName != null">
         model_name,
-      </if>
-      <if test="modelTypeCode != null">
-        model_type_code,
       </if>
       <if test="modelStatusCode != null">
         model_status_code,
@@ -89,9 +85,6 @@
       </if>
       <if test="modelName != null">
         #{modelName,jdbcType=VARCHAR},
-      </if>
-      <if test="modelTypeCode != null">
-        #{modelTypeCode,jdbcType=INTEGER},
       </if>
       <if test="modelStatusCode != null">
         #{modelStatusCode,jdbcType=INTEGER},
@@ -129,9 +122,6 @@
       <if test="modelName != null">
         model_name = #{modelName,jdbcType=VARCHAR},
       </if>
-      <if test="modelTypeCode != null">
-        model_type_code = #{modelTypeCode,jdbcType=INTEGER},
-      </if>
       <if test="modelStatusCode != null">
         model_status_code = #{modelStatusCode,jdbcType=INTEGER},
       </if>
@@ -164,7 +154,6 @@
     update waterfall_model
     set folder_id = #{folderId,jdbcType=INTEGER},
       model_name = #{modelName,jdbcType=VARCHAR},
-      model_type_code = #{modelTypeCode,jdbcType=INTEGER},
       model_status_code = #{modelStatusCode,jdbcType=INTEGER},
       model_status_name = #{modelStatusName,jdbcType=VARCHAR},
       export_type_code = #{exportTypeCode,jdbcType=INTEGER},

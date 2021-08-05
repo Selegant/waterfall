@@ -63,14 +63,8 @@ public class ModelManagementController {
         Result<Object> result = new Result<>();
 
         try {
-            if (modelManagementService.exsitById(folder.getId())) {
-                modelManagementService.updateFolderWithConditionById(folder);
-                result.success("update success！");
-            } else {
-                result.setCode(HttpStatus.BAD_REQUEST.value());
-                result.setMessage("no exist！");
-            }
-
+            modelManagementService.updateFolderWithConditionById(folder);
+            result.success("update success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());
@@ -121,7 +115,7 @@ public class ModelManagementController {
 
     @GetMapping("/data-module")
     @ApiOperation("数据模型列表")
-    public Result<IPage<WaterfallModel>> dataModuleList(@RequestParam(value = "folderId") Integer folderId,
+    public Result<IPage<WaterfallModel>> dataModuleList(@RequestParam(value = "folderId", required = false) Integer folderId,
                                                         @RequestParam(value = "modelName", required = false) String modelName,
                                                         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
                                                         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
@@ -132,6 +126,7 @@ public class ModelManagementController {
             WaterfallModel waterfallModel = new WaterfallModel();
             waterfallModel.setFolderId(folderId);
             waterfallModel.setModelName(modelName);
+            waterfallModel.setDelFlag(false);
             result = Result.OK("query success!", modelManagementService.queryDataModulePage(page, waterfallModel));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -193,7 +188,23 @@ public class ModelManagementController {
         Result<Object> result = new Result<>();
         try {
             result.setResult(modelManagementService.ddlToModel(dto));
-            result.setMessage("query success!");
+            result.setMessage("add success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
+    @PostMapping("/data-module/publish/{dbId}/{modelId}")
+    @ApiOperation("发布数据模型")
+    public Result<Object> modelPublish(@PathVariable Integer dbId,
+                                       @PathVariable Integer modelId) {
+        Result<Object> result = new Result<>();
+        try {
+            modelManagementService.modelPublish(dbId, modelId);
+            result.setMessage("publish success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

@@ -6,7 +6,7 @@ import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_MAXWAIT;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_PASSWORD;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_URL;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_USERNAME;
-import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.*;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.db.DbRuntimeException;
@@ -115,27 +115,6 @@ public class MyDBUtil {
         result = CollUtil.sortByProperty(result, "columnName");
 
         return result;
-    }
-
-    /**
-     * 获取建表ddl
-     */
-    public static String getCreateDdl(DataSource ds, String tableName, String database) {
-        String res = "";
-        Connection conn = null;
-        try {
-            conn = ds.getConnection();
-            String sql = "show create table " + "`" + database + "`." + "`" + tableName + "`;";
-            ResultSet resultSet = conn.createStatement().executeQuery(sql);
-            resultSet.next();
-            res = (String) resultSet.getObject(resultSet.getMetaData().getColumnLabel(2));
-        } catch (SQLException e) {
-            throw new DbRuntimeException("Get columns error!", e);
-        } finally {
-            DbUtil.close(conn);
-        }
-
-        return res;
     }
 
     @NotNull
