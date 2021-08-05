@@ -147,7 +147,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
     public List<String> getTables(WaterfallDataSource dataSource, Integer typeId) {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         DataSource db = new SimpleDataSource(dataSource.getJdbcUrl(), dataSource.getUsername(),
-                dataSource.getPassword());
+                dataSource.getPassword(), waterfallDataSourceTypeMapper.getDriverByDbType(dataSource.getDbType()));
         String type = dataSource.getDbType().toUpperCase();
         List<String> result = new ArrayList<>();
         if (MYSQL.equals(type) || HIVE.equals(type)) {
