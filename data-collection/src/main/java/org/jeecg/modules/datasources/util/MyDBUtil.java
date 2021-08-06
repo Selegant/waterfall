@@ -6,6 +6,7 @@ import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_MAXWAIT;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_PASSWORD;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_URL;
 import static com.alibaba.druid.pool.DruidDataSourceFactory.PROP_USERNAME;
+import static org.jeecg.modules.datasources.constant.DataSourceConstant.AMOUNT;
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.MYSQL;
 
 import cn.hutool.core.collection.CollUtil;
@@ -47,6 +48,11 @@ public class MyDBUtil {
     private static List<String> decimalPoint;
 
     private static List<String> noNeedSize;
+
+    private static final String ORACLE_SQL = "SELECT COLUMN_NAME, DATA_TYPE,DATA_LENGTH,DATA_PRECISION,DATA_SCALE "
+            + "FROM user_tab_columns WHERE TABLE_NAME = '%s'";
+
+    private static final String ORACLE_NUMBER = "NUMBER";
 
     static {
         // TODO 稍后完善
@@ -139,10 +145,39 @@ public class MyDBUtil {
         return res;
     }
 
+    public static List<TableColumnInfoDTO> getOracleViewColumn(MyDatasourcePoolUtil instance, String tableName) {
+        List<TableColumnInfoDTO> result = new ArrayList<>();
+        Connection conn = null;
+        try {
+            conn = instance.getConnection();
+            PreparedStatement ps = conn.prepareStatement(String.format(ORACLE_SQL, tableName));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                TableColumnInfoDTO dto = new TableColumnInfoDTO();
+                dto.setColumnName(rs.getString("COLUMN_NAME"));
+                String type = rs.getString("DATA_TYPE");
+                dto.setColumnType(type);
+                if (ORACLE_NUMBER.equals(type)) {
+                    dto.setColumnSize(rs.getInt("DATA_PRECISION"));
+                    dto.setDecimalDigits(rs.getInt("DATA_SCALE"));
+                } else {
+                    dto.setColumnSize(rs.getInt("DATA_LENGTH"));
+                }
+                result.add(dto);
+            }
+        } catch (SQLException e) {
+            throw new DbRuntimeException("Get columns error!", e);
+        } finally {
+            instance.releaseConnection(conn);
+        }
+
+        return result;
+    }
+
     @NotNull
     public static List<TableColumnInfoDTO> getTableColumnInfo(MyDatasourcePoolUtil instance, String tableName,
             String database) {
-        List<TableColumnInfoDTO> result = new LinkedList<>();
+        List<TableColumnInfoDTO> result = new ArrayList<>();
         Connection conn = null;
         try {
             conn = instance.getConnection();

@@ -389,8 +389,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
         QueryWrapper<WaterfallDataType> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("db_type", dbType);
         return waterfallDataTypeMapper.selectList(queryWrapper).stream().map(WaterfallDataType::getDataTypeName)
-                .collect(
-                        Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
