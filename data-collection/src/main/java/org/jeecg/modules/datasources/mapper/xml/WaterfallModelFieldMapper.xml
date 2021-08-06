@@ -12,7 +12,7 @@
     <result column="metadata_id" jdbcType="INTEGER" property="metadataId" />
     <result column="primarykey_flag" jdbcType="BOOLEAN" property="primarykeyFlag" />
     <result column="empty_flag" jdbcType="BOOLEAN" property="emptyFlag" />
-    <result column="length" jdbcType="INTEGER" property="length" />
+    <result column="length" jdbcType="VARCHAR" property="length" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="field_sort" jdbcType="INTEGER" property="fieldSort" />
@@ -44,7 +44,7 @@
       )
     values (#{id,jdbcType=INTEGER}, #{modelId,jdbcType=INTEGER}, #{fieldName,jdbcType=VARCHAR}, 
       #{fieldTypeName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{metadataId,jdbcType=INTEGER},
-      #{primarykeyFlag,jdbcType=BOOLEAN}, #{emptyFlag,jdbcType=BOOLEAN}, #{length,jdbcType=INTEGER}, 
+      #{primarykeyFlag,jdbcType=BOOLEAN}, #{emptyFlag,jdbcType=BOOLEAN}, #{length,jdbcType=VARCHAR},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{fieldSort,jdbcType=INTEGER},
       #{delFlag, jdbcType=BOOLEAN})
   </insert>
@@ -118,7 +118,7 @@
         #{emptyFlag,jdbcType=BOOLEAN},
       </if>
       <if test="length != null">
-        #{length,jdbcType=INTEGER},
+        #{length,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -160,7 +160,7 @@
         empty_flag = #{emptyFlag,jdbcType=BOOLEAN},
       </if>
       <if test="length != null">
-        `length` = #{length,jdbcType=INTEGER},
+        `length` = #{length,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -187,7 +187,7 @@
       metadata_id = #{metadataId,jdbcType=INTEGER},
       primarykey_flag = #{primarykeyFlag,jdbcType=BOOLEAN},
       empty_flag = #{emptyFlag,jdbcType=BOOLEAN},
-      `length` = #{length,jdbcType=INTEGER},
+      `length` = #{length,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       field_sort = #{fieldSort,jdbcType=INTEGER},

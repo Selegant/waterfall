@@ -3,17 +3,20 @@ package org.jeecg.modules.datasources.util;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.modules.datasources.antlr.mysql.MySqlLexer;
 import org.jeecg.modules.datasources.antlr.mysql.MySqlParser;
+import org.jeecg.modules.datasources.antlr.oracle.OracleLexer;
+import org.jeecg.modules.datasources.antlr.oracle.OracleParser;
+import org.jeecg.modules.datasources.constant.DataSourceConstant;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
-import org.jeecg.modules.datasources.dto.DdlDto;
 import org.jeecg.modules.datasources.model.WaterfallModelField;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -43,9 +46,9 @@ public class DdlConvertUtil {
         for (MySqlParser.CreateDefinitionContext clounm : clounmsContext) {
             String id = clounm.getRuleContexts(MySqlParser.UidContext.class).get(0).getText().replace("`","");
             MySqlParser.ColumnDefinitionContext columnDefinition = clounm.getRuleContexts(MySqlParser.ColumnDefinitionContext.class).get(0);
-            String dataType = DataTypeUtil.parseDataTypeOne("MYSQL",columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getChild(0).getText());
+            String dataType = DataTypeUtil.parseDataTypeOne(DataSourceConstant.MYSQL,columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getChild(0).getText());
             List<MySqlParser.LengthOneDimensionContext> lenContexts = columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getRuleContexts(MySqlParser.LengthOneDimensionContext.class);
-            Integer len = CollectionUtils.isEmpty(lenContexts) ? null : Integer.valueOf(lenContexts.get(0).getRuleContexts(MySqlParser.DecimalLiteralContext.class).get(0).getText());
+            String len = CollectionUtils.isEmpty(lenContexts) ? null : lenContexts.get(0).getRuleContexts(MySqlParser.DecimalLiteralContext.class).get(0).getText();
             Boolean isPrimary = CollectionUtils.isEmpty(columnDefinition.getRuleContexts(MySqlParser.PrimaryKeyColumnConstraintContext.class)) ? false : true;
             Boolean emptyFlag = false;
             if (!isPrimary) {
@@ -76,6 +79,59 @@ public class DdlConvertUtil {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MySqlParser parser = new MySqlParser(tokens);
         return parser;
+    }
+
+    public static DataModuleDTO oracleToModel(String sql) throws IOException {
+        CharStream input = CharStreams.fromString(sql);
+        OracleLexer lexer = new OracleLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        OracleParser parser = new OracleParser(tokens);
+        DataModuleDTO ddl = new DataModuleDTO();
+        OracleParser.RootContext statement = parser.root();
+
+        String dbAndTable = statement.statement().create_table().table_name().getText();
+        dbAndTable = dbAndTable.contains(".") ? dbAndTable.split("\\.")[1] : dbAndTable;
+        ddl.setModelName(dbAndTable);
+        List<WaterfallModelField> coloumns = new ArrayList<>();
+
+        List<OracleParser.Relational_propertyContext> relational_propertyContexts = statement.statement().create_table().relational_table().relational_property();
+        relational_propertyContexts.stream().forEach(e -> {
+            String columnName = e.column_definition().column_name().getText();
+            String dataType = DataTypeUtil.parseDataTypeOne(DataSourceConstant.ORACLE, e.column_definition().datatype().native_datatype_element().getText());
+            String len = "STRING".equals(dataType) ? null :
+                    CollectionUtils.isEmpty(e.column_definition().default_value().children) ? null : e.column_definition().default_value().getText();
+            List<OracleParser.Inline_constraintContext> inline_constraintContexts = e.column_definition().inline_constraint();
+            Boolean isPrimary  = false;
+            Boolean emptyFlag = true;
+            //PRIMARY+2 notNull+1
+            AtomicInteger flag = new AtomicInteger(0);
+            inline_constraintContexts.stream().forEach(t -> {
+                if (StringUtils.isNotBlank(t.PRIMARY().getText())) {
+                    flag.set(2);
+                }
+                if (StringUtils.isNotBlank(t.NOT().getText())) {
+                    flag.set(1);
+                }
+            });
+
+            if (flag.get() == 1) {
+                emptyFlag = false;
+            }
+            if (flag.get() == 2) {
+                emptyFlag = false;
+                isPrimary = true;
+            }
+            WaterfallModelField waterfallModelField = new WaterfallModelField();
+            waterfallModelField.setFieldName(columnName);
+            waterfallModelField.setFieldTypeName(dataType);
+            waterfallModelField.setLength(len);
+            waterfallModelField.setPrimarykeyFlag(isPrimary);
+            waterfallModelField.setEmptyFlag(emptyFlag);
+            coloumns.add(waterfallModelField);
+            coloumns.add(waterfallModelField);
+        });
+        ddl.setModelFields(coloumns);
+        return ddl;
     }
 
     //DDL实体转hive

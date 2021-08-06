@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.modules.datasources.constant.DataSourceConstant;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.dto.ModelFolderDTO;
 import org.jeecg.modules.datasources.mapper.WaterfallFolderMapper;
@@ -273,7 +274,15 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     public DataModuleDTO ddlToModel(DataModuleDTO dto) {
         DataModuleDTO res = null;
         try {
-            res = DdlConvertUtil.mysqlToModel(dto.getSql());
+            if (DataSourceConstant.MYSQL.equals(dto.getDbType().toUpperCase())) {
+                res = DdlConvertUtil.mysqlToModel(dto.getSql());
+            }else if (DataSourceConstant.ORACLE.equals(dto.getDbType().toUpperCase())) {
+                res = DdlConvertUtil.oracleToModel(dto.getSql());
+            }else if (DataSourceConstant.HIVE.equals(dto.getDbType().toUpperCase())){
+
+            }else {
+                throw new JeecgBootException("暂不支持该类型");
+            }
             res.setRamark(dto.getRamark());
             res.setFolderId(dto.getFolderId());
             saveDataModule(res);
@@ -287,14 +296,15 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public void modelPublish(Integer dbId, Integer modelId) {
         DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
-        publishToHive(dbId, dataModuleDTO);
-    }
-
-    private void publishToHive(Integer dbId, DataModuleDTO dataModuleDTO) {
         String sql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
         dataSourceService.createHiveTable(dbId, sql);
     }
 
+    @Override
+    public DataModuleDTO dbToModel(Integer source, Integer tableName) {
+        return null;
+//        return dataSourceService.dbToModel(source, tableName);
+    }
 
     private void checkParams(WaterfallFolder waterfallFolder) {
     }

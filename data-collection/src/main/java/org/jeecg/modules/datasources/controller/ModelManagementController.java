@@ -197,6 +197,22 @@ public class ModelManagementController {
         return result;
     }
 
+    @PostMapping("/data-module/{source}/{tableName}")
+    @ApiOperation("从数据库生成数据模型")
+    public Result<Object> dbToModel(@PathVariable Integer source,
+                                    @PathVariable Integer tableName) {
+        Result<Object> result = new Result<>();
+        try {
+            result.setResult(modelManagementService.dbToModel(source, tableName));
+            result.setMessage("add success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
     @PostMapping("/data-module/publish/{dbId}/{modelId}")
     @ApiOperation("发布数据模型")
     public Result<Object> modelPublish(@PathVariable Integer dbId,

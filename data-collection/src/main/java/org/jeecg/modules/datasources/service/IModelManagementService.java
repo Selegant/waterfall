@@ -40,4 +40,6 @@ public interface IModelManagementService {
     DataModuleDTO ddlToModel(DataModuleDTO dto);
 
     void modelPublish(Integer dbId, Integer modelId);
+
+    DataModuleDTO dbToModel(Integer source, Integer tableName);
 }

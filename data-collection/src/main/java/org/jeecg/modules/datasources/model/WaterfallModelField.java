@@ -37,7 +37,7 @@ public class WaterfallModelField {
     private Boolean emptyFlag;
 
     @ApiModelProperty("字段长度")
-    private Integer length;
+    private String length;
 
     @ApiModelProperty("创建时间")
     private Date createTime;
