@@ -72,6 +72,7 @@ public class DataTypeUtil {
             dto.setSourceColumnName(e.getColumnName());
             dto.setSourceColumnType(e.getColumnType());
             dto.setTargetColumnType(type);
+            dto.setColumnComment(e.getRemarks());
             result.add(dto);
         });
         return result;

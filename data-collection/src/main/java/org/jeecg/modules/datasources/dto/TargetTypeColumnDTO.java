@@ -11,4 +11,6 @@ public class TargetTypeColumnDTO {
 
     private String targetColumnType;
 
+    private String columnComment;
+
 }
