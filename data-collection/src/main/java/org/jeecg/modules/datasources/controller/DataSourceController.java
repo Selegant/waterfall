@@ -9,6 +9,7 @@ import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.PageInfoDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.TargetTypeColumnDTO;
+import org.jeecg.modules.datasources.input.CreateHiveTableInput;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
@@ -281,5 +282,16 @@ public class DataSourceController {
         return result;
     }
 
-
+    @RequestMapping(value = "/createTable", method = RequestMethod.POST)
+    public Result<String> createHiveTable(@RequestBody CreateHiveTableInput input) {
+        Result<String> result = new Result<>();
+        try {
+            dataSourceService.createHiveTableByInput(input);
+            result.success("操作成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
 }

@@ -31,9 +31,11 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.TargetTypeColumnDTO;
+import org.jeecg.modules.datasources.input.CreateHiveTableInput;
 import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceAmountMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
@@ -43,10 +45,12 @@ import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.model.WaterfallDataType;
+import org.jeecg.modules.datasources.model.WaterfallModelField;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
 import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.datasources.util.DatasourcePool;
+import org.jeecg.modules.datasources.util.DdlConvertUtil;
 import org.jeecg.modules.datasources.util.MyDBUtil;
 import org.jeecg.modules.datasources.util.MyDatasourcePoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -387,6 +391,23 @@ public class DataSourceServiceImpl implements IDataSourceService {
         return waterfallDataTypeMapper.selectList(queryWrapper).stream().map(WaterfallDataType::getDataTypeName)
                 .collect(
                         Collectors.toList());
+    }
+
+    @Override
+    public void createHiveTableByInput(CreateHiveTableInput input) {
+        DataModuleDTO dto = new DataModuleDTO();
+        dto.setModelName(input.getTableName());
+        List<WaterfallModelField> fields = new ArrayList<>();
+        dto.setModelFields(fields);
+        for (TargetTypeColumnDTO column : input.getColumns()) {
+            WaterfallModelField field = new WaterfallModelField();
+            field.setFieldName(column.getSourceColumnName());
+            field.setFieldTypeName(column.getTargetColumnType());
+            field.setRemark(column.getColumnComment());
+            fields.add(field);
+        }
+        String sql = DdlConvertUtil.modelToHiveDdl(dto);
+        createHiveTable(input.getDbId(), sql);
     }
 
     private void updateAmount(MyDatasourcePoolUtil datasourcePool, List<WaterfallDataSourceAmount> lstAmount) {
