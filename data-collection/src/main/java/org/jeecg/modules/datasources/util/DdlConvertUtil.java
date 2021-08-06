@@ -87,7 +87,7 @@ public class DdlConvertUtil {
         //id INT comment 'ss'
         String colStr = "%s\t%s\tCOMMENT\t%s";
         String collect = dto.getModelFields().stream().map(col -> {
-            return String.format(colStr, col.getFieldName(), col.getFieldTypeName(), col.getRemark());
+            return String.format(colStr, col.getFieldName(), col.getFieldTypeName(), "'" + col.getRemark() + "'");
         }).collect(Collectors.joining(","));
         builder.append(collect +")");
         return builder.toString();
