@@ -10,8 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.datasources.mapper.WaterfallDataSourceMapper;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author shitiannan
+ */
 @Component
 @Slf4j
 public class DatasourcePool {
@@ -21,7 +25,7 @@ public class DatasourcePool {
     @Autowired
     private WaterfallDataSourceMapper mapper;
 
-    @PostConstruct
+//    @PostConstruct
     public void initPoolMap() {
         List<WaterfallDataSource> lstWaterfall = mapper.selectList(new QueryWrapper<>());
         for (WaterfallDataSource waterfall : lstWaterfall) {

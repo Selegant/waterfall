@@ -23,6 +23,7 @@ public class DataTypeUtil {
             put("DECIMAL","DECIMAL");
             put("NUMERIC","DECIMAL");
             put("VARCHAR","STRING");
+            put("VARCHAR2","STRING");
             put("CHAR","STRING");
             put("TIMESTAMP","TIMESTAMP");
             put("DATETIME","DATE");
