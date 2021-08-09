@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
@@ -407,6 +408,18 @@ public class DataSourceServiceImpl implements IDataSourceService {
         }
         String sql = DdlConvertUtil.modelToHiveDdl(dto);
         createHiveTable(input.getDbId(), sql);
+    }
+
+    @Override
+    public String getDbType(Integer dbId) {
+        WaterfallDataSource waterfallDataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
+        if (waterfallDataSource == null) {
+            throw new JeecgBootException("数据库不存在！");
+        }
+        if (waterfallDataSource.getAliveFlag() == false) {
+            throw new JeecgBootException("数据库不可用！");
+        }
+        return waterfallDataSource.getDbType();
     }
 
     private void updateAmount(MyDatasourcePoolUtil datasourcePool, List<WaterfallDataSourceAmount> lstAmount) {

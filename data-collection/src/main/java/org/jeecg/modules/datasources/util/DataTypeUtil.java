@@ -13,20 +13,29 @@ public class DataTypeUtil {
 
     public final static Map<String, String> MYSQL_HIVE =new HashMap<String, String>() {
         {
+            put("BIGINT","BIGINT");
+            put("INT","INT");
+            put("INT UNSIGNED","INT");
+            put("INTEGER","INT");
+            put("BIT","TINYINT");
             put("TINYINT","TINYINT");
             put("SMALLINT","SMALLINT");
-            put("MEDIUMINT","INT");
-            put("INT","INT");
-            put("BIGINT","BIGINT");
-            put("FLOAT","FLOAT");
-            put("DOUBLE","DOUBLE");
+            put("MEDIUMINT","BIGINT");
             put("DECIMAL","DECIMAL");
-            put("NUMERIC","DECIMAL");
-            put("VARCHAR","STRING");
-            put("VARCHAR2","STRING");
+            put("FLOAT","DOUBLE");
+            put("DOUBLE","DOUBLE");
+            put("BINARY","BINARY");
             put("CHAR","STRING");
+            put("VARCHAR","STRING");
+            put("MEDIUMTEXT","STRING");
+            put("TEXT","STRING");
+            put("LONGTEXT","STRING");
+            put("BLOB","STRING");
+            put("DATETIME","TIMESTAMP");
+            put("TIME","TIMESTAMP");
             put("TIMESTAMP","TIMESTAMP");
-            put("DATETIME","DATE");
+            put("DATE","TIMESTAMP");
+            put("JSON","MAP<STRING,STRING>");
         }
     };
 
@@ -34,14 +43,27 @@ public class DataTypeUtil {
 
     public final static Map<String, String> ORACLE_HIVE =new HashMap<String, String>() {
         {
-            put("NUMBER","INT");
-            put("BINARY_FLOAT","FLOAT");
+            put("INTEGER","DOUBLE");
+            put("FLOAT","DOUBLE");
+            put("BINARY_FLOAT","DOUBLE");
             put("BINARY_DOUBLE","DOUBLE");
-            put("VARCHAR","STRING");
-            put("CHAR","STRING");
-            put("RAW","BINARY");
+            put("DATE","TIMESTAMP");
             put("TIMESTAMP","TIMESTAMP");
-            put("DATE","DATE");
+            put("CHAR","STRING");
+            put("NCHAR","STRING");
+            put("VARCHAR","STRING");
+            put("VARCHAR2","STRING");
+            put("NVARCHAR","STRING");
+            put("NVARCHAR2","STRING");
+            put("RAW","BINARY");
+            put("BLOB","STRING");
+
+            //NUMBER(1)->TINYINT NUMBER(P,S)->DECIMAL NUMBER(2),NUMBER(4)->SMALLINT NUMBER(5),NUMBER(9)->INT NUMBER(10),NUMBER(18)->BIGINT
+            put("NUMBER(1)","TINYINT");
+            put("NUMBER(4)","SMALLINT");
+            put("NUMBER(9)","INT");
+            put("NUMBER(18)","BIGINT");
+            put("NUMBER(P,S)","DECIMAL");
         }
     };
 
@@ -79,6 +101,24 @@ public class DataTypeUtil {
     }
 
     public static String parseDataTypeOne(String dbType, String sourceColumnType) {
-        return DATA_MAPPING.get(dbType).get(sourceColumnType.toUpperCase());
+        if (sourceColumnType.toUpperCase().contains("NUMBER")) {
+            if (sourceColumnType.contains(",")) {
+                sourceColumnType = "NUMBER(P,S)";
+            }else {
+                Integer size = Integer.valueOf(sourceColumnType.substring(sourceColumnType.indexOf("(") + 1, sourceColumnType.indexOf(")")));
+                if (size == 1){
+                    sourceColumnType = "NUMBER(1)";
+                }else if (size <= 4) {
+                    sourceColumnType = "NUMBER(4)";
+                }else if (size <= 9) {
+                    sourceColumnType = "NUMBER(9)";
+                }else if (size <= 18) {
+                    sourceColumnType = "NUMBER(18)";
+                }
+            }
+        }
+        String type = DATA_MAPPING.get(dbType).get(sourceColumnType.toUpperCase());
+
+        return type;
     }
 }

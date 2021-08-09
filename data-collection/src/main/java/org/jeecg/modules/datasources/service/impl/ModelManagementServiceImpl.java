@@ -9,6 +9,8 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.datasources.constant.DataSourceConstant;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.dto.ModelFolderDTO;
+import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
+import org.jeecg.modules.datasources.input.TableColumnInput;
 import org.jeecg.modules.datasources.mapper.WaterfallFolderMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallModelFieldMapper;
 import org.jeecg.modules.datasources.mapper.WaterfallModelMapper;
@@ -19,6 +21,7 @@ import org.jeecg.modules.datasources.model.WaterfallModelField;
 import org.jeecg.modules.datasources.model.WaterfallModelPartition;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IModelManagementService;
+import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.datasources.util.DdlConvertUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,12 +150,12 @@ public class ModelManagementServiceImpl implements IModelManagementService {
             throw new JeecgBootException("所属层级不存在！");
         }
         //检查唯一性 folderId+modelName
-        if (exsitModelByFolderIdAndModelName(dataModuleDTO.getFolderId(), dataModuleDTO.getModelName())) {
+        if (exsitModelByFolderIdAndModelName(dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
             throw new JeecgBootException("模型名已经存在！");
         }
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setFolderId(dataModuleDTO.getFolderId());
-        waterfallModel.setModelName(dataModuleDTO.getModelName());
+        waterfallModel.setModelName(dataModuleDTO.getModelName().toLowerCase());
         waterfallModel.setModelStatusCode(DataModuleDTO.UN_PUBLISHED);
         waterfallModel.setModelStatusName(DataModuleDTO.UN_PUBLISHED_NAME);
         waterfallModel.setExportTypeCode(dataModuleDTO.getExportTypeCode());
@@ -301,9 +304,50 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public DataModuleDTO dbToModel(Integer source, Integer tableName) {
-        return null;
-//        return dataSourceService.dbToModel(source, tableName);
+    public DataModuleDTO tableOrViewToModel(Integer folderId, Integer source, String tableName) {
+        DataModuleDTO dataModule = getModel(folderId, source, tableName);
+        saveDataModule(dataModule);
+        return queryDataMoudle(dataModule.getId());
+    }
+
+    @Override
+    public void dbToModel(Integer folderId, Integer source) {
+        dataSourceService.getTables(source, 0).stream().forEach(tableOrView -> {
+            saveDataModule(getModel(folderId, source, tableOrView));
+        });
+    }
+
+    private DataModuleDTO getModel(Integer folderId, Integer source, String tableName) {
+        List<TableColumnInfoDTO> tableColumns = dataSourceService.getTableColumns(new TableColumnInput(source, tableName));
+        DataModuleDTO dataModule = new DataModuleDTO();
+        dataModule.setModelName(tableName);
+        dataModule.setFolderId(folderId);
+        List<WaterfallModelField> modelFields = new ArrayList<>(tableColumns.size());
+        tableColumns.stream().forEach(e -> {
+            WaterfallModelField tmp = new WaterfallModelField();
+            tmp.setFieldName(e.getColumnName());
+            if (e.getColumnSize() != null) {
+                if (e.getDecimalDigits() == null || e.getDecimalDigits() == 0) {
+                    tmp.setLength("(" + e.getColumnSize() + ")");
+                }else {
+                    tmp.setLength("(" + e.getColumnSize() + "," + e.getDecimalDigits() + ")");
+                }
+            }
+            if ("NUMBER".equalsIgnoreCase(e.getColumnType()) && e.getColumnSize() != null) {
+                e.setColumnType(e.getColumnType() + tmp.getLength());
+            }
+            tmp.setFieldTypeName(DataTypeUtil.parseDataTypeOne(dataSourceService.getDbType(source), e.getColumnType()));
+            if (tmp.getFieldTypeName() == null) {
+                log.error("表名：{}  字段名：{}" ,tableName, e.getColumnType());
+            }
+            tmp.setPrimarykeyFlag(e.getPrimaryKey() == null ? false : e.getPrimaryKey());
+            tmp.setEmptyFlag(e.getNullable());
+            tmp.setRemark(e.getRemarks());
+
+            modelFields.add(tmp);
+        });
+        dataModule.setModelFields(modelFields);
+        return dataModule;
     }
 
     private void checkParams(WaterfallFolder waterfallFolder) {

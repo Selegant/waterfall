@@ -53,4 +53,6 @@ public interface IDataSourceService {
     List<String> getColumnType(String dbType);
 
     void createHiveTableByInput(CreateHiveTableInput input);
+
+    String getDbType(Integer dbId);
 }

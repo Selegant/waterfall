@@ -197,13 +197,30 @@ public class ModelManagementController {
         return result;
     }
 
-    @PostMapping("/data-module/{source}/{tableName}")
-    @ApiOperation("从数据库生成数据模型")
-    public Result<Object> dbToModel(@PathVariable Integer source,
-                                    @PathVariable Integer tableName) {
+    @PostMapping("/data-module/{folderId}/{source}/{tableName}")
+    @ApiOperation("单表生成数据模型")
+    public Result<Object> tableOrViewToModel(@PathVariable Integer folderId,
+                                    @PathVariable Integer source,
+                                    @PathVariable String tableName) {
         Result<Object> result = new Result<>();
         try {
-            result.setResult(modelManagementService.dbToModel(source, tableName));
+            result.setResult(modelManagementService.tableOrViewToModel(folderId, source, tableName));
+            result.setMessage("add success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
+    @PostMapping("/data-module/{folderId}/{source}")
+    @ApiOperation("数据库生成数据模型")
+    public Result<Object> dbToModel(@PathVariable Integer folderId,
+                                    @PathVariable Integer source) {
+        Result<Object> result = new Result<>();
+        try {
+            modelManagementService.dbToModel(folderId, source);
             result.setMessage("add success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);

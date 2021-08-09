@@ -57,7 +57,7 @@ datatype
     ;
 
 inline_constraint
-    : ( NOT? NULL | UNIQUE | PRIMARY KEY) constraint_state?
+    : ( NOT? NULL | UNIQUE | CONSTRAINT regular_id PRIMARY KEY) constraint_state?
     ;
 
 constraint_state

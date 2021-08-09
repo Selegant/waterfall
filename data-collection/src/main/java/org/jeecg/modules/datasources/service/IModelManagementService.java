@@ -41,5 +41,7 @@ public interface IModelManagementService {
 
     void modelPublish(Integer dbId, Integer modelId);
 
-    DataModuleDTO dbToModel(Integer source, Integer tableName);
+    DataModuleDTO tableOrViewToModel(Integer folderId, Integer source, String tableName);
+
+    void dbToModel(Integer folderId, Integer source);
 }
