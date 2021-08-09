@@ -234,8 +234,10 @@ public class MyDBUtil {
             if (c.getColumnType().toLowerCase(Locale.ROOT).contains(DATE)) {
                 c.setIncColumn(1);
             }
+            if ("INT UNSIGNED".equals(c.getColumnType())) {
+                c.setColumnType("INT");
+            }
         });
         return result;
     }
-
 }

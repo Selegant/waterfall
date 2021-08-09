@@ -10,7 +10,6 @@ import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_TAB
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.TYPE_VIEW;
 
 import cn.hutool.db.DbRuntimeException;
-import cn.hutool.db.DbUtil;
 import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
@@ -87,6 +86,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         connection(dataSource);
         waterfallDataSourceMapper.insertSelective(dataSource);
+        DatasourcePool.add(dataSource);
     }
 
     @Override
@@ -103,9 +103,14 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public void updateDataSource(WaterfallDataSource dataSource) throws Exception {
+        WaterfallDataSource dbWaterfall = waterfallDataSourceMapper.selectByPrimaryKey(dataSource.getId());
         dataSource.setJdbcUrl(concatUrl(dataSource));
         connection(dataSource);
         waterfallDataSourceMapper.updateByPrimaryKeySelective(dataSource);
+        if (!dbWaterfall.getJdbcUrl().equals(dataSource.getJdbcUrl()) || !dbWaterfall.getUsername()
+                .equals(dataSource.getUsername()) || !dbWaterfall.getPassword().equals(dataSource.getPassword())) {
+            DatasourcePool.update(dataSource);
+        }
     }
 
     @Override
