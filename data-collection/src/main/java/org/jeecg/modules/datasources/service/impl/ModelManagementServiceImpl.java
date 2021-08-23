@@ -160,7 +160,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         waterfallModel.setModelStatusName(DataModuleDTO.UN_PUBLISHED_NAME);
         waterfallModel.setExportTypeCode(dataModuleDTO.getExportTypeCode());
         waterfallModel.setExportTypeName(dataModuleDTO.getExportTypeName());
-        waterfallModel.setRamark(StringUtils.isEmpty(dataModuleDTO.getRamark()) ? "" : dataModuleDTO.getRamark());
+        waterfallModel.setRemark(StringUtils.isEmpty(dataModuleDTO.getRemark()) ? "" : dataModuleDTO.getRemark());
         waterfallModel.setCreateTime(new Date());
         waterfallModel.setUpdateTime(new Date());
         waterfallModel.setDelFlag(false);
@@ -228,7 +228,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         waterfallModel.setModelStatusName(dataModuleDTO.getModelStatusName());
         waterfallModel.setExportTypeCode(dataModuleDTO.getExportTypeCode());
         waterfallModel.setExportTypeName(dataModuleDTO.getExportTypeName());
-        waterfallModel.setRamark(dataModuleDTO.getRamark());
+        waterfallModel.setRemark(dataModuleDTO.getRemark());
         waterfallModel.setDelFlag(dataModuleDTO.getDelFlag());
         waterfallModel.setUpdateTime(new Date());
         waterfallModelMapper.updateById(waterfallModel);
@@ -286,7 +286,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
             }else {
                 throw new JeecgBootException("暂不支持该类型");
             }
-            res.setRamark(dto.getRamark());
+            res.setRemark(dto.getRemark());
             res.setFolderId(dto.getFolderId());
             saveDataModule(res);
             res = queryDataMoudle(res.getId());

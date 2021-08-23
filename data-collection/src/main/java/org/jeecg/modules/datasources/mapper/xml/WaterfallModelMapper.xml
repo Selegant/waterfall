@@ -11,7 +11,7 @@
     <result column="model_status_name" jdbcType="VARCHAR" property="modelStatusName" />
     <result column="export_type_code" jdbcType="INTEGER" property="exportTypeCode" />
     <result column="export_type_name" jdbcType="VARCHAR" property="exportTypeName" />
-    <result column="ramark" jdbcType="VARCHAR" property="ramark" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
@@ -19,7 +19,7 @@
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, folder_id, model_name, model_status_code, model_status_name,
-    export_type_code, export_type_name, ramark, create_time, update_time, del_flag
+    export_type_code, export_type_name, remark, create_time, update_time, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -37,11 +37,11 @@
     <!--@mbg.generated-->
     insert into waterfall_model (folder_id, model_name,
       model_status_code, model_status_name, export_type_code,
-      export_type_name, ramark, create_time,
+      export_type_name, remark, create_time,
       update_time, del_flag)
     values (#{folderId,jdbcType=INTEGER}, #{modelName,jdbcType=VARCHAR},
       #{modelStatusCode,jdbcType=INTEGER}, #{modelStatusName,jdbcType=VARCHAR}, #{exportTypeCode,jdbcType=INTEGER},
-      #{exportTypeName,jdbcType=VARCHAR}, #{ramark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{exportTypeName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{updateTime,jdbcType=TIMESTAMP}, #{delFlag, jdbcType=BOOLEAN})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallModel" useGeneratedKeys="true">
@@ -66,8 +66,8 @@
       <if test="exportTypeName != null">
         export_type_name,
       </if>
-      <if test="ramark != null">
-        ramark,
+      <if test="remark != null">
+        remark,
       </if>
       <if test="createTime != null">
         create_time,
@@ -98,8 +98,8 @@
       <if test="exportTypeName != null">
         #{exportTypeName,jdbcType=VARCHAR},
       </if>
-      <if test="ramark != null">
-        #{ramark,jdbcType=VARCHAR},
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -134,8 +134,8 @@
       <if test="exportTypeName != null">
         export_type_name = #{exportTypeName,jdbcType=VARCHAR},
       </if>
-      <if test="ramark != null">
-        ramark = #{ramark,jdbcType=VARCHAR},
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -158,7 +158,7 @@
       model_status_name = #{modelStatusName,jdbcType=VARCHAR},
       export_type_code = #{exportTypeCode,jdbcType=INTEGER},
       export_type_name = #{exportTypeName,jdbcType=VARCHAR},
-      ramark = #{ramark,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       del_flag = #{delFlag,jdbcType=BOOLEAN}

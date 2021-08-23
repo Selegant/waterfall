@@ -34,6 +34,7 @@ public class DataTypeUtil {
             put("DATETIME","TIMESTAMP");
             put("TIME","TIMESTAMP");
             put("TIMESTAMP","TIMESTAMP");
+            put("ENUM","INT");
             put("DATE","TIMESTAMP");
             put("JSON","MAP<STRING,STRING>");
         }

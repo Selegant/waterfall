@@ -43,7 +43,7 @@ public class ModelManagementController {
         return result;
     }
 
-    @PostMapping("/folder")
+    @PostMapping("/addFolder")
     @ApiOperation("添加文件夹")
     public Result<Object> addFolder(@RequestBody WaterfallFolder waterfallFolder) {
         Result<Object> result = new Result<>();
@@ -61,7 +61,6 @@ public class ModelManagementController {
     @ApiOperation("更新文件夹")
     public Result<Object> updateFolder(@RequestBody WaterfallFolder folder) {
         Result<Object> result = new Result<>();
-
         try {
             modelManagementService.updateFolderWithConditionById(folder);
             result.success("update success！");
@@ -69,7 +68,6 @@ public class ModelManagementController {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());
         }
-
         return result;
     }
 
@@ -113,7 +111,7 @@ public class ModelManagementController {
     }
 
 
-    @GetMapping("/data-module")
+    @GetMapping("/dataModuleList")
     @ApiOperation("数据模型列表")
     public Result<IPage<WaterfallModel>> dataModuleList(@RequestParam(value = "folderId", required = false) Integer folderId,
                                                         @RequestParam(value = "modelName", required = false) String modelName,

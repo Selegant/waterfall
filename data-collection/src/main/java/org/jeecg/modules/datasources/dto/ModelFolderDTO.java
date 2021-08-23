@@ -19,6 +19,7 @@ public class ModelFolderDTO {
     private String key;
     private String value;
     private SlotsBean slots;
+    private Integer level;
     private List<ModelFolderDTO> children;
 
     public ModelFolderDTO(WaterfallFolder waterfallFolder) {
@@ -26,6 +27,15 @@ public class ModelFolderDTO {
         this.setKey(waterfallFolder.getId().toString());
         this.setValue(waterfallFolder.getId().toString());
         this.setSlots(new SlotsBean());
+        this.setLevel(1);
+    }
+
+    public ModelFolderDTO(WaterfallFolder waterfallFolder,Integer level) {
+        this.setTitle(waterfallFolder.getFolderName());
+        this.setKey(waterfallFolder.getId().toString());
+        this.setValue(waterfallFolder.getId().toString());
+        this.setSlots(new SlotsBean());
+        this.setLevel(level);
     }
 
     public ModelFolderDTO(WaterfallFolder waterfallFolder,List<WaterfallFolder> childrenList) {
@@ -35,7 +45,7 @@ public class ModelFolderDTO {
         this.setValue(waterfallFolder.getId().toString());
         List<ModelFolderDTO> list = new ArrayList<>();
         childrenList.forEach(c->{
-            list.add(new ModelFolderDTO(c));
+            list.add(new ModelFolderDTO(c,2));
         });
         this.setChildren(list);
     }

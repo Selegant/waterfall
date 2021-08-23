@@ -34,7 +34,7 @@ public class WaterfallModel {
     private String exportTypeName;
 
     @ApiModelProperty("模型表述")
-    private String ramark;
+    private String remark;
 
     @ApiModelProperty("创建时间")
     private Date createTime;

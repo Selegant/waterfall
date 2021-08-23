@@ -53,7 +53,7 @@ public class DataModuleDTO{
     /**
      * 模型表述
      */
-    private String ramark;
+    private String remark;
 
     /**
      * 删除标识
