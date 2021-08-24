@@ -70,31 +70,7 @@ public class JobResultDTO {
 
             private String name;
 
-            private ParameterBeanX parameter;
-
-            @Data
-            public static class ParameterBeanX {
-
-                private String encoding;
-
-                private Boolean print;
-
-                private String password;
-
-                private String username;
-
-                private List<String> column;
-
-                private List<ConnectionBeanW> connection;
-
-                @Data
-                public static class ConnectionBeanW {
-
-                    private String jdbcUrl;
-
-                    private List<String> table;
-                }
-            }
+            private ParameterBeanDTO parameter;
         }
     }
 

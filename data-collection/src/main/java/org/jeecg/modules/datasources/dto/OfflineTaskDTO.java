@@ -1,5 +1,6 @@
 package org.jeecg.modules.datasources.dto;
 
+import com.alibaba.fastjson.JSONObject;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -26,6 +27,12 @@ public class OfflineTaskDTO {
     private String targetTable;
     private List<MappingColumnsBean> mappingColumns;
     private String incColumn;
+
+    private String defaultFS;
+
+    private String path;
+
+    private JSONObject hadoopConfig;
 
     /**
      * 任务执行调度时间
@@ -81,8 +88,13 @@ public class OfflineTaskDTO {
     public static class MappingColumnsBean {
 
         private String originalColumn;
+
         private String targetColumn;
+
         private Integer originalColumnIndex;
+
         private Integer targetColumnIndex;
+
+        private String targetColumnType;
     }
 }
