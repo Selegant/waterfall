@@ -48,7 +48,7 @@ public interface IDataSourceService {
 
     String getCreateDdl(TableColumnInput input);
 
-    void createHiveTable(Integer dbId, String sql);
+    void createHiveTable(Integer dbId, String... sqls);
 
     List<String> getColumnType(String dbType);
 

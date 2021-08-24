@@ -39,9 +39,13 @@ public interface IModelManagementService {
 
     DataModuleDTO ddlToModel(DataModuleDTO dto);
 
-    void modelPublish(Integer dbId, Integer modelId);
+    void modelPublish(Integer modelId);
 
     DataModuleDTO tableOrViewToModel(Integer folderId, Integer source, String tableName);
 
     void dbToModel(Integer folderId, Integer source);
+
+    void modelToDb(Integer dbId, Integer modelId);
+
+    void modelUnpublish(Integer modelId);
 }

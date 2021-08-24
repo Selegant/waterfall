@@ -48,7 +48,7 @@ public class DdlConvertUtil {
             MySqlParser.ColumnDefinitionContext columnDefinition = clounm.getRuleContexts(MySqlParser.ColumnDefinitionContext.class).get(0);
             String dataType = DataTypeUtil.parseDataTypeOne(DataSourceConstant.MYSQL,columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getChild(0).getText());
             List<MySqlParser.LengthOneDimensionContext> lenContexts = columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getRuleContexts(MySqlParser.LengthOneDimensionContext.class);
-            String len = CollectionUtils.isEmpty(lenContexts) ? null : lenContexts.get(0).getRuleContexts(MySqlParser.DecimalLiteralContext.class).get(0).getText();
+            String len = CollectionUtils.isEmpty(lenContexts) ? null : lenContexts.get(0).getRuleContexts(MySqlParser.DecimalLiteralContext.class).get(0).getText().replace("(","").replace(")","");
             Boolean isPrimary = CollectionUtils.isEmpty(columnDefinition.getRuleContexts(MySqlParser.PrimaryKeyColumnConstraintContext.class)) ? false : true;
             Boolean emptyFlag = false;
             if (!isPrimary) {
@@ -81,6 +81,30 @@ public class DdlConvertUtil {
         return parser;
     }
 
+    public static void main(String[] args) {
+        String sql = "CREATE TABLE `COMPACTION_QUEUE` (\n" +
+                "  `CQ_ID` BIGINT(20) NOT NULL,\n" +
+                "  `CQ_DATABASE` VARCHAR(128) NOT NULL,\n" +
+                "  `CQ_TABLE` VARCHAR(128) NOT NULL,\n" +
+                "  `CQ_PARTITION` VARCHAR(767) DEFAULT NULL,\n" +
+                "  `CQ_STATE` CHAR(1) NOT NULL,\n" +
+                "  `CQ_TYPE` CHAR(1) NOT NULL,\n" +
+                "  `CQ_TBLPROPERTIES` VARCHAR(2048) DEFAULT NULL,\n" +
+                "  `CQ_WORKER_ID` VARCHAR(128) DEFAULT NULL,\n" +
+                "  `CQ_START` BIGINT(20) DEFAULT NULL,\n" +
+                "  `CQ_RUN_AS` VARCHAR(128) DEFAULT NULL,\n" +
+                "  `CQ_HIGHEST_TXN_ID` BIGINT(20) DEFAULT NULL,\n" +
+                "  `CQ_META_INFO` VARBINARY(2048) DEFAULT NULL,\n" +
+                "  `CQ_HADOOP_JOB_ID` VARCHAR(32) DEFAULT NULL\n" +
+                ",);\n" +
+                "\n";
+        try {
+            mysqlToModel(sql);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static DataModuleDTO oracleToModel(String sql) throws IOException {
         CharStream input = CharStreams.fromString(sql);
         OracleLexer lexer = new OracleLexer(input);
@@ -99,11 +123,11 @@ public class DdlConvertUtil {
             String columnName = e.column_definition().column_name().getText();
             String dataType = DataTypeUtil.parseDataTypeOne(DataSourceConstant.ORACLE, e.column_definition().datatype().native_datatype_element().getText());
             String len = "STRING".equals(dataType) ? null :
-                    CollectionUtils.isEmpty(e.column_definition().default_value().children) ? null : e.column_definition().default_value().getText();
+                    CollectionUtils.isEmpty(e.column_definition().default_value().children) ? null : e.column_definition().default_value().getText().replace("(","").replace(")","");
             List<OracleParser.Inline_constraintContext> inline_constraintContexts = e.column_definition().inline_constraint();
             Boolean isPrimary  = false;
             Boolean emptyFlag = true;
-            //PRIMARY+2 notNull+1
+            //PRIMARY:2 notNull:1
             AtomicInteger flag = new AtomicInteger(0);
             inline_constraintContexts.stream().forEach(t -> {
                 if (StringUtils.isNotBlank(t.PRIMARY().getText())) {
@@ -137,15 +161,22 @@ public class DdlConvertUtil {
     //DDL实体转hive
     public static String modelToHiveDdl(DataModuleDTO dto) {
         StringBuilder builder = new StringBuilder();
-        String ddl = "CREATE TABLE IF NOT EXISTS %s\n";
+        String ddl = "CREATE TABLE %s\n";
         builder.append(String.format(ddl, dto.getModelName()));
         builder.append("(");
         //id INT comment 'ss'
         String colStr = "%s\t%s\tCOMMENT\t%s";
         String collect = dto.getModelFields().stream().map(col -> {
+            if ("DECIMAL".equalsIgnoreCase(col.getFieldTypeName())) {
+                col.setFieldTypeName(col.getFieldTypeName() + "(" +col.getLength()+")");
+            }
             return String.format(colStr, col.getFieldName(), col.getFieldTypeName(), "'" + col.getRemark() + "'");
         }).collect(Collectors.joining(","));
         builder.append(collect +")");
         return builder.toString();
+    }
+
+    public static String delSql(String tableName) {
+        return "drop table if exists " + tableName;
     }
 }

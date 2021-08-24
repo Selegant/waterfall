@@ -228,14 +228,44 @@ public class ModelManagementController {
         return result;
     }
 
-    @PostMapping("/data-module/publish/{dbId}/{modelId}")
+    @PostMapping("/data-module/publish/{modelId}")
     @ApiOperation("发布数据模型")
-    public Result<Object> modelPublish(@PathVariable Integer dbId,
+    public Result<Object> modelPublish(@PathVariable Integer modelId) {
+        Result<Object> result = new Result<>();
+        try {
+            modelManagementService.modelPublish(modelId);
+            result.setMessage("publish success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
+    @PostMapping("/data-module/unpublish/{modelId}")
+    @ApiOperation("下架数据模型")
+    public Result<Object> modelUnpublish(@PathVariable Integer modelId) {
+        Result<Object> result = new Result<>();
+        try {
+            modelManagementService.modelUnpublish(modelId);
+            result.setMessage("unpublish success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
+    @PostMapping("/data-module/physical/{dbId}/{modelId}")
+    @ApiOperation("数据模型物理化")
+    public Result<Object> modelToDb(@PathVariable Integer dbId,
                                        @PathVariable Integer modelId) {
         Result<Object> result = new Result<>();
         try {
-            modelManagementService.modelPublish(dbId, modelId);
-            result.setMessage("publish success!");
+            modelManagementService.modelToDb(dbId, modelId);
+            result.setMessage("physical success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

@@ -373,18 +373,24 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void createHiveTable(Integer dbId, String sql) {
+    public void createHiveTable(Integer dbId, String... sqls) {
+        //todo hive jdbc无法批处理 会导致表删了
         Connection connection = null;
         WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
         MyDatasourcePoolUtil instance = DatasourcePool.pool.get(dataSource.getId());
         try {
             connection = instance.getConnection();
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.executeUpdate();
+            PreparedStatement ps = null;
+            for (String sql : sqls) {
+                ps = connection.prepareStatement(sql);
+                ps.executeUpdate();
+            }
         } catch (SQLException se) {
             log.error("创建Hive表错误-SQLException:{}", se.getMessage());
+            throw new JeecgBootException(se.getMessage());
         } catch (Exception e) {
             log.error("创建Hive表错误-Exception:{}", e.getMessage());
+            throw new JeecgBootException(e.getMessage());
         } finally {
             instance.releaseConnection(connection);
         }
@@ -411,8 +417,9 @@ public class DataSourceServiceImpl implements IDataSourceService {
             field.setRemark(column.getColumnComment());
             fields.add(field);
         }
-        String sql = DdlConvertUtil.modelToHiveDdl(dto);
-        createHiveTable(input.getDbId(), sql);
+        String createsql = DdlConvertUtil.modelToHiveDdl(dto);
+        String delsql = DdlConvertUtil.delSql(dto.getModelName());
+        createHiveTable(input.getDbId(), delsql, createsql);
     }
 
     @Override

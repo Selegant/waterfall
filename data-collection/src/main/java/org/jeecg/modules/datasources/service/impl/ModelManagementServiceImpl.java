@@ -297,10 +297,17 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public void modelPublish(Integer dbId, Integer modelId) {
+    public void modelPublish(Integer modelId) {
         DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
-        String sql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
-        dataSourceService.createHiveTable(dbId, sql);
+        if (dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
+            throw new JeecgBootException("模型已发布，请勿重复操作！");
+        }
+        WaterfallModel waterfallModel = new WaterfallModel();
+        waterfallModel.setId(dataModuleDTO.getId());
+        waterfallModel.setModelStatusCode(DataModuleDTO.PUBLISHED);
+        waterfallModel.setModelStatusName(DataModuleDTO.PUBLISHED_NAME);
+        waterfallModel.setUpdateTime(new Date());
+        waterfallModelMapper.updateByPrimaryKeySelective(waterfallModel);
     }
 
     @Override
@@ -317,6 +324,31 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         });
     }
 
+    @Override
+    public void modelToDb(Integer dbId, Integer modelId) {
+        DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
+        if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
+            throw new JeecgBootException("模型未发布，无法物理化！");
+        }
+        String createSql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
+        String delsql = DdlConvertUtil.delSql(dataModuleDTO.getModelName());
+        dataSourceService.createHiveTable(dbId, delsql, createSql);
+    }
+
+    @Override
+    public void modelUnpublish(Integer modelId) {
+        DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
+        if (dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.UN_PUBLISHED)) {
+            throw new JeecgBootException("模型已下架，请勿重复操作！");
+        }
+        WaterfallModel waterfallModel = new WaterfallModel();
+        waterfallModel.setId(dataModuleDTO.getId());
+        waterfallModel.setModelStatusCode(DataModuleDTO.UN_PUBLISHED);
+        waterfallModel.setModelStatusName(DataModuleDTO.UN_PUBLISHED_NAME);
+        waterfallModel.setUpdateTime(new Date());
+        waterfallModelMapper.updateByPrimaryKeySelective(waterfallModel);
+    }
+
     private DataModuleDTO getModel(Integer folderId, Integer source, String tableName) {
         List<TableColumnInfoDTO> tableColumns = dataSourceService.getTableColumns(new TableColumnInput(source, tableName));
         DataModuleDTO dataModule = new DataModuleDTO();
@@ -328,13 +360,13 @@ public class ModelManagementServiceImpl implements IModelManagementService {
             tmp.setFieldName(e.getColumnName());
             if (e.getColumnSize() != null) {
                 if (e.getDecimalDigits() == null || e.getDecimalDigits() == 0) {
-                    tmp.setLength("(" + e.getColumnSize() + ")");
+                    tmp.setLength("" + e.getColumnSize());
                 }else {
-                    tmp.setLength("(" + e.getColumnSize() + "," + e.getDecimalDigits() + ")");
+                    tmp.setLength(e.getColumnSize() + "," + e.getDecimalDigits());
                 }
             }
             if ("NUMBER".equalsIgnoreCase(e.getColumnType()) && e.getColumnSize() != null) {
-                e.setColumnType(e.getColumnType() + tmp.getLength());
+                e.setColumnType(e.getColumnType() +  "(" + tmp.getLength() + ")");
             }
             tmp.setFieldTypeName(DataTypeUtil.parseDataTypeOne(dataSourceService.getDbType(source), e.getColumnType()));
             if (tmp.getFieldTypeName() == null) {
