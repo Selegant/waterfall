@@ -242,6 +242,7 @@ public class DataSourceController {
         if (dbId < 0) {
             result.error500("资源ID错误");
             return result;
+
         }
         try {
             dataSourceService.asyncUpdateAmount(dbId, type);
