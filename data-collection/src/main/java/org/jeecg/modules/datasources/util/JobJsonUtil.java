@@ -12,7 +12,9 @@ import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE_W
 
 import com.alibaba.fastjson.JSONObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.jeecg.modules.datasources.dto.JobResultDTO;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ConnectionBean;
@@ -20,13 +22,14 @@ import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.ReaderBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.ReaderBean.ParameterBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.WriterBean;
-import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.WriterBean.ParameterBeanX;
-import org.jeecg.modules.datasources.dto.JobResultDTO.ContentBean.WriterBean.ParameterBeanX.ConnectionBeanW;
 import org.jeecg.modules.datasources.dto.JobResultDTO.SettingBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.SettingBean.ErrorLimitBean;
 import org.jeecg.modules.datasources.dto.JobResultDTO.SettingBean.SpeedBean;
+import org.jeecg.modules.datasources.dto.NameAndTypeDTO;
 import org.jeecg.modules.datasources.dto.OfflineTaskDTO;
 import org.jeecg.modules.datasources.dto.OfflineTaskDTO.MappingColumnsBean;
+import org.jeecg.modules.datasources.dto.ParameterBeanDTO;
+import org.jeecg.modules.datasources.dto.ParameterBeanDTO.ConnectionBeanW;
 import org.jeecg.modules.datasources.model.WaterfallDataSource;
 
 public class JobJsonUtil {
@@ -104,27 +107,36 @@ public class JobJsonUtil {
         if (ORACLE.equals(targetType)) {
             writerName = ORACLE_WRITER;
         }
-        if (HIVE.equals(originalType)) {
-            writerName = HIVE_WRITER;
-        }
-        writerBean.setName(writerName);
         // 目标表参数
-        ParameterBeanX parameterBeanX = new ParameterBeanX();
+        ParameterBeanDTO parameterBeanX = new ParameterBeanDTO();
         // 是否打印
         parameterBeanX.setPrint(true);
         parameterBeanX.setEncoding("UTF-8");
-        parameterBeanX.setUsername(target.getUsername());
-        parameterBeanX.setPassword(target.getPassword());
-        List<ConnectionBeanW> writeConnections = new ArrayList<>(1);
-        ConnectionBeanW writeConnection = new ConnectionBeanW();
-        List<String> tables = new ArrayList<>(1);
-        tables.add(input.getTargetTable());
-        writeConnection.setTable(tables);
-        writeConnection.setJdbcUrl(target.getJdbcUrl());
-        writeConnections.add(writeConnection);
-        parameterBeanX.setConnection(writeConnections);
-        parameterBeanX.setColumn(input.getMappingColumns().stream().map(MappingColumnsBean::getTargetColumn).collect(
-                Collectors.toList()));
+        if (HIVE.equals(originalType)) {
+            writerName = HIVE_WRITER;
+            parameterBeanX.setDefaultFS(input.getDefaultFS());
+            parameterBeanX.setPath(input.getPath());
+            parameterBeanX.setFileType("TEXT");
+            parameterBeanX.setFileName(input.getTargetTable());
+            parameterBeanX.setHadoopConfig(input.getHadoopConfig());
+        } else {
+            parameterBeanX.setUsername(target.getUsername());
+            parameterBeanX.setPassword(target.getPassword());
+            List<ConnectionBeanW> writeConnections = new ArrayList<>(1);
+            ConnectionBeanW writeConnection = new ConnectionBeanW();
+            List<String> tables = new ArrayList<>(1);
+            tables.add(input.getTargetTable());
+            writeConnection.setTable(tables);
+            writeConnection.setJdbcUrl(target.getJdbcUrl());
+            writeConnections.add(writeConnection);
+            parameterBeanX.setConnection(writeConnections);
+        }
+        writerBean.setName(writerName);
+        List<NameAndTypeDTO> columns = new ArrayList<>();
+        parameterBeanX.setColumn(columns);
+        input.getMappingColumns().forEach(e -> {
+            columns.add(NameAndTypeDTO.builder().name(e.getTargetColumn()).type(e.getTargetColumnType()).build());
+        });
         writerBean.setParameter(parameterBeanX);
         content.setWriter(writerBean);
         contentBeans.add(content);
