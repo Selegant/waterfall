@@ -106,7 +106,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
         WaterfallDataSource dbWaterfall = waterfallDataSourceMapper.selectByPrimaryKey(dataSource.getId());
         dataSource.setJdbcUrl(concatUrl(dataSource));
         connection(dataSource);
-        waterfallDataSourceMapper.updateByPrimaryKeySelective(dataSource);
+        waterfallDataSourceMapper.updateById(dataSource);
         if (!dbWaterfall.getJdbcUrl().equals(dataSource.getJdbcUrl()) || !dbWaterfall.getUsername()
                 .equals(dataSource.getUsername()) || !dbWaterfall.getPassword().equals(dataSource.getPassword())) {
             DatasourcePool.update(dataSource);
