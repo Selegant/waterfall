@@ -1,4 +1,4 @@
-package org.jeecg.modules.datasources.controller;
+package org.jeecg.modules.datasources.webscoket;
 
 import com.alibaba.fastjson.JSONObject;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @ServerEndpoint("/logWebsocket/{userId}")
-public class JobWebsocketController {
+public class JobWebsocket {
 
     private Session session;
 
@@ -33,7 +33,7 @@ public class JobWebsocketController {
     /**
      * 缓存 webSocket连接到单机服务class中（整体方案支持集群）
      */
-    private static CopyOnWriteArraySet<JobWebsocketController> webSockets = new CopyOnWriteArraySet<>();
+    private static CopyOnWriteArraySet<JobWebsocket> webSockets = new CopyOnWriteArraySet<>();
 
     private static Map<String, Session> sessionPool = new HashMap<String, Session>();
 
@@ -85,4 +85,6 @@ public class JobWebsocketController {
             pushMessage(JSONObject.toJSONString(data));
         }
     }
+
+
 }

@@ -83,4 +83,13 @@ public class WaterfallDataSource {
      * 更新时间
      */
     private Date updateTime;
+
+    private String defaultfs;
+
+    /**
+     * hive path
+     */
+    private String path;
+
+    private String hadoopConfig;
 }
