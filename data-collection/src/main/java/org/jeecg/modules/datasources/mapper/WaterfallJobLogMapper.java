@@ -1,12 +1,15 @@
 package org.jeecg.modules.datasources.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallJobLog;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface WaterfallJobLogMapper {
+public interface WaterfallJobLogMapper extends BaseMapper<WaterfallJobLog> {
+
     int deleteByPrimaryKey(Long id);
 
     int insert(WaterfallJobLog record);
@@ -62,4 +65,5 @@ public interface WaterfallJobLogMapper {
             @Param("triggerTimeStart") Date triggerTimeStart,
             @Param("triggerTimeEnd") Date triggerTimeEnd,
             @Param("logStatus") int logStatus);
+
 }
