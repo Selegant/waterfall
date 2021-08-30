@@ -1,11 +1,14 @@
 package org.jeecg.modules.datasources.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.modules.datasources.antlr.mysql.MySqlLexer;
-import org.jeecg.modules.datasources.antlr.mysql.MySqlParser;
+import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.modules.datasources.antlr.mysql.*;
 import org.jeecg.modules.datasources.antlr.oracle.OracleLexer;
 import org.jeecg.modules.datasources.antlr.oracle.OracleParser;
 import org.jeecg.modules.datasources.constant.DataSourceConstant;
@@ -24,88 +27,36 @@ import java.util.stream.Collectors;
  * @Author liansongye
  * @create 2021/8/4 10:07 上午
  */
+@Slf4j
 public class DdlConvertUtil {
-
 
     /**************************** Mysql ********************************/
 
-    // todo 1、改到visitor或者listener  2、添加分区字段解析
-    public static DataModuleDTO mysqlToModel(String sql) throws IOException {
-        MySqlParser parse = getParseTree(sql);
-        DataModuleDTO ddl = new DataModuleDTO();
-        MySqlParser.RootContext statement = parse.root();
-        MySqlParser.CreateTableContext table = statement.sqlStatements().sqlStatement(0).ddlStatement().createTable();
-        String dbAndTable = table.getRuleContexts(MySqlParser.TableNameContext.class).get(0).getText().replaceAll("`", "");
-        dbAndTable = dbAndTable.contains(".") ? dbAndTable.split("\\.")[1] : dbAndTable;
-        ddl.setModelName(dbAndTable);
-
-        List<MySqlParser.CreateDefinitionContext> clounmsContext = table.getRuleContexts(MySqlParser.CreateDefinitionsContext.class).get(0).getRuleContexts(MySqlParser.ColumnDeclarationContext.class);
-
-        //表字段
-        List<WaterfallModelField> coloumns = new ArrayList<>(clounmsContext.size());
-        for (MySqlParser.CreateDefinitionContext clounm : clounmsContext) {
-            String id = clounm.getRuleContexts(MySqlParser.UidContext.class).get(0).getText().replace("`","");
-            MySqlParser.ColumnDefinitionContext columnDefinition = clounm.getRuleContexts(MySqlParser.ColumnDefinitionContext.class).get(0);
-            String dataType = DataTypeUtil.parseDataTypeOne(DataSourceConstant.MYSQL,columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getChild(0).getText());
-            List<MySqlParser.LengthOneDimensionContext> lenContexts = columnDefinition.getRuleContexts(MySqlParser.DataTypeContext.class).get(0).getRuleContexts(MySqlParser.LengthOneDimensionContext.class);
-            String len = CollectionUtils.isEmpty(lenContexts) ? null : lenContexts.get(0).getRuleContexts(MySqlParser.DecimalLiteralContext.class).get(0).getText().replace("(","").replace(")","");
-            Boolean isPrimary = CollectionUtils.isEmpty(columnDefinition.getRuleContexts(MySqlParser.PrimaryKeyColumnConstraintContext.class)) ? false : true;
-            Boolean emptyFlag = false;
-            if (!isPrimary) {
-                emptyFlag = CollectionUtils.isEmpty(columnDefinition.getRuleContexts(MySqlParser.NullNotnullContext.class)) ? true : false;
-            }
-            String comment = "''";
-            List<MySqlParser.CommentColumnConstraintContext> commentContexts = columnDefinition.getRuleContexts(MySqlParser.CommentColumnConstraintContext.class);
-            if (commentContexts != null && commentContexts.size() > 1) {
-                comment = commentContexts.get(1).getText();
-            }
-            WaterfallModelField waterfallModelField = new WaterfallModelField();
-            waterfallModelField.setFieldName(id);
-            waterfallModelField.setFieldTypeName(dataType);
-            waterfallModelField.setLength(len);
-            waterfallModelField.setPrimarykeyFlag(isPrimary);
-            waterfallModelField.setEmptyFlag(emptyFlag);
-            waterfallModelField.setRemark(comment);
-            coloumns.add(waterfallModelField);
-        }
-
-        ddl.setModelFields(coloumns);
-        return ddl;
-    }
-
-    private static MySqlParser getParseTree(String sql) throws IOException {
+    public static DataModuleDTO mysqlToModel(String sql) {
         CharStream input = CharStreams.fromString(sql);
         MySqlLexer lexer = new MySqlLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MySqlParser parser = new MySqlParser(tokens);
-        return parser;
+        ParseTree tree = parser.program();
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        MySqlParserBaseListener listener = new MySqlParserBaseListener();
+        walker.walk(listener, tree);
+
+        return listener.getModule();
     }
 
     public static void main(String[] args) {
-        String sql = "CREATE TABLE `COMPACTION_QUEUE` (\n" +
-                "  `CQ_ID` BIGINT(20) NOT NULL,\n" +
-                "  `CQ_DATABASE` VARCHAR(128) NOT NULL,\n" +
-                "  `CQ_TABLE` VARCHAR(128) NOT NULL,\n" +
-                "  `CQ_PARTITION` VARCHAR(767) DEFAULT NULL,\n" +
-                "  `CQ_STATE` CHAR(1) NOT NULL,\n" +
-                "  `CQ_TYPE` CHAR(1) NOT NULL,\n" +
-                "  `CQ_TBLPROPERTIES` VARCHAR(2048) DEFAULT NULL,\n" +
-                "  `CQ_WORKER_ID` VARCHAR(128) DEFAULT NULL,\n" +
-                "  `CQ_START` BIGINT(20) DEFAULT NULL,\n" +
-                "  `CQ_RUN_AS` VARCHAR(128) DEFAULT NULL,\n" +
-                "  `CQ_HIGHEST_TXN_ID` BIGINT(20) DEFAULT NULL,\n" +
-                "  `CQ_META_INFO` VARBINARY(2048) DEFAULT NULL,\n" +
-                "  `CQ_HADOOP_JOB_ID` VARCHAR(32) DEFAULT NULL\n" +
-                ",);\n" +
-                "\n";
-        try {
-            mysqlToModel(sql);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String sql = "CREATE TABLE IF NOT EXISTS nbods.cd_treatdiagnosis\n" +
+                "(\n" +
+                "\t`id` INT AUTO_INCREMENT COMMENT ' id ' PRIMARY KEY,\n" +
+                "\tPRIMARY KEY (`id`)\n" +
+                ")";
+        System.out.println(mysqlToModel(sql).toString());
+
     }
 
-    public static DataModuleDTO oracleToModel(String sql) throws IOException {
+    public static DataModuleDTO oracleToModel(String sql) {
         CharStream input = CharStreams.fromString(sql);
         OracleLexer lexer = new OracleLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
