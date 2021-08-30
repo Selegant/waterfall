@@ -15,4 +15,6 @@ public interface WaterfallModelPartitionMapper  extends BaseMapper<WaterfallMode
     int updateByPrimaryKeySelective(WaterfallModelPartition record);
 
     int updateByPrimaryKey(WaterfallModelPartition record);
+
+    void deleteByModelId(Integer modelId);
 }

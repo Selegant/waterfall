@@ -15,4 +15,6 @@ public interface WaterfallModelFieldMapper extends BaseMapper<WaterfallModelFiel
     int updateByPrimaryKeySelective(WaterfallModelField record);
 
     int updateByPrimaryKey(WaterfallModelField record);
+
+    void deleteByModelId(Integer modelId);
 }

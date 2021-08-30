@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Api(value = "模型分区字段")
 public class WaterfallModelPartition {
 

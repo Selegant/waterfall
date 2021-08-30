@@ -3,6 +3,9 @@ package org.jeecg.modules.datasources.controller;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
@@ -29,11 +32,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("datasource")
 @Slf4j
+@Api(tags = "数据源管理接口")
 public class DataSourceController {
 
     @Autowired
     IDataSourceService dataSourceService;
 
+    @ApiOperation("数据源列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<List<WaterfallDataSource>> list(@RequestParam String purpose, HttpServletRequest request) {
         Result<List<WaterfallDataSource>> result = new Result<>();
@@ -169,6 +174,7 @@ public class DataSourceController {
         return result;
     }
 
+    @ApiOperation("数据表列表")
     @RequestMapping(value = "/getTables/{id}", method = RequestMethod.GET)
     public Result<List<String>> getTables(@PathVariable(value = "id") String id, HttpServletRequest request) {
         Result<List<String>> result = new Result<>();

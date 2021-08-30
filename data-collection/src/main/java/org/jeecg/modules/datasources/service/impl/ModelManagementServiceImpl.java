@@ -105,6 +105,13 @@ public class ModelManagementServiceImpl implements IModelManagementService {
 
     @Override
     public void updateFolderWithConditionById(WaterfallFolder folder) {
+        if (folder.getParentId() != ZERO && !exsitFolderById(folder.getParentId())) {
+            throw new JeecgBootException("父层级不存在！");
+        }
+
+//        if (exsitFolderByParentIdAndFolderName(folder.getParentId(), folder.getFolderName())) {
+//            throw new JeecgBootException("同层级该文件名已经存在！");
+//        }
         folder.setUpdateTime(new Date());
         waterfallFolderMapper.updateById(folder);
     }
@@ -129,7 +136,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public Boolean exsitModelByFolderIdAndModelName(Integer folderId, String modelName) {
         LambdaQueryWrapper<WaterfallModel> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WaterfallModel::getId, folderId)
+        queryWrapper.eq(WaterfallModel::getFolderId, folderId)
                 .eq(WaterfallModel::getModelName, modelName)
                 .eq(WaterfallModel::getDelFlag, false);
         return waterfallModelMapper.selectCount(queryWrapper) > 0;
@@ -168,45 +175,11 @@ public class ModelManagementServiceImpl implements IModelManagementService {
             dataModuleDTO.setId(waterfallModel.getId());
             //字段信息
             if (dataModuleDTO.getModelFields() != null) {
-                Set<String> fieldSet = new HashSet<>();
-                dataModuleDTO.getModelFields().stream().forEach(e -> {
-                    fieldSet.add(e.getFieldName());
-                });
-                if (fieldSet.size() != dataModuleDTO.getModelFields().size()) {
-                    throw new JeecgBootException("字段名重复！");
-                }
-                dataModuleDTO.getModelFields().stream().forEach(e -> {
-                    WaterfallModelField modelField = new WaterfallModelField();
-                    modelField.setModelId(waterfallModel.getId());
-                    modelField.setFieldName(e.getFieldName());
-                    modelField.setFieldTypeName(e.getFieldTypeName());
-                    modelField.setMetadataId(e.getMetadataId());
-                    modelField.setPrimarykeyFlag(e.getPrimarykeyFlag());
-                    modelField.setEmptyFlag(e.getEmptyFlag());
-                    modelField.setLength(e.getLength());
-                    modelField.setRemark(StringUtils.isEmpty(e.getRemark()) ? "" : e.getRemark());
-                    modelField.setFieldSort(e.getFieldSort());
-
-                    modelField.setCreateTime(new Date());
-                    modelField.setUpdateTime(new Date());
-                    modelField.setDelFlag(false);
-                    waterfallModelFieldMapper.insertSelective(modelField);
-                });
+                saveModelField(dataModuleDTO.getModelFields(), waterfallModel.getId());
             }
             //分区字段
             if (dataModuleDTO.getModelPartitions() != null) {
-                dataModuleDTO.getModelPartitions().stream().forEach(e -> {
-                    WaterfallModelPartition modelPartition = new WaterfallModelPartition();
-                    modelPartition.setModelId(waterfallModel.getId());
-                    modelPartition.setPartitionName(e.getPartitionName());
-                    modelPartition.setPartitionTypeId(e.getPartitionTypeId());
-                    modelPartition.setMetadataId(e.getMetadataId());
-                    modelPartition.setRemark(StringUtils.isEmpty(e.getRemark()) ? "" : e.getRemark());
-                    modelPartition.setCreateTime(new Date());
-                    modelPartition.setUpdateTime(new Date());
-                    modelPartition.setDelFlag(false);
-                    waterfallModelPartitionMapper.insertSelective(modelPartition);
-                });
+                savePartition(dataModuleDTO.getModelPartitions(), waterfallModel.getId());
             }
         }
     }
@@ -233,17 +206,13 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         waterfallModel.setUpdateTime(new Date());
         waterfallModelMapper.updateById(waterfallModel);
         if (!CollectionUtils.isEmpty(dataModuleDTO.getModelFields())) {
-            dataModuleDTO.getModelFields().stream().forEach(e -> {
-                e.setUpdateTime(new Date());
-                waterfallModelFieldMapper.updateById(e);
-            });
+            waterfallModelFieldMapper.deleteByModelId(dataModuleDTO.getId());
+            saveModelField(dataModuleDTO.getModelFields(), dataModuleDTO.getId());
         }
 
         if (!CollectionUtils.isEmpty(dataModuleDTO.getModelPartitions())) {
-            dataModuleDTO.getModelPartitions().stream().forEach(e -> {
-                e.setUpdateTime(new Date());
-                waterfallModelPartitionMapper.updateById(e);
-            });
+            waterfallModelPartitionMapper.deleteByModelId(dataModuleDTO.getId());
+            savePartition(dataModuleDTO.getModelPartitions(), dataModuleDTO.getId());
         }
     }
 
@@ -269,6 +238,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         res.setModelStatusName(model.getModelStatusName());
         res.setModelFields(modelFields);
         res.setModelPartitions(modulePartitions);
+        res.setRemark(model.getRemark());
 
         return res;
     }
@@ -276,23 +246,20 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public DataModuleDTO ddlToModel(DataModuleDTO dto) {
         DataModuleDTO res = null;
-        try {
-            if (DataSourceConstant.MYSQL.equals(dto.getDbType().toUpperCase())) {
-                res = DdlConvertUtil.mysqlToModel(dto.getSql());
-            }else if (DataSourceConstant.ORACLE.equals(dto.getDbType().toUpperCase())) {
-                res = DdlConvertUtil.oracleToModel(dto.getSql());
-            }else if (DataSourceConstant.HIVE.equals(dto.getDbType().toUpperCase())){
+        if (DataSourceConstant.MYSQL.equals(dto.getDbType().toUpperCase())) {
+            res = DdlConvertUtil.mysqlToModel(dto.getSql());
+        }else if (DataSourceConstant.ORACLE.equals(dto.getDbType().toUpperCase())) {
+            res = DdlConvertUtil.oracleToModel(dto.getSql());
+        }else if (DataSourceConstant.HIVE.equals(dto.getDbType().toUpperCase())){
 
-            }else {
-                throw new JeecgBootException("暂不支持该类型");
-            }
-            res.setRemark(dto.getRemark());
-            res.setFolderId(dto.getFolderId());
-            saveDataModule(res);
-            res = queryDataMoudle(res.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
+        }else {
+            throw new JeecgBootException("暂不支持该类型");
         }
+        if (StringUtils.isNotBlank(dto.getModelName())) {
+            res.setModelName(dto.getModelName());
+        }
+        res.setRemark(dto.getRemark());
+        res.setFolderId(dto.getFolderId());
         return res;
     }
 
@@ -313,8 +280,9 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public DataModuleDTO tableOrViewToModel(Integer folderId, Integer source, String tableName) {
         DataModuleDTO dataModule = getModel(folderId, source, tableName);
-        saveDataModule(dataModule);
-        return queryDataMoudle(dataModule.getId());
+//        saveDataModule(dataModule);
+//        return queryDataMoudle(dataModule.getId());
+        return dataModule;
     }
 
     @Override
@@ -383,6 +351,48 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     private void checkParams(WaterfallFolder waterfallFolder) {
+    }
+
+    private void savePartition(List<WaterfallModelPartition> modelPartitions, Integer modelId){
+        modelPartitions.stream().forEach(e -> {
+            WaterfallModelPartition modelPartition = new WaterfallModelPartition();
+            modelPartition.setModelId(modelId);
+            modelPartition.setPartitionName(e.getPartitionName());
+            modelPartition.setPartitionTypeId(e.getPartitionTypeId());
+            modelPartition.setMetadataId(e.getMetadataId());
+            modelPartition.setRemark(StringUtils.isEmpty(e.getRemark()) ? "" : e.getRemark());
+            modelPartition.setCreateTime(new Date());
+            modelPartition.setUpdateTime(new Date());
+            modelPartition.setDelFlag(false);
+            waterfallModelPartitionMapper.insertSelective(modelPartition);
+        });
+    }
+
+    private void saveModelField(List<WaterfallModelField> modelFields, Integer modelId) {
+        Set<String> fieldSet = new HashSet<>();
+        modelFields.stream().forEach(e -> {
+            fieldSet.add(e.getFieldName());
+        });
+        if (fieldSet.size() != modelFields.size()) {
+            throw new JeecgBootException("字段名重复！");
+        }
+        modelFields.stream().forEach(e -> {
+            WaterfallModelField modelField = new WaterfallModelField();
+            modelField.setModelId(modelId);
+            modelField.setFieldName(e.getFieldName());
+            modelField.setFieldTypeName(e.getFieldTypeName());
+            modelField.setMetadataId(e.getMetadataId());
+            modelField.setPrimarykeyFlag(e.getPrimarykeyFlag());
+            modelField.setEmptyFlag(e.getEmptyFlag());
+            modelField.setLength(e.getLength());
+            modelField.setRemark(StringUtils.isEmpty(e.getRemark()) ? "" : e.getRemark());
+            modelField.setFieldSort(e.getFieldSort());
+
+            modelField.setCreateTime(new Date());
+            modelField.setUpdateTime(new Date());
+            modelField.setDelFlag(false);
+            waterfallModelFieldMapper.insertSelective(modelField);
+        });
     }
 
 

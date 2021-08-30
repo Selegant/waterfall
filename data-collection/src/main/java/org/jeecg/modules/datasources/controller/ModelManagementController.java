@@ -196,14 +196,14 @@ public class ModelManagementController {
     }
 
     @PostMapping("/data-module/{folderId}/{source}/{tableName}")
-    @ApiOperation("单表生成数据模型")
+    @ApiOperation("单表或视图生成数据模型")
     public Result<Object> tableOrViewToModel(@PathVariable Integer folderId,
                                     @PathVariable Integer source,
                                     @PathVariable String tableName) {
         Result<Object> result = new Result<>();
         try {
             result.setResult(modelManagementService.tableOrViewToModel(folderId, source, tableName));
-            result.setMessage("add success!");
+            result.setMessage("query success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

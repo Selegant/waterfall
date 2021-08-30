@@ -140,4 +140,8 @@
       del_flag = #{delFlag,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <delete id="deleteByModelId" parameterType="java.lang.Integer">
+    delete from waterfall_model_partition where model_id = #{modelId,jdbcType=INTEGER}
+  </delete>
 </mapper>
