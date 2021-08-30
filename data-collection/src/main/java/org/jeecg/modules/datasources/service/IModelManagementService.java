@@ -23,9 +23,9 @@ public interface IModelManagementService {
 
     Boolean exsitFolderById(Integer id);
 
-    Boolean exsitFolderByParentIdAndFolderName(Integer parentId, String folderName);
+    Boolean exsitFolderByParentIdAndFolderNameExcludeId(Integer id, Integer parentId, String folderName);
 
-    Boolean exsitModelByFolderIdAndModelName(Integer folderId, String modelName);
+    Boolean exsitModelByFolderIdAndModelNameExcludeId(Integer id, Integer folderId, String modelName);
 
     Boolean exsitModelFieldByModelIdAndFieldName(Integer modelId, String fieldName);
 

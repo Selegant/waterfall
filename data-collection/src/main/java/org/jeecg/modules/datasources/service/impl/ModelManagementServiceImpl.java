@@ -23,6 +23,7 @@ import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IModelManagementService;
 import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.datasources.util.DdlConvertUtil;
+import org.jeecg.modules.datasources.util.RegularUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +91,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         if (waterfallFolder.getParentId() != ZERO && !exsitFolderById(waterfallFolder.getParentId())) {
             throw new JeecgBootException("父层级不存在！");
         }
-        if (exsitFolderByParentIdAndFolderName(waterfallFolder.getParentId(), waterfallFolder.getFolderName())) {
+        if (exsitFolderByParentIdAndFolderNameExcludeId(waterfallFolder.getId(), waterfallFolder.getParentId(), waterfallFolder.getFolderName())) {
             throw new JeecgBootException("同层级该文件名已经存在！");
         }
         checkParams(waterfallFolder);
@@ -109,9 +110,9 @@ public class ModelManagementServiceImpl implements IModelManagementService {
             throw new JeecgBootException("父层级不存在！");
         }
 
-//        if (exsitFolderByParentIdAndFolderName(folder.getParentId(), folder.getFolderName())) {
-//            throw new JeecgBootException("同层级该文件名已经存在！");
-//        }
+        if (exsitFolderByParentIdAndFolderNameExcludeId(folder.getId(), folder.getParentId(), folder.getFolderName())) {
+            throw new JeecgBootException("同层级该文件名已经存在！");
+        }
         folder.setUpdateTime(new Date());
         waterfallFolderMapper.updateById(folder);
     }
@@ -119,27 +120,29 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public Boolean exsitFolderById(Integer id) {
         LambdaQueryWrapper<WaterfallFolder> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WaterfallFolder::getId, id)
+        queryWrapper.select(WaterfallFolder::getId).eq(WaterfallFolder::getId, id)
                     .eq(WaterfallFolder::getDelFlag, false);
         return waterfallFolderMapper.selectCount(queryWrapper) > 0;
     }
 
     @Override
-    public Boolean exsitFolderByParentIdAndFolderName(Integer parentId, String folderName) {
+    public Boolean exsitFolderByParentIdAndFolderNameExcludeId(Integer id, Integer parentId, String folderName) {
         LambdaQueryWrapper<WaterfallFolder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WaterfallFolder::getParentId, parentId)
                 .eq(WaterfallFolder::getFolderName, folderName)
                 .eq(WaterfallFolder::getDelFlag, false);
-        return waterfallFolderMapper.selectCount(queryWrapper) > 0;
+        List<WaterfallFolder> waterfallFolders = waterfallFolderMapper.selectList(queryWrapper);
+        return waterfallFolders.size() > 1 || (waterfallFolders.size() == 1 && id.equals(waterfallFolders.get(0).getId()));
     }
 
     @Override
-    public Boolean exsitModelByFolderIdAndModelName(Integer folderId, String modelName) {
+    public Boolean exsitModelByFolderIdAndModelNameExcludeId(Integer id, Integer folderId, String modelName) {
         LambdaQueryWrapper<WaterfallModel> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WaterfallModel::getFolderId, folderId)
+        queryWrapper.select(WaterfallModel::getId).eq(WaterfallModel::getFolderId, folderId)
                 .eq(WaterfallModel::getModelName, modelName)
                 .eq(WaterfallModel::getDelFlag, false);
-        return waterfallModelMapper.selectCount(queryWrapper) > 0;
+        List<WaterfallModel> waterfallModels = waterfallModelMapper.selectList(queryWrapper);
+        return waterfallModels.size() > 1 || (id != null && waterfallModels.size() == 1 && !id.equals(waterfallModels.get(0)));
     }
 
     @Override
@@ -153,11 +156,14 @@ public class ModelManagementServiceImpl implements IModelManagementService {
 
     @Override
     public void saveDataModule(DataModuleDTO dataModuleDTO) {
+        if (!RegularUtil.isSqlColunmName(dataModuleDTO.getModelName())) {
+            throw new JeecgBootException("模型名不符合sql标准！");
+        }
         if (!exsitFolderById(dataModuleDTO.getFolderId())) {
             throw new JeecgBootException("所属层级不存在！");
         }
         //检查唯一性 folderId+modelName
-        if (exsitModelByFolderIdAndModelName(dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
+        if (exsitModelByFolderIdAndModelNameExcludeId(dataModuleDTO.getId(), dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
             throw new JeecgBootException("模型名已经存在！");
         }
         WaterfallModel waterfallModel = new WaterfallModel();
@@ -192,7 +198,13 @@ public class ModelManagementServiceImpl implements IModelManagementService {
 
     @Override
     public void updateModuleWithConditionById(DataModuleDTO dataModuleDTO) {
-
+        if (!exsitFolderById(dataModuleDTO.getFolderId())) {
+            throw new JeecgBootException("所属层级不存在！");
+        }
+        //检查唯一性 folderId+modelName
+        if (exsitModelByFolderIdAndModelNameExcludeId(dataModuleDTO.getId(), dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
+            throw new JeecgBootException("模型名已经存在！");
+        }
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setId(dataModuleDTO.getId());
         waterfallModel.setFolderId(dataModuleDTO.getFolderId());
@@ -371,6 +383,9 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     private void saveModelField(List<WaterfallModelField> modelFields, Integer modelId) {
         Set<String> fieldSet = new HashSet<>();
         modelFields.stream().forEach(e -> {
+            if (!RegularUtil.isSqlColunmName(e.getFieldName())) {
+                throw new JeecgBootException("模型字段名不符合sql标准！");
+            }
             fieldSet.add(e.getFieldName());
         });
         if (fieldSet.size() != modelFields.size()) {
@@ -379,7 +394,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         modelFields.stream().forEach(e -> {
             WaterfallModelField modelField = new WaterfallModelField();
             modelField.setModelId(modelId);
-            modelField.setFieldName(e.getFieldName());
+            modelField.setFieldName(e.getFieldName().toLowerCase());
             modelField.setFieldTypeName(e.getFieldTypeName());
             modelField.setMetadataId(e.getMetadataId());
             modelField.setPrimarykeyFlag(e.getPrimarykeyFlag());
