@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,6 +160,9 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         if (!RegularUtil.isSqlColunmName(dataModuleDTO.getModelName())) {
             throw new JeecgBootException("模型名不符合sql标准！");
         }
+        if (dataModuleDTO.getModelName().startsWith("_")) {
+            throw new JeecgBootException("不支持前缀 '_' ！");
+        }
         if (!exsitFolderById(dataModuleDTO.getFolderId())) {
             throw new JeecgBootException("所属层级不存在！");
         }
@@ -199,28 +201,29 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public void updateModuleWithConditionById(DataModuleDTO dataModuleDTO, boolean isDel) {
-        if (!isDel) {
-            if (!exsitFolderById(dataModuleDTO.getFolderId())) {
-                throw new JeecgBootException("所属层级不存在！");
-            }
-            //检查唯一性 folderId+modelName
-            if (exsitModelByFolderIdAndModelNameExcludeId(dataModuleDTO.getId(), dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
-                throw new JeecgBootException("模型名已经存在！");
-            }
+    public void updateModuleWithConditionById(DataModuleDTO dataModuleDTO) {
+
+        WaterfallModel model = waterfallModelMapper.selectByPrimaryKey(dataModuleDTO.getId());
+        if (model == null) {
+            throw new JeecgBootException("模型不存在！");
         }
+        if (model.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
+            throw new JeecgBootException("请先下架该模型！");
+        }
+        if (!exsitFolderById(dataModuleDTO.getFolderId())) {
+            throw new JeecgBootException("所属层级不存在！");
+        }
+        //检查唯一性 folderId+modelName
+        if (exsitModelByFolderIdAndModelNameExcludeId(dataModuleDTO.getId(), dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
+            throw new JeecgBootException("模型名已经存在！");
+        }
+
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setId(dataModuleDTO.getId());
-        waterfallModel.setFolderId(dataModuleDTO.getFolderId());
         waterfallModel.setModelName(dataModuleDTO.getModelName());
-        waterfallModel.setModelStatusCode(dataModuleDTO.getModelStatusCode());
-        waterfallModel.setModelStatusName(dataModuleDTO.getModelStatusName());
-        waterfallModel.setExportTypeCode(dataModuleDTO.getExportTypeCode());
-        waterfallModel.setExportTypeName(dataModuleDTO.getExportTypeName());
         waterfallModel.setRemark(dataModuleDTO.getRemark());
-        waterfallModel.setDelFlag(dataModuleDTO.getDelFlag());
         waterfallModel.setUpdateTime(new Date());
-        waterfallModelMapper.updateById(waterfallModel);
+        waterfallModelMapper.updateByPrimaryKeySelective(waterfallModel);
         if (!CollectionUtils.isEmpty(dataModuleDTO.getModelFields())) {
             waterfallModelFieldMapper.deleteByModelId(dataModuleDTO.getId());
             saveModelField(dataModuleDTO.getModelFields(), dataModuleDTO.getId());
@@ -235,6 +238,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public DataModuleDTO queryDataMoudle(Integer id) {
         WaterfallModel model = waterfallModelMapper.selectById(id);
+        if (model == null) return null;
 
         List<WaterfallModelField> modelFields = waterfallModelFieldMapper.selectList(
                 new LambdaQueryWrapper<WaterfallModelField>().eq(WaterfallModelField::getModelId, model.getId())
@@ -255,6 +259,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         res.setModelFields(modelFields);
         res.setModelPartitions(modulePartitions);
         res.setRemark(model.getRemark());
+        res.setPublishDb(model.getPublishDb());
 
         return res;
     }
@@ -284,8 +289,8 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public void modelPublish(Integer modelId) {
         DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
-        if (dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
-            throw new JeecgBootException("模型已发布，请勿重复操作！");
+        if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.UN_PUBLISHED)) {
+            throw new JeecgBootException("未发布模型才能发布！");
         }
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setId(dataModuleDTO.getId());
@@ -298,8 +303,6 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     @Override
     public DataModuleDTO tableOrViewToModel(Integer folderId, Integer source, String tableName) {
         DataModuleDTO dataModule = getModel(folderId, source, tableName);
-//        saveDataModule(dataModule);
-//        return queryDataMoudle(dataModule.getId());
         return dataModule;
     }
 
@@ -318,9 +321,18 @@ public class ModelManagementServiceImpl implements IModelManagementService {
             if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
                 errorMsg.put(dataModuleDTO.getModelName(), "模型未发布，无法物理化！");
             }else {
+                String modelName = dataModuleDTO.getModelName().startsWith("_") ? dataModuleDTO.getFolderId() + dataModuleDTO.getModelName() :
+                        dataModuleDTO.getFolderId() + "_" + dataModuleDTO.getModelName();
+                dataModuleDTO.setModelName(modelName);
                 String createSql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
-                String delsql = DdlConvertUtil.delSql(dataModuleDTO.getModelName());
-                dataSourceService.createHiveTableNoInterrupt(dbId, errorMsg, dataModuleDTO.getModelName(), delsql, createSql);
+                boolean success = dataSourceService.executeHiveSqlNoInterrupt(dbId, errorMsg, modelName, createSql);
+                if (success) {
+                    WaterfallModel model = new WaterfallModel();
+                    model.setId(dataModuleDTO.getId());
+                    model.setPublishDb(dbId);
+                    model.setUpdateTime(new Date());
+                    waterfallModelMapper.updateByPrimaryKeySelective(model);
+                }
             }
         });
 
@@ -328,15 +340,37 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public void modelUnpublish(Integer modelId) {
+    public void modelOff(Integer modelId) {
         DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
-        if (dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.UN_PUBLISHED)) {
-            throw new JeecgBootException("模型已下架，请勿重复操作！");
+        if (dataModuleDTO == null || dataModuleDTO.getModelStatusCode() == null) return;
+
+        if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
+            throw new JeecgBootException("已发布的模型才能下架！");
+        }
+        if (dataModuleDTO.getPublishDb() != null) {
+            //删除物理化的表
+            String modelName = dataModuleDTO.getFolderId() + "_" + dataModuleDTO.getModelName();
+            dataSourceService.executeHiveSql(dataModuleDTO.getPublishDb(), DdlConvertUtil.delSql(modelName));
         }
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setId(dataModuleDTO.getId());
         waterfallModel.setModelStatusCode(DataModuleDTO.UN_PUBLISHED);
         waterfallModel.setModelStatusName(DataModuleDTO.UN_PUBLISHED_NAME);
+        waterfallModel.setUpdateTime(new Date());
+        waterfallModelMapper.updateByPrimaryKeySelective(waterfallModel);
+    }
+
+    @Override
+    public void deleteModelById(Integer id) {
+        DataModuleDTO dataModuleDTO = queryDataMoudle(id);
+        if (dataModuleDTO == null || dataModuleDTO.getModelStatusCode() == null) return;
+
+        if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.UN_PUBLISHED)) {
+            throw new JeecgBootException("请先下架该模型！");
+        }
+        WaterfallModel waterfallModel = new WaterfallModel();
+        waterfallModel.setId(dataModuleDTO.getId());
+        waterfallModel.setDelFlag(true);
         waterfallModel.setUpdateTime(new Date());
         waterfallModelMapper.updateByPrimaryKeySelective(waterfallModel);
     }

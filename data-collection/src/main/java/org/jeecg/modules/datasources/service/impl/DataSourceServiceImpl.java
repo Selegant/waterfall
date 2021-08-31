@@ -374,18 +374,15 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void createHiveTable(Integer dbId, String... sqls) {
-        //todo hive jdbc无法批处理 会导致表删了
+    public void executeHiveSql(Integer dbId, String sql) {
         Connection connection = null;
         WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
         MyDatasourcePoolUtil instance = DatasourcePool.pool.get(dataSource.getId());
         try {
             connection = instance.getConnection();
             PreparedStatement ps = null;
-            for (String sql : sqls) {
-                ps = connection.prepareStatement(sql);
-                ps.executeUpdate();
-            }
+            ps = connection.prepareStatement(sql);
+            ps.executeUpdate();
         } catch (SQLException se) {
             log.error("创建Hive表错误-SQLException:{}", se.getMessage());
             throw new JeecgBootException(se.getMessage());
@@ -398,10 +395,11 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
-    public void createHiveTableNoInterrupt(Integer dbId, Map<String, String> errorMsg, String modelName, String... sqls) {
+    public boolean executeHiveSqlNoInterrupt(Integer dbId, Map<String, String> errorMsg, String modelName, String... sqls) {
         Connection connection = null;
         WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
         MyDatasourcePoolUtil instance = DatasourcePool.pool.get(dataSource.getId());
+        boolean res = true;
         try {
             connection = instance.getConnection();
             PreparedStatement ps = null;
@@ -412,12 +410,16 @@ public class DataSourceServiceImpl implements IDataSourceService {
         } catch (SQLException se) {
             log.error("创建Hive表错误-SQLException:{}", se.getMessage());
             errorMsg.put(modelName, "sql错误！");
+            res = false;
         } catch (Exception e) {
             log.error("创建Hive表错误-Exception:{}", e.getMessage());
             errorMsg.put(modelName, "创建Hive表错误！");
+            res = false;
         } finally {
             instance.releaseConnection(connection);
         }
+
+        return res;
     }
 
     @Override
@@ -442,8 +444,7 @@ public class DataSourceServiceImpl implements IDataSourceService {
             fields.add(field);
         }
         String createsql = DdlConvertUtil.modelToHiveDdl(dto);
-        String delsql = DdlConvertUtil.delSql(dto.getModelName());
-        createHiveTable(input.getDbId(), delsql, createsql);
+        executeHiveSql(input.getDbId(), createsql);
     }
 
     @Override

@@ -20,44 +20,14 @@ public class DataModuleDTO{
 
     private Integer id;
 
-    /**
-     * 层级id
-     */
     private Integer folderId;
-
-    /**
-     * 数据模型名称
-     */
     private String modelName;
-
-    /**
-     * 发布状态代码
-     */
     private Integer modelStatusCode;
-
-    /**
-     * 发布状态名
-     */
     private String modelStatusName;
-
-    /**
-     * 创建方式代码
-     */
     private Integer exportTypeCode;
-
-    /**
-     * 创建方式名
-     */
     private String exportTypeName;
-
-    /**
-     * 模型表述
-     */
     private String remark;
-
-    /**
-     * 删除标识
-     */
+    private Integer publishDb;
     private Boolean delFlag;
 
     //数据字段

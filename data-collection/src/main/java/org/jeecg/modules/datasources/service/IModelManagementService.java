@@ -34,7 +34,7 @@ public interface IModelManagementService {
 
     IPage<WaterfallModel> queryDataModulePage(Page<WaterfallModel> page, WaterfallModel waterfallModel);
 
-    void updateModuleWithConditionById(DataModuleDTO dataModuleDTO, boolean isDel);
+    void updateModuleWithConditionById(DataModuleDTO dataModuleDTO);
 
     DataModuleDTO queryDataMoudle(Integer id);
 
@@ -48,5 +48,7 @@ public interface IModelManagementService {
 
     Map<String, String> modelToDb(Integer dbId, List<Integer> modelIds);
 
-    void modelUnpublish(Integer modelId);
+    void modelOff(Integer modelId);
+
+    void deleteModelById(Integer id);
 }

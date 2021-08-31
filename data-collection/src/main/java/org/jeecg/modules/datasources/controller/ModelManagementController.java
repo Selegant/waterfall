@@ -145,7 +145,7 @@ public class ModelManagementController {
     public Result<Object> updateDataModule(@RequestBody DataModuleDTO dataModuleDTO) {
         Result<Object> result = new Result<>();
         try {
-            modelManagementService.updateModuleWithConditionById(dataModuleDTO, false);
+            modelManagementService.updateModuleWithConditionById(dataModuleDTO);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());
@@ -157,11 +157,8 @@ public class ModelManagementController {
     @ApiOperation("删除数据模型")
     public Result<Object> deleteDataModule(@PathVariable Integer id) {
         Result<Object> result = new Result<>();
-        DataModuleDTO dataModuleDTO = new DataModuleDTO();
-        dataModuleDTO.setId(id);
-        dataModuleDTO.setDelFlag(true);
         try {
-            modelManagementService.updateModuleWithConditionById(dataModuleDTO, true);
+            modelManagementService.deleteModelById(id);
             result.success("delete success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -249,13 +246,13 @@ public class ModelManagementController {
         return result;
     }
 
-    @PostMapping("/data-module/unpublish/{modelId}")
+    @PostMapping("/data-module/off/{modelId}")
     @ApiOperation("下架数据模型")
-    public Result<Object> modelUnpublish(@PathVariable Integer modelId) {
+    public Result<Object> modelOff(@PathVariable Integer modelId) {
         Result<Object> result = new Result<>();
         try {
-            modelManagementService.modelUnpublish(modelId);
-            result.setMessage("unpublish success!");
+            modelManagementService.modelOff(modelId);
+            result.setMessage("off model success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

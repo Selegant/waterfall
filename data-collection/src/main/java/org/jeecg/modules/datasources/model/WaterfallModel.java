@@ -36,6 +36,9 @@ public class WaterfallModel {
     @ApiModelProperty("模型表述")
     private String remark;
 
+    @ApiModelProperty("物理化数据库id")
+    private Integer publishDb;
+
     @ApiModelProperty("创建时间")
     private Date createTime;
 
