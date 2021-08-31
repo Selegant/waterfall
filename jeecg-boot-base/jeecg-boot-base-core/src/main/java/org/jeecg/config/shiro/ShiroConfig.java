@@ -129,6 +129,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/newsWebsocket/**", "anon");//CMS模块
         filterChainDefinitionMap.put("/vxeSocket/**", "anon");//JVxeTable无痕刷新示例
         filterChainDefinitionMap.put("/eoaSocket/**","anon");//我的聊天
+        filterChainDefinitionMap.put("/logWebsocket/**", "anon");// 采集日志
 
         //性能监控  TODO 存在安全漏洞泄露TOEKN（durid连接池也有）
         filterChainDefinitionMap.put("/actuator/**", "anon");

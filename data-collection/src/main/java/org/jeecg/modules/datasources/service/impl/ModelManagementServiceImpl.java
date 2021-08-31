@@ -425,7 +425,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         if (waterfallModel.getId() != null) {
             queryWrapper.eq(WaterfallModel::getId, waterfallModel.getId());
         }
-        if (waterfallModel.getFolderId() != null) {
+        if (waterfallModel.getFolderId() != null && ZERO!=waterfallModel.getFolderId()) {
             queryWrapper.eq(WaterfallModel::getFolderId, waterfallModel.getFolderId());
         }
         if (StringUtils.isNotBlank(waterfallModel.getModelName())) {

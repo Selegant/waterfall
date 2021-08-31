@@ -49,6 +49,7 @@ public class JobWebsocket {
             webSockets.add(this);
             sessionPool.put(userId, session);
             log.info("websocket消息 有新的连接，总数为:{}", webSockets.size());
+            sendLogMessage();
         } catch (Exception e) {
         }
     }
@@ -75,7 +76,7 @@ public class JobWebsocket {
         }
     }
 
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void sendLogMessage() {
         if (webSockets.isEmpty()) {
             return;
