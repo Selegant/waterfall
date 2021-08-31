@@ -4,8 +4,10 @@ package org.jeecg.modules.datasources.antlr.mysql;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.jeecg.modules.datasources.constant.DataSourceConstant;
 import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.model.WaterfallModelField;
+import org.jeecg.modules.datasources.util.DataTypeUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,7 +169,10 @@ public class MySqlParserBaseListener implements MySqlParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTableOptionComment(MySqlParser.TableOptionCommentContext ctx) { }
+	@Override public void enterTableOptionComment(MySqlParser.TableOptionCommentContext ctx) {
+		String remark = ctx.STRING_LITERAL().getText();
+		module.setRemark(remark.substring(1,remark.length() -1));
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -305,7 +310,9 @@ public class MySqlParserBaseListener implements MySqlParserListener {
 			dataType = dataType.substring(0, dataType.indexOf("("));
 		}
 		field.setFieldName(fieldName);
-		field.setFieldTypeName(dataType);
+		field.setFieldTypeName(
+				DataTypeUtil.parseDataTypeOne(DataSourceConstant.MYSQL, dataType)
+		);
 		field.setLength(len);
 
 		modelFields.put(fieldName, field);
