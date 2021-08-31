@@ -275,6 +275,7 @@ public class DataSourceController {
         return result;
     }
 
+    @ApiOperation("数据类型列表")
     @RequestMapping(value = "/columnType/{dbType}", method = RequestMethod.GET)
     public Result<List<String>> getTargetTypeColumns(@PathVariable(value = "dbType") String dbType) {
         Result<List<String>> result = new Result<>();

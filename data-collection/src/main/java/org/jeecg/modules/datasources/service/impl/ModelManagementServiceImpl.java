@@ -105,13 +105,15 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public void updateFolderWithConditionById(WaterfallFolder folder) {
-        if (folder.getParentId() != ZERO && !exsitFolderById(folder.getParentId())) {
-            throw new JeecgBootException("父层级不存在！");
-        }
+    public void updateFolderWithConditionById(WaterfallFolder folder, boolean isDel) {
+        if (!isDel) {
+            if (folder.getParentId() != ZERO && !exsitFolderById(folder.getParentId())) {
+                throw new JeecgBootException("父层级不存在！");
+            }
 
-        if (exsitFolderByParentIdAndFolderNameExcludeId(folder.getId(), folder.getParentId(), folder.getFolderName())) {
-            throw new JeecgBootException("同层级该文件名已经存在！");
+            if (exsitFolderByParentIdAndFolderNameExcludeId(folder.getId(), folder.getParentId(), folder.getFolderName())) {
+                throw new JeecgBootException("同层级该文件名已经存在！");
+            }
         }
         folder.setUpdateTime(new Date());
         waterfallFolderMapper.updateById(folder);
@@ -132,7 +134,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                 .eq(WaterfallFolder::getFolderName, folderName)
                 .eq(WaterfallFolder::getDelFlag, false);
         List<WaterfallFolder> waterfallFolders = waterfallFolderMapper.selectList(queryWrapper);
-        return waterfallFolders.size() > 1 || (waterfallFolders.size() == 1 && id.equals(waterfallFolders.get(0).getId()));
+        return waterfallFolders.size() > 1 || (id != null && waterfallFolders.size() == 1 && id.equals(waterfallFolders.get(0).getId()));
     }
 
     @Override
@@ -142,7 +144,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                 .eq(WaterfallModel::getModelName, modelName)
                 .eq(WaterfallModel::getDelFlag, false);
         List<WaterfallModel> waterfallModels = waterfallModelMapper.selectList(queryWrapper);
-        return waterfallModels.size() > 1 || (id != null && waterfallModels.size() == 1 && !id.equals(waterfallModels.get(0)));
+        return waterfallModels.size() > 1 || (id != null && waterfallModels.size() == 1 && !id.equals(waterfallModels.get(0).getId()));
     }
 
     @Override
@@ -197,13 +199,15 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public void updateModuleWithConditionById(DataModuleDTO dataModuleDTO) {
-        if (!exsitFolderById(dataModuleDTO.getFolderId())) {
-            throw new JeecgBootException("所属层级不存在！");
-        }
-        //检查唯一性 folderId+modelName
-        if (exsitModelByFolderIdAndModelNameExcludeId(dataModuleDTO.getId(), dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
-            throw new JeecgBootException("模型名已经存在！");
+    public void updateModuleWithConditionById(DataModuleDTO dataModuleDTO, boolean isDel) {
+        if (!isDel) {
+            if (!exsitFolderById(dataModuleDTO.getFolderId())) {
+                throw new JeecgBootException("所属层级不存在！");
+            }
+            //检查唯一性 folderId+modelName
+            if (exsitModelByFolderIdAndModelNameExcludeId(dataModuleDTO.getId(), dataModuleDTO.getFolderId(), dataModuleDTO.getModelName().toLowerCase())) {
+                throw new JeecgBootException("模型名已经存在！");
+            }
         }
         WaterfallModel waterfallModel = new WaterfallModel();
         waterfallModel.setId(dataModuleDTO.getId());
@@ -272,6 +276,8 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         }
         res.setRemark(dto.getRemark());
         res.setFolderId(dto.getFolderId());
+        res.setSql(dto.getSql());
+        res.setDbType(dto.getDbType());
         return res;
     }
 
@@ -305,14 +311,20 @@ public class ModelManagementServiceImpl implements IModelManagementService {
     }
 
     @Override
-    public void modelToDb(Integer dbId, Integer modelId) {
-        DataModuleDTO dataModuleDTO = queryDataMoudle(modelId);
-        if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
-            throw new JeecgBootException("模型未发布，无法物理化！");
-        }
-        String createSql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
-        String delsql = DdlConvertUtil.delSql(dataModuleDTO.getModelName());
-        dataSourceService.createHiveTable(dbId, delsql, createSql);
+    public Map<String, String> modelToDb(Integer dbId, List<Integer> modelIds) {
+        Map<String, String> errorMsg =  new HashMap<>(modelIds.size());
+        modelIds.stream().forEach(e -> {
+            DataModuleDTO dataModuleDTO = queryDataMoudle(e);
+            if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
+                errorMsg.put(dataModuleDTO.getModelName(), "模型未发布，无法物理化！");
+            }else {
+                String createSql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
+                String delsql = DdlConvertUtil.delSql(dataModuleDTO.getModelName());
+                dataSourceService.createHiveTableNoInterrupt(dbId, errorMsg, dataModuleDTO.getModelName(), delsql, createSql);
+            }
+        });
+
+        return errorMsg;
     }
 
     @Override
@@ -337,7 +349,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         List<WaterfallModelField> modelFields = new ArrayList<>(tableColumns.size());
         tableColumns.stream().forEach(e -> {
             WaterfallModelField tmp = new WaterfallModelField();
-            tmp.setFieldName(e.getColumnName());
+            tmp.setFieldName(e.getColumnName().toLowerCase());
             if (e.getColumnSize() != null) {
                 if (e.getDecimalDigits() == null || e.getDecimalDigits() == 0) {
                     tmp.setLength("" + e.getColumnSize());
@@ -430,6 +442,9 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         }
         if (StringUtils.isNotBlank(waterfallModel.getModelName())) {
             queryWrapper.like(WaterfallModel::getModelName, waterfallModel.getModelName());
+        }
+        if (waterfallModel.getModelStatusCode() != null) {
+            queryWrapper.eq(WaterfallModel::getModelStatusCode, waterfallModel.getModelStatusCode());
         }
         if (waterfallModel.getDelFlag() != null) {
             queryWrapper.eq(WaterfallModel::getDelFlag, waterfallModel.getDelFlag());

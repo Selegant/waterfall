@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -391,6 +392,29 @@ public class DataSourceServiceImpl implements IDataSourceService {
         } catch (Exception e) {
             log.error("创建Hive表错误-Exception:{}", e.getMessage());
             throw new JeecgBootException(e.getMessage());
+        } finally {
+            instance.releaseConnection(connection);
+        }
+    }
+
+    @Override
+    public void createHiveTableNoInterrupt(Integer dbId, Map<String, String> errorMsg, String modelName, String... sqls) {
+        Connection connection = null;
+        WaterfallDataSource dataSource = waterfallDataSourceMapper.selectByPrimaryKey(dbId);
+        MyDatasourcePoolUtil instance = DatasourcePool.pool.get(dataSource.getId());
+        try {
+            connection = instance.getConnection();
+            PreparedStatement ps = null;
+            for (String sql : sqls) {
+                ps = connection.prepareStatement(sql);
+                ps.executeUpdate();
+            }
+        } catch (SQLException se) {
+            log.error("创建Hive表错误-SQLException:{}", se.getMessage());
+            errorMsg.put(modelName, "sql错误！");
+        } catch (Exception e) {
+            log.error("创建Hive表错误-Exception:{}", e.getMessage());
+            errorMsg.put(modelName, "创建Hive表错误！");
         } finally {
             instance.releaseConnection(connection);
         }

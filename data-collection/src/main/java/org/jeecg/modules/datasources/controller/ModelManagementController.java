@@ -1,6 +1,7 @@
 package org.jeecg.modules.datasources.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -14,6 +15,9 @@ import org.jeecg.modules.datasources.service.IModelManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -62,7 +66,7 @@ public class ModelManagementController {
     public Result<Object> updateFolder(@RequestBody WaterfallFolder folder) {
         Result<Object> result = new Result<>();
         try {
-            modelManagementService.updateFolderWithConditionById(folder);
+            modelManagementService.updateFolderWithConditionById(folder, false);
             result.success("update success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -83,7 +87,7 @@ public class ModelManagementController {
                 WaterfallFolder delFolder = new WaterfallFolder();
                 delFolder.setId(id);
                 delFolder.setDelFlag(true);
-                modelManagementService.updateFolderWithConditionById(delFolder);
+                modelManagementService.updateFolderWithConditionById(delFolder, true);
                 result.success("delete success！");
             }
 
@@ -115,6 +119,7 @@ public class ModelManagementController {
     @ApiOperation("数据模型列表")
     public Result<IPage<WaterfallModel>> dataModuleList(@RequestParam(value = "folderId", required = false) Integer folderId,
                                                         @RequestParam(value = "modelName", required = false) String modelName,
+                                                        @RequestParam(value = "modelStatusCode", required = false) Integer modelStatusCode,
                                                         @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
                                                         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         Result<IPage<WaterfallModel>> result = new Result<>();
@@ -124,6 +129,7 @@ public class ModelManagementController {
             WaterfallModel waterfallModel = new WaterfallModel();
             waterfallModel.setFolderId(folderId);
             waterfallModel.setModelName(modelName);
+            waterfallModel.setModelStatusCode(modelStatusCode);
             waterfallModel.setDelFlag(false);
             result = Result.OK("query success!", modelManagementService.queryDataModulePage(page, waterfallModel));
         } catch (Exception e) {
@@ -139,7 +145,7 @@ public class ModelManagementController {
     public Result<Object> updateDataModule(@RequestBody DataModuleDTO dataModuleDTO) {
         Result<Object> result = new Result<>();
         try {
-            modelManagementService.updateModuleWithConditionById(dataModuleDTO);
+            modelManagementService.updateModuleWithConditionById(dataModuleDTO, false);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());
@@ -155,7 +161,7 @@ public class ModelManagementController {
         dataModuleDTO.setId(id);
         dataModuleDTO.setDelFlag(true);
         try {
-            modelManagementService.updateModuleWithConditionById(dataModuleDTO);
+            modelManagementService.updateModuleWithConditionById(dataModuleDTO, true);
             result.success("delete success!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -258,14 +264,18 @@ public class ModelManagementController {
         return result;
     }
 
-    @PostMapping("/data-module/physical/{dbId}/{modelId}")
+    @PostMapping("/data-module/physical/{dbId}")
     @ApiOperation("数据模型物理化")
     public Result<Object> modelToDb(@PathVariable Integer dbId,
-                                       @PathVariable Integer modelId) {
+                                    @RequestBody List<Integer> modelIds) {
         Result<Object> result = new Result<>();
         try {
-            modelManagementService.modelToDb(dbId, modelId);
-            result.setMessage("physical success!");
+            Map<String, String> errorModels = modelManagementService.modelToDb(dbId, modelIds);
+            if (errorModels.size() > 0) {
+                result.error500(JSON.toJSONString(errorModels));
+            }else {
+                result.setMessage("physical success!");
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

@@ -13,6 +13,7 @@ import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IDataSourceService {
 
@@ -49,6 +50,8 @@ public interface IDataSourceService {
     String getCreateDdl(TableColumnInput input);
 
     void createHiveTable(Integer dbId, String... sqls);
+
+    void createHiveTableNoInterrupt(Integer dbId, Map<String, String> errorMsg, String modelName, String... sqls);
 
     List<String> getColumnType(String dbType);
 

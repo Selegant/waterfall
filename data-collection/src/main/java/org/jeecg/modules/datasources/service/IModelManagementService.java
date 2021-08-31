@@ -8,6 +8,7 @@ import org.jeecg.modules.datasources.model.WaterfallFolder;
 import org.jeecg.modules.datasources.model.WaterfallModel;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IModelManagementService {
 
@@ -19,7 +20,7 @@ public interface IModelManagementService {
 
     void saveFolder(WaterfallFolder waterfallFolder);
 
-    void updateFolderWithConditionById(WaterfallFolder delFolder);
+    void updateFolderWithConditionById(WaterfallFolder folder, boolean isDel);
 
     Boolean exsitFolderById(Integer id);
 
@@ -33,7 +34,7 @@ public interface IModelManagementService {
 
     IPage<WaterfallModel> queryDataModulePage(Page<WaterfallModel> page, WaterfallModel waterfallModel);
 
-    void updateModuleWithConditionById(DataModuleDTO dataModuleDTO);
+    void updateModuleWithConditionById(DataModuleDTO dataModuleDTO, boolean isDel);
 
     DataModuleDTO queryDataMoudle(Integer id);
 
@@ -45,7 +46,7 @@ public interface IModelManagementService {
 
     void dbToModel(Integer folderId, Integer source);
 
-    void modelToDb(Integer dbId, Integer modelId);
+    Map<String, String> modelToDb(Integer dbId, List<Integer> modelIds);
 
     void modelUnpublish(Integer modelId);
 }
