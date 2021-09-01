@@ -88,4 +88,14 @@ public class WaterfallJobLog {
      * 增量表max id
      */
     private Long maxId;
+
+    /**
+     * 任务名称
+     */
+    private String taskName;
+
+    /**
+     * 日志状态
+     */
+    private String logStatus;
 }

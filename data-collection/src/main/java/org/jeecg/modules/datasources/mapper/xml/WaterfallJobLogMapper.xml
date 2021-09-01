@@ -29,6 +29,12 @@
     executor_sharding_param, executor_fail_retry_count, trigger_time, trigger_code, trigger_msg,
     handle_time, handle_code, handle_msg, alarm_status, process_id, max_id
   </sql>
+  <sql id="Base_Page_Column_List">
+    <!--@mbg.generated-->
+    a.id, a.job_group, a.job_id, a.job_desc, a.executor_address, a.executor_handler, a.executor_param,
+    a.executor_sharding_param, a.executor_fail_retry_count, a.trigger_time, a.trigger_code, a.trigger_msg,
+    a.handle_time, a.handle_code, a.handle_msg, a.alarm_status, a.process_id, a.max_id,b.task_name
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select
@@ -368,6 +374,47 @@
     </trim>
     ORDER BY t.trigger_time DESC
     LIMIT #{offset}, #{pagesize}
+  </select>
+  <select
+          id="wapperPageList"
+          resultType="org.jeecg.modules.datasources.model.WaterfallJobLog">
+    SELECT
+    <include refid="Base_Page_Column_List"/>
+    FROM waterfall_job_log a, waterfall_job_info b
+    <trim
+            prefix="WHERE"
+            prefixOverrides="AND | OR">
+<!--      <if test="jobId==0 and jobGroup gt 0">-->
+<!--        AND t.job_group = #{jobGroup}-->
+<!--      </if>-->
+<!--      <if test="jobId gt 0">-->
+<!--        AND t.job_id = #{jobId}-->
+<!--      </if>-->
+<!--      <if test="triggerTimeStart != null">-->
+<!--        AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}-->
+<!--      </if>-->
+<!--      <if test="triggerTimeEnd != null">-->
+<!--        AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}-->
+<!--      </if>-->
+      a.job_id = b.id
+      <if test="ew.taskName != null and ew.taskName != ''">
+        and b.task_name like #{ew.taskName,jdbcType=VARCHAR}
+      </if>
+      <if test="ew.logStatus == 1">
+        AND a.handle_code = 200
+      </if>
+      <if test="ew.logStatus == 2">
+        AND (
+        a.trigger_code NOT IN (0, 200) OR
+        a.handle_code NOT IN (0, 200)
+        )
+      </if>
+      <if test="ew.logStatus == 3">
+        AND a.trigger_code = 200
+        AND a.handle_code = 0
+      </if>
+    </trim>
+    ORDER BY a.trigger_time DESC
   </select>
   <select
     id="pageListCount"

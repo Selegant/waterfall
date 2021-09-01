@@ -29,17 +29,23 @@ public class WaterfallJobLogServiceImpl extends
     @Autowired
     private WaterfallJobInfoMapper waterfallJobInfoMapper;
 
+    @Autowired
+    private WaterfallJobLogMapper waterfallJobLogMapper;
+
     @Override
     public IPage<WaterfallJobLog> pages(WebsocketLogPageInput input) {
-        QueryWrapper<WaterfallJobLog> logQueryWrapper = new QueryWrapper<>();
-        if (StringUtils.isBlank(input.getJobName())) {
-            return super.page(new Page<>(input.getPageNo(), input.getPageSize()), logQueryWrapper);
-        }
-        QueryWrapper<WaterfallJobInfo> infoQueryWrapper = new QueryWrapper<>();
-        infoQueryWrapper.like("task_name", input.getJobName());
-        List<Integer> ids = waterfallJobInfoMapper.selectList(infoQueryWrapper).stream().map(WaterfallJobInfo::getId)
-                .collect(Collectors.toList());
-        logQueryWrapper.in("job_id", ids);
-        return super.page(new Page<>(input.getPageNo(), input.getPageSize()), logQueryWrapper);
+          WaterfallJobLog log = new WaterfallJobLog();
+          log.setTaskName(input.getJobName());
+          return waterfallJobLogMapper.wapperPageList(new Page<>(input.getPageNo(), input.getPageSize()),log);
+//        QueryWrapper<WaterfallJobLog> logQueryWrapper = new QueryWrapper<>();
+//        if (StringUtils.isBlank(input.getJobName())) {
+//            return super.page(new Page<>(input.getPageNo(), input.getPageSize()), logQueryWrapper);
+//        }
+//        QueryWrapper<WaterfallJobInfo> infoQueryWrapper = new QueryWrapper<>();
+//        infoQueryWrapper.like("task_name", input.getJobName());
+//        List<Integer> ids = waterfallJobInfoMapper.selectList(infoQueryWrapper).stream().map(WaterfallJobInfo::getId)
+//                .collect(Collectors.toList());
+//        logQueryWrapper.in("job_id", ids);
+//        return super.page(new Page<>(input.getPageNo(), input.getPageSize()), logQueryWrapper);
     }
 }

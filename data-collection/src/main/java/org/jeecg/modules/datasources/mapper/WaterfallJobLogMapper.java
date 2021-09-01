@@ -1,6 +1,9 @@
 package org.jeecg.modules.datasources.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallJobLog;
@@ -66,4 +69,5 @@ public interface WaterfallJobLogMapper extends BaseMapper<WaterfallJobLog> {
             @Param("triggerTimeEnd") Date triggerTimeEnd,
             @Param("logStatus") int logStatus);
 
+    IPage<WaterfallJobLog> wapperPageList(IPage<WaterfallJobLog> page,@Param(Constants.WRAPPER) WaterfallJobLog log);
 }

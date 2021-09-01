@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallQualityRuleFieldMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallQualityRuleField">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_quality_rule_field-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rule_id" jdbcType="INTEGER" property="ruleId" />
+    <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
+    <result column="rule_field_type_code" jdbcType="INTEGER" property="ruleFieldTypeCode" />
+    <result column="regular_expression" jdbcType="VARCHAR" property="regularExpression" />
+    <result column="compare_mode" jdbcType="VARCHAR" property="compareMode" />
+    <result column="expected_value" jdbcType="VARCHAR" property="expectedValue" />
+    <result column="empty_flag" jdbcType="BOOLEAN" property="emptyFlag" />
+    <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, rule_id, field_name, rule_field_type_code, regular_expression, compare_mode, 
+    expected_value, empty_flag, del_flag, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_quality_rule_field
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_quality_rule_field
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleField" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_quality_rule_field (rule_id, field_name, rule_field_type_code, 
+      regular_expression, compare_mode, expected_value, 
+      empty_flag, del_flag, create_time, 
+      update_time)
+    values (#{ruleId,jdbcType=INTEGER}, #{fieldName,jdbcType=VARCHAR}, #{ruleFieldTypeCode,jdbcType=INTEGER}, 
+      #{regularExpression,jdbcType=VARCHAR}, #{compareMode,jdbcType=VARCHAR}, #{expectedValue,jdbcType=VARCHAR}, 
+      #{emptyFlag,jdbcType=BOOLEAN}, #{delFlag,jdbcType=BOOLEAN}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleField" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_quality_rule_field
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ruleId != null">
+        rule_id,
+      </if>
+      <if test="fieldName != null">
+        field_name,
+      </if>
+      <if test="ruleFieldTypeCode != null">
+        rule_field_type_code,
+      </if>
+      <if test="regularExpression != null">
+        regular_expression,
+      </if>
+      <if test="compareMode != null">
+        compare_mode,
+      </if>
+      <if test="expectedValue != null">
+        expected_value,
+      </if>
+      <if test="emptyFlag != null">
+        empty_flag,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ruleId != null">
+        #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="fieldName != null">
+        #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleFieldTypeCode != null">
+        #{ruleFieldTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="regularExpression != null">
+        #{regularExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="compareMode != null">
+        #{compareMode,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedValue != null">
+        #{expectedValue,jdbcType=VARCHAR},
+      </if>
+      <if test="emptyFlag != null">
+        #{emptyFlag,jdbcType=BOOLEAN},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BOOLEAN},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleField">
+    <!--@mbg.generated-->
+    update waterfall_quality_rule_field
+    <set>
+      <if test="ruleId != null">
+        rule_id = #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="fieldName != null">
+        field_name = #{fieldName,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleFieldTypeCode != null">
+        rule_field_type_code = #{ruleFieldTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="regularExpression != null">
+        regular_expression = #{regularExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="compareMode != null">
+        compare_mode = #{compareMode,jdbcType=VARCHAR},
+      </if>
+      <if test="expectedValue != null">
+        expected_value = #{expectedValue,jdbcType=VARCHAR},
+      </if>
+      <if test="emptyFlag != null">
+        empty_flag = #{emptyFlag,jdbcType=BOOLEAN},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BOOLEAN},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleField">
+    <!--@mbg.generated-->
+    update waterfall_quality_rule_field
+    set rule_id = #{ruleId,jdbcType=INTEGER},
+      field_name = #{fieldName,jdbcType=VARCHAR},
+      rule_field_type_code = #{ruleFieldTypeCode,jdbcType=INTEGER},
+      regular_expression = #{regularExpression,jdbcType=VARCHAR},
+      compare_mode = #{compareMode,jdbcType=VARCHAR},
+      expected_value = #{expectedValue,jdbcType=VARCHAR},
+      empty_flag = #{emptyFlag,jdbcType=BOOLEAN},
+      del_flag = #{delFlag,jdbcType=BOOLEAN},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
