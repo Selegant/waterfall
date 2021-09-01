@@ -6,13 +6,13 @@ import lombok.Data;
     * 检验计划和质量规则中间表
     */
 @Data
-public class WaterfallQualityCheckPlanWithRule {
+public class WaterfallQualityRuleWithJobInfo {
     private Integer id;
 
     /**
     * 检验计划id
     */
-    private Integer checkPlanId;
+    private Integer jobInfoId;
 
     /**
     * 质量规则id

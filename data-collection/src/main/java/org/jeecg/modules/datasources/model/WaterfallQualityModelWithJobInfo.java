@@ -4,31 +4,21 @@ import java.util.Date;
 import lombok.Data;
 
 /**
-    * 校验计划表
+    * 模型和计划中间表
     */
 @Data
-public class WaterfallQualityCheckPlan {
+public class WaterfallQualityModelWithJobInfo {
     private Integer id;
 
     /**
-    * 计划名称
-    */
-    private String planName;
-
-    /**
-    * 关联模型id
+    * 模型id
     */
     private Integer modelId;
 
     /**
-    * 执行周期
+    * 计划id
     */
-    private String planCycle;
-
-    /**
-    * 运行状态
-    */
-    private Boolean runFlag;
+    private Integer jobInfoId;
 
     /**
     * 删除标志

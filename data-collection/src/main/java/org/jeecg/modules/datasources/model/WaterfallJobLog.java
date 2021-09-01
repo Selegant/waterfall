@@ -1,7 +1,10 @@
 package org.jeecg.modules.datasources.model;
 
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 public class WaterfallJobLog {
@@ -47,6 +50,8 @@ public class WaterfallJobLog {
     /**
      * 调度-时间
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date triggerTime;
 
     /**
@@ -62,6 +67,8 @@ public class WaterfallJobLog {
     /**
      * 执行-时间
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date handleTime;
 
     /**

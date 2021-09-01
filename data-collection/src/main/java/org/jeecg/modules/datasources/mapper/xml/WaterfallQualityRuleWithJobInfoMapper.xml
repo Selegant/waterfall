@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallQualityCheckPlanWithRuleMapper">
-  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallQualityCheckPlanWithRule">
+<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallQualityRuleWithJobInfoMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallQualityRuleWithJobInfo">
     <!--@mbg.generated-->
-    <!--@Table waterfall_quality_check_plan_with_rule-->
+    <!--@Table waterfall_quality_rule_with_job_info-->
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="check_plan_id" jdbcType="INTEGER" property="checkPlanId" />
+    <result column="job_info_id" jdbcType="INTEGER" property="jobInfoId" />
     <result column="quality_rule_id" jdbcType="INTEGER" property="qualityRuleId" />
     <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, check_plan_id, quality_rule_id, del_flag
+    id, job_info_id, quality_rule_id, del_flag
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
     <include refid="Base_Column_List" />
-    from waterfall_quality_check_plan_with_rule
+    from waterfall_quality_rule_with_job_info
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--@mbg.generated-->
-    delete from waterfall_quality_check_plan_with_rule
+    delete from waterfall_quality_rule_with_job_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityCheckPlanWithRule" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleWithJobInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_quality_check_plan_with_rule (check_plan_id, quality_rule_id, del_flag
+    insert into waterfall_quality_rule_with_job_info (job_info_id, quality_rule_id, del_flag
       )
-    values (#{checkPlanId,jdbcType=INTEGER}, #{qualityRuleId,jdbcType=INTEGER}, #{delFlag,jdbcType=BOOLEAN}
+    values (#{jobInfoId,jdbcType=INTEGER}, #{qualityRuleId,jdbcType=INTEGER}, #{delFlag,jdbcType=BOOLEAN}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityCheckPlanWithRule" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleWithJobInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into waterfall_quality_check_plan_with_rule
+    insert into waterfall_quality_rule_with_job_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="checkPlanId != null">
-        check_plan_id,
+      <if test="jobInfoId != null">
+        job_info_id,
       </if>
       <if test="qualityRuleId != null">
         quality_rule_id,
@@ -47,8 +47,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="checkPlanId != null">
-        #{checkPlanId,jdbcType=INTEGER},
+      <if test="jobInfoId != null">
+        #{jobInfoId,jdbcType=INTEGER},
       </if>
       <if test="qualityRuleId != null">
         #{qualityRuleId,jdbcType=INTEGER},
@@ -58,12 +58,12 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityCheckPlanWithRule">
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleWithJobInfo">
     <!--@mbg.generated-->
-    update waterfall_quality_check_plan_with_rule
+    update waterfall_quality_rule_with_job_info
     <set>
-      <if test="checkPlanId != null">
-        check_plan_id = #{checkPlanId,jdbcType=INTEGER},
+      <if test="jobInfoId != null">
+        job_info_id = #{jobInfoId,jdbcType=INTEGER},
       </if>
       <if test="qualityRuleId != null">
         quality_rule_id = #{qualityRuleId,jdbcType=INTEGER},
@@ -74,10 +74,10 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityCheckPlanWithRule">
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallQualityRuleWithJobInfo">
     <!--@mbg.generated-->
-    update waterfall_quality_check_plan_with_rule
-    set check_plan_id = #{checkPlanId,jdbcType=INTEGER},
+    update waterfall_quality_rule_with_job_info
+    set job_info_id = #{jobInfoId,jdbcType=INTEGER},
       quality_rule_id = #{qualityRuleId,jdbcType=INTEGER},
       del_flag = #{delFlag,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
