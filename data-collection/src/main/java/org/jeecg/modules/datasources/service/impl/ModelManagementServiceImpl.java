@@ -133,7 +133,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                 .eq(WaterfallFolder::getFolderName, folderName)
                 .eq(WaterfallFolder::getDelFlag, false);
         List<WaterfallFolder> waterfallFolders = waterfallFolderMapper.selectList(queryWrapper);
-        return waterfallFolders.size() > 1 || (id != null && waterfallFolders.size() == 1 && id.equals(waterfallFolders.get(0).getId()));
+        return waterfallFolders.size() > 1 || (id != null && waterfallFolders.size() == 1 && !id.equals(waterfallFolders.get(0).getId()));
     }
 
     @Override
