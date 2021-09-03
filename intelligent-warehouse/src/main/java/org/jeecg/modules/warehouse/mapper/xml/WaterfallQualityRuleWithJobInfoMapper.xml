@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.warehouse.mapper.WaterfallQualityRuleWithJobInfoMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.warehouse.model.WaterfallQualityRuleWithJobInfo">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_quality_rule_with_job_info-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="job_info_id" jdbcType="INTEGER" property="jobInfoId" />
+    <result column="quality_rule_id" jdbcType="INTEGER" property="qualityRuleId" />
+    <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, job_info_id, quality_rule_id, del_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from waterfall_quality_rule_with_job_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_quality_rule_with_job_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.warehouse.model.WaterfallQualityRuleWithJobInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_quality_rule_with_job_info (job_info_id, quality_rule_id, del_flag
+      )
+    values (#{jobInfoId,jdbcType=INTEGER}, #{qualityRuleId,jdbcType=INTEGER}, #{delFlag,jdbcType=BOOLEAN}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.warehouse.model.WaterfallQualityRuleWithJobInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_quality_rule_with_job_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="jobInfoId != null">
+        job_info_id,
+      </if>
+      <if test="qualityRuleId != null">
+        quality_rule_id,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="jobInfoId != null">
+        #{jobInfoId,jdbcType=INTEGER},
+      </if>
+      <if test="qualityRuleId != null">
+        #{qualityRuleId,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BOOLEAN},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.warehouse.model.WaterfallQualityRuleWithJobInfo">
+    <!--@mbg.generated-->
+    update waterfall_quality_rule_with_job_info
+    <set>
+      <if test="jobInfoId != null">
+        job_info_id = #{jobInfoId,jdbcType=INTEGER},
+      </if>
+      <if test="qualityRuleId != null">
+        quality_rule_id = #{qualityRuleId,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BOOLEAN},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.warehouse.model.WaterfallQualityRuleWithJobInfo">
+    <!--@mbg.generated-->
+    update waterfall_quality_rule_with_job_info
+    set job_info_id = #{jobInfoId,jdbcType=INTEGER},
+      quality_rule_id = #{qualityRuleId,jdbcType=INTEGER},
+      del_flag = #{delFlag,jdbcType=BOOLEAN}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

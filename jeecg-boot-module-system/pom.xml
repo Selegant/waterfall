@@ -44,6 +44,11 @@
 			<artifactId>data-collection</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jeecg</groupId>
+			<artifactId>intelligent-warehouse</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!-- 积木报表 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>

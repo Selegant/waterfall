@@ -60,10 +60,11 @@
         <module>jeecg-boot-module-system</module>
 		<module>data-collection</module>
 		<module>datax-executor</module>
+        <module>intelligent-warehouse</module>
 
-       <!-- 需要微服务，请打开注释
-       <module>jeecg-boot-starter</module>
-        <module>jeecg-cloud-module</module>-->
+        <!-- 需要微服务，请打开注释
+        <module>jeecg-boot-starter</module>
+         <module>jeecg-cloud-module</module>-->
 	</modules>
 
 	<distributionManagement>

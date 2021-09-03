@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.warehouse.mapper.WaterfallModelMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.modules.warehouse.model.WaterfallModel">
+    <!--@mbg.generated-->
+    <!--@Table waterfall_model-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="folder_id" jdbcType="INTEGER" property="folderId" />
+    <result column="model_name" jdbcType="VARCHAR" property="modelName" />
+    <result column="model_status_code" jdbcType="INTEGER" property="modelStatusCode" />
+    <result column="model_status_name" jdbcType="VARCHAR" property="modelStatusName" />
+    <result column="export_type_code" jdbcType="INTEGER" property="exportTypeCode" />
+    <result column="export_type_name" jdbcType="VARCHAR" property="exportTypeName" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="publish_db" jdbcType="INTEGER" property="publishDb" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="del_flag" jdbcType="BOOLEAN" property="delFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, folder_id, model_name, model_status_code, model_status_name,
+    export_type_code, export_type_name, remark, publish_db, create_time, update_time, del_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from waterfall_model
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from waterfall_model
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.warehouse.model.WaterfallModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_model (folder_id, model_name,
+      model_status_code, model_status_name, export_type_code,
+      export_type_name, remark, publish_db, create_time,
+      update_time, del_flag)
+    values (#{folderId,jdbcType=INTEGER}, #{modelName,jdbcType=VARCHAR},
+      #{modelStatusCode,jdbcType=INTEGER}, #{modelStatusName,jdbcType=VARCHAR}, #{exportTypeCode,jdbcType=INTEGER},
+      #{exportTypeName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{publishDb,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{delFlag, jdbcType=BOOLEAN})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.warehouse.model.WaterfallModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into waterfall_model
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="folderId != null">
+        folder_id,
+      </if>
+      <if test="modelName != null">
+        model_name,
+      </if>
+      <if test="modelStatusCode != null">
+        model_status_code,
+      </if>
+      <if test="modelStatusName != null">
+        model_status_name,
+      </if>
+      <if test="exportTypeCode != null">
+        export_type_code,
+      </if>
+      <if test="exportTypeName != null">
+        export_type_name,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="publishDb != null">
+        publish_db,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="folderId != null">
+        #{folderId,jdbcType=INTEGER},
+      </if>
+      <if test="modelName != null">
+        #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelStatusCode != null">
+        #{modelStatusCode,jdbcType=INTEGER},
+      </if>
+      <if test="modelStatusName != null">
+        #{modelStatusName,jdbcType=VARCHAR},
+      </if>
+      <if test="exportTypeCode != null">
+        #{exportTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="exportTypeName != null">
+        #{exportTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDb != null">
+        #{publishDb,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BOOLEAN},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.warehouse.model.WaterfallModel">
+    <!--@mbg.generated-->
+    update waterfall_model
+    <set>
+      <if test="folderId != null">
+        folder_id = #{folderId,jdbcType=INTEGER},
+      </if>
+      <if test="modelName != null">
+        model_name = #{modelName,jdbcType=VARCHAR},
+      </if>
+      <if test="modelStatusCode != null">
+        model_status_code = #{modelStatusCode,jdbcType=INTEGER},
+      </if>
+      <if test="modelStatusName != null">
+        model_status_name = #{modelStatusName,jdbcType=VARCHAR},
+      </if>
+      <if test="exportTypeCode != null">
+        export_type_code = #{exportTypeCode,jdbcType=INTEGER},
+      </if>
+      <if test="exportTypeName != null">
+        export_type_name = #{exportTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="publishDb != null">
+        publish_db = #{publishDb,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BOOLEAN},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.warehouse.model.WaterfallModel">
+    <!--@mbg.generated-->
+    update waterfall_model
+    set folder_id = #{folderId,jdbcType=INTEGER},
+      model_name = #{modelName,jdbcType=VARCHAR},
+      model_status_code = #{modelStatusCode,jdbcType=INTEGER},
+      model_status_name = #{modelStatusName,jdbcType=VARCHAR},
+      export_type_code = #{exportTypeCode,jdbcType=INTEGER},
+      export_type_name = #{exportTypeName,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      publish_db = #{publishDb,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      del_flag = #{delFlag,jdbcType=BOOLEAN}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

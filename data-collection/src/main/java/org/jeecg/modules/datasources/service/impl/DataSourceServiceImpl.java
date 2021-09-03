@@ -32,7 +32,6 @@ import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.modules.datasources.dto.DataModuleDTO;
 import org.jeecg.modules.datasources.dto.DatabaseTreeDTO;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.dto.TargetTypeColumnDTO;
@@ -46,12 +45,10 @@ import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceAmount;
 import org.jeecg.modules.datasources.model.WaterfallDataSourceType;
 import org.jeecg.modules.datasources.model.WaterfallDataType;
-import org.jeecg.modules.datasources.model.WaterfallModelField;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.service.IWaterfallDataSourceAmountService;
 import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.datasources.util.DatasourcePool;
-import org.jeecg.modules.datasources.util.DdlConvertUtil;
 import org.jeecg.modules.datasources.util.MyDBUtil;
 import org.jeecg.modules.datasources.util.MyDatasourcePoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -432,19 +429,23 @@ public class DataSourceServiceImpl implements IDataSourceService {
 
     @Override
     public void createHiveTableByInput(CreateHiveTableInput input) {
-        DataModuleDTO dto = new DataModuleDTO();
-        dto.setModelName(input.getTableName());
-        List<WaterfallModelField> fields = new ArrayList<>();
-        dto.setModelFields(fields);
-        for (TargetTypeColumnDTO column : input.getColumns()) {
-            WaterfallModelField field = new WaterfallModelField();
-            field.setFieldName(column.getSourceColumnName());
-            field.setFieldTypeName(column.getTargetColumnType());
-            field.setRemark(column.getColumnComment());
-            fields.add(field);
-        }
-        String createsql = DdlConvertUtil.modelToHiveDdl(dto);
-        executeHiveSql(input.getDbId(), createsql);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("CREATE TABLE %s\n", input.getTableName()));
+
+        builder.append("(");
+        //id INT comment 'ss'
+        String colTemplate = "%s\t%s\tCOMMENT\t%s";
+        String colSql = input.getColumns().stream().map(col -> {
+            if ("DECIMAL".equalsIgnoreCase(col.getSourceColumnName())) {
+                col.setSourceColumnName(col.getTargetColumnType());
+            }
+            return String.format(colTemplate, col.getSourceColumnName(), col.getTargetColumnType(), "'" + col.getColumnComment() + "'");
+        }).collect(Collectors.joining(","));
+
+        builder.append(colSql + ")");
+
+        executeHiveSql(input.getDbId(), builder.toString());
     }
 
     @Override
