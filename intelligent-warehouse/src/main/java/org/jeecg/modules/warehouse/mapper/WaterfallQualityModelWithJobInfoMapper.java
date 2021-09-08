@@ -22,4 +22,6 @@ public interface WaterfallQualityModelWithJobInfoMapper extends BaseMapper<Water
     int updateByPrimaryKey(WaterfallQualityModelWithJobInfo record);
 
     List<WaterfallQualityCheckPlanDTO> checkPlanList(Integer modelId);
+
+    WaterfallQualityCheckPlanDTO checkPlanInfo(Integer jobInfoId);
 }

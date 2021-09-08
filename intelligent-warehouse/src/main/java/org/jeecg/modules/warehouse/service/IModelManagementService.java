@@ -6,6 +6,7 @@ import org.jeecg.modules.warehouse.model.WaterfallModel;
 import org.jeecg.modules.warehouse.dto.DataModuleDTO;
 import org.jeecg.modules.warehouse.dto.ModelFolderDTO;
 import org.jeecg.modules.warehouse.model.WaterfallFolder;
+import org.jeecg.modules.warehouse.model.WaterfallModelField;
 
 import java.util.List;
 import java.util.Map;
@@ -51,4 +52,6 @@ public interface IModelManagementService {
     void modelOff(Integer modelId);
 
     void deleteModelById(Integer id);
+
+    List<WaterfallModelField> queryDataMoudleFields(Integer modelId);
 }

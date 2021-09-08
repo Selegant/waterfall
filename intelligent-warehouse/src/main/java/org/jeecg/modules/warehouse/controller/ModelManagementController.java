@@ -282,4 +282,20 @@ public class ModelManagementController {
     }
 
 
+    @GetMapping("/data-module/fields/{modelId}")
+    @ApiOperation("数据模型字段")
+    public Result<Object> queryDataMoudleFields(@PathVariable Integer modelId) {
+        Result<Object> result = new Result<>();
+        try {
+            result.setResult(modelManagementService.queryDataMoudleFields(modelId));
+            result.setMessage("query success!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
+        return result;
+    }
+
+
 }

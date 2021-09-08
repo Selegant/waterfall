@@ -82,6 +82,22 @@ public class QualityRuleController {
         return result;
     }
 
+    @PutMapping("/rule/enable/{id}")
+    @ApiOperation("启用/停用质量规则")
+    public Result<Object> enableRule(@PathVariable Integer id,
+                                     @RequestParam Boolean enable) {
+        Result<Object> result = new Result<>();
+
+        try {
+            qualityRuleService.updateRuleEnableSatus(id, enable);
+            result.setMessage("update success！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
     @DeleteMapping("/rule/{id}")
     @ApiOperation("删除质量规则")
     public Result<Object> deleteRule(@PathVariable Integer id) {
@@ -103,7 +119,7 @@ public class QualityRuleController {
         Result<Object> result = new Result<>();
 
         try {
-            qualityRuleService.ruleInfo(id);
+            result.setResult(qualityRuleService.ruleInfo(id));
             result.setMessage("query success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -119,7 +135,7 @@ public class QualityRuleController {
 
         try {
             result.setResult(qualityRuleService.queryRuleFieldTypeList());
-            result.setMessage("delete success！");
+            result.setMessage("query success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

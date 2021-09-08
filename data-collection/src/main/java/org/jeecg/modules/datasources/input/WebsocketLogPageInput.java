@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WebsocketLogPageInput {
 
+    private Integer jobId;
+
     private String jobName;
 
     private Integer pageNo;

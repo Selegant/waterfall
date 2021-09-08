@@ -1,8 +1,8 @@
 package org.jeecg.modules.datasources.core.route;
 
 
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.biz.model.TriggerParam;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.biz.model.TriggerParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,7 @@
 package org.jeecg.modules.warehouse.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,12 +11,13 @@ import java.util.Date;
     */
 @Data
 public class WaterfallQualityRuleFieldType {
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
     * 规则字段类型代码
     */
-    private String typeCode;
+    private Integer typeCode;
 
     /**
     * 规则字段类别名

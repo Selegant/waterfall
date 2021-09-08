@@ -26,4 +26,6 @@ public interface IQualityRuleService {
     List<WaterfallQualityRuleFieldType> queryRuleFieldTypeList();
 
     WaterfallQualityRuleDTO ruleInfo(Integer id);
+
+    void updateRuleEnableSatus(Integer id, boolean enable);
 }

@@ -245,10 +245,7 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         WaterfallModel model = waterfallModelMapper.selectById(id);
         if (model == null) return null;
 
-        List<WaterfallModelField> modelFields = waterfallModelFieldMapper.selectList(
-                new LambdaQueryWrapper<WaterfallModelField>().eq(WaterfallModelField::getModelId, model.getId())
-                        .eq(WaterfallModelField::getDelFlag, false)
-        );
+        List<WaterfallModelField> modelFields = queryDataMoudleFields(model.getId());
 
         List<WaterfallModelPartition> modulePartitions = waterfallModelPartitionMapper.selectList(
                 new LambdaQueryWrapper<WaterfallModelPartition>().eq(WaterfallModelPartition::getModelId, model.getId())
@@ -379,6 +376,15 @@ public class ModelManagementServiceImpl implements IModelManagementService {
         waterfallModel.setDelFlag(true);
         waterfallModel.setUpdateTime(new Date());
         waterfallModelMapper.updateByPrimaryKeySelective(waterfallModel);
+    }
+
+    @Override
+    public List<WaterfallModelField> queryDataMoudleFields(Integer modelId) {
+
+        return waterfallModelFieldMapper.selectList(
+                new LambdaQueryWrapper<WaterfallModelField>().eq(WaterfallModelField::getModelId, modelId)
+                        .eq(WaterfallModelField::getDelFlag, false)
+        );
     }
 
 

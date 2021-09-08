@@ -387,9 +387,6 @@
 <!--      <if test="jobId==0 and jobGroup gt 0">-->
 <!--        AND t.job_group = #{jobGroup}-->
 <!--      </if>-->
-<!--      <if test="jobId gt 0">-->
-<!--        AND t.job_id = #{jobId}-->
-<!--      </if>-->
 <!--      <if test="triggerTimeStart != null">-->
 <!--        AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}-->
 <!--      </if>-->
@@ -397,6 +394,9 @@
 <!--        AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}-->
 <!--      </if>-->
       a.job_id = b.id
+      <if test="ew.jobId != null and ew.jobId gt 0">
+        and b.id = #{ew.jobId,jdbcType=INTEGER}
+      </if>
       <if test="ew.taskName != null and ew.taskName != ''">
         and b.task_name like #{ew.taskName,jdbcType=VARCHAR}
       </if>

@@ -1,7 +1,7 @@
 package org.jeecg.modules.datasources.core.thread;
 
 
-import org.jeecg.datax.enums.RegistryConfig;
+import org.jeecg.xxl.enums.RegistryConfig;
 import org.jeecg.modules.datasources.core.conf.JobAdminConfig;
 import org.jeecg.modules.datasources.model.WaterfallJobGroup;
 import org.jeecg.modules.datasources.model.WaterfallJobRegistry;

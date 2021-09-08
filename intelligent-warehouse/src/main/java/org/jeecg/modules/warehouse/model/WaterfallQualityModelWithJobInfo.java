@@ -1,5 +1,8 @@
 package org.jeecg.modules.warehouse.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,30 +12,22 @@ import java.util.Date;
     */
 @Data
 public class WaterfallQualityModelWithJobInfo {
+
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-    * 模型id
-    */
+    @ApiModelProperty("模型id")
     private Integer modelId;
 
-    /**
-    * 计划id
-    */
+    @ApiModelProperty("计划id")
     private Integer jobInfoId;
 
-    /**
-    * 删除标志
-    */
+    @ApiModelProperty("删除标志")
     private Boolean delFlag;
 
-    /**
-    * 创建时间
-    */
+    @ApiModelProperty("创建时间")
     private Date createTime;
 
-    /**
-    * 修改时间
-    */
+    @ApiModelProperty("修改时间")
     private Date updateTime;
 }

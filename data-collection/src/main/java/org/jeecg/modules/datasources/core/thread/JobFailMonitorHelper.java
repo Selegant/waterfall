@@ -2,7 +2,7 @@ package org.jeecg.modules.datasources.core.thread;
 
 
 
-import org.jeecg.datax.biz.model.ReturnT;
+import org.jeecg.xxl.biz.model.ReturnT;
 import org.jeecg.modules.datasources.core.conf.JobAdminConfig;
 import org.jeecg.modules.datasources.core.trigger.TriggerTypeEnum;
 import org.jeecg.modules.datasources.core.util.I18nUtil;

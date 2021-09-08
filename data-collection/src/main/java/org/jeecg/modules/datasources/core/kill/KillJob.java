@@ -1,8 +1,8 @@
 package org.jeecg.modules.datasources.core.kill;
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.biz.model.TriggerParam;
-import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
-import org.jeecg.datax.glue.GlueTypeEnum;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.biz.model.TriggerParam;
+import org.jeecg.xxl.enums.ExecutorBlockStrategyEnum;
+import org.jeecg.xxl.glue.GlueTypeEnum;
 import java.util.Date;
 
 /**

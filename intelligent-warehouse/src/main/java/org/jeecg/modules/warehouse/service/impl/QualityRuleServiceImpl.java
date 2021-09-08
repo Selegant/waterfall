@@ -92,8 +92,16 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
             if (StringUtils.isNotBlank(e.getRegularExpression()) && !CronExpression.isValidExpression(e.getRegularExpression())) {
                 throw new RuntimeException("CORN表达式不合法");
             }
+            e.setId(null);
+            e.setRuleId(ruleEntity.getId());
+            if (e.getDelFlag() == null) {
+                e.setDelFlag(false);
+            }
+            if (e.getCreateTime() == null) {
+                e.setCreateTime(new Date());
+            }
             e.setUpdateTime(new Date());
-            ruleFieldMapper.updateByPrimaryKeySelective(e);
+            ruleFieldMapper.insert(e);
         });
     }
 
@@ -126,6 +134,15 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
                 .eq(WaterfallQualityRuleField::getDelFlag, false);
         res.setRuleFields(ruleFieldMapper.selectList(queryWrapper));
         return res;
+    }
+
+    @Override
+    public void updateRuleEnableSatus(Integer id, boolean enable) {
+        WaterfallQualityRule ruleEntity = new WaterfallQualityRule();
+        ruleEntity.setId(id);
+        ruleEntity.setEnableFlag(enable);
+        ruleEntity.setUpdateTime(new Date());
+        ruleMapper.updateByPrimaryKeySelective(ruleEntity);
     }
 
 
@@ -182,9 +199,11 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
         if (ruleDto.getRuleType().equals(WaterfallQualityRuleDTO.RULE_PRIVATE) && ruleDto.getModelId() == null) {
             throw new JeecgBootException("质量规则id不存在！");
         }
-        WaterfallQualityRule oldRule = ruleMapper.selectByPrimaryKey(ruleDto.getId());
-        if (oldRule == null || oldRule.getDelFlag() == true) {
-            throw new JeecgBootException("质量规则不存在！");
+        if (ruleDto.getId() != null) {
+            WaterfallQualityRule oldRule = ruleMapper.selectByPrimaryKey(ruleDto.getId());
+            if (oldRule == null || oldRule.getDelFlag() == true) {
+                throw new JeecgBootException("质量规则不存在！");
+            }
         }
         LambdaQueryWrapper<WaterfallQualityRule> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WaterfallQualityRule::getRuleName, ruleDto.getRuleName())
@@ -198,8 +217,10 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
         }
 
         List<WaterfallQualityRule> waterfallQualityRules = ruleMapper.selectList(queryWrapper);
-        if (waterfallQualityRules.size() > 1 || !waterfallQualityRules.get(0).getId().equals(ruleDto.getId())) {
-            throw new JeecgBootException("质量规则名重复！");
+        if (waterfallQualityRules.size() > 0) {
+            if (waterfallQualityRules.size() > 1 || !waterfallQualityRules.get(0).getId().equals(ruleDto.getId())) {
+                throw new JeecgBootException("质量规则名重复！");
+            }
         }
     }
 }

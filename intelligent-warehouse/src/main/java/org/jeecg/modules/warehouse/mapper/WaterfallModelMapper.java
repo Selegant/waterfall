@@ -1,6 +1,8 @@
 package org.jeecg.modules.warehouse.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.warehouse.dto.JobDTO;
 import org.jeecg.modules.warehouse.model.WaterfallModel;
 
 public interface WaterfallModelMapper  extends BaseMapper<WaterfallModel> {
@@ -15,4 +17,6 @@ public interface WaterfallModelMapper  extends BaseMapper<WaterfallModel> {
     int updateByPrimaryKeySelective(WaterfallModel record);
 
     int updateByPrimaryKey(WaterfallModel record);
+
+    JobDTO getDbInfo(@Param(value = "jobId") Integer jobId);
 }

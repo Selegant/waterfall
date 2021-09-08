@@ -6,7 +6,8 @@ package org.jeecg.modules.datasources.webscoket;
  */
 public enum WebsocketCommandEnum {
 
-    JOB_LOG_PAGES("/jobLogPages", "任务日志分页列表");
+    JOB_LOG_PAGES("/jobLogPages", "任务日志分页列表"),
+    CHECK_PLAN_LOG_PAGES("/checkPlanLogPages", "校验计划日志分页列表");
 
     private String command;
 

@@ -2,8 +2,8 @@ package org.jeecg.modules.datasources.core.route.strategy;
 
 
 
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.biz.model.TriggerParam;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.biz.model.TriggerParam;
 import org.jeecg.modules.datasources.core.route.ExecutorRouter;
 
 import java.util.List;

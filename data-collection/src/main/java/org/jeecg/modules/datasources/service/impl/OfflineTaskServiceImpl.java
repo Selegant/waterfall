@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.text.ParseException;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
+import org.jeecg.xxl.enums.ExecutorBlockStrategyEnum;
 import org.jeecg.modules.datasources.core.cron.CronExpression;
 import org.jeecg.modules.datasources.core.route.ExecutorRouteStrategyEnum;
 import org.jeecg.modules.datasources.core.thread.JobScheduleHelper;

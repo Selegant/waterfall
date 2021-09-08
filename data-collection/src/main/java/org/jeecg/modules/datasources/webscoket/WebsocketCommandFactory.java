@@ -1,5 +1,6 @@
 package org.jeecg.modules.datasources.webscoket;
 
+import static org.jeecg.modules.datasources.webscoket.WebsocketCommandEnum.CHECK_PLAN_LOG_PAGES;
 import static org.jeecg.modules.datasources.webscoket.WebsocketCommandEnum.JOB_LOG_PAGES;
 
 /**
@@ -9,7 +10,8 @@ import static org.jeecg.modules.datasources.webscoket.WebsocketCommandEnum.JOB_L
 public class WebsocketCommandFactory {
 
     public WebsocketCommandService factoryCommand(String command) {
-        if (JOB_LOG_PAGES.getCommand().equals(command)) {
+
+        if (JOB_LOG_PAGES.getCommand().equals(command) || CHECK_PLAN_LOG_PAGES.getCommand().equals(command)) {
             return new JobLogCommandImpl();
         }
         throw new RuntimeException("无效命令");

@@ -1,13 +1,13 @@
 package org.jeecg.modules.datasources.service.impl;
 
 
-import org.jeecg.datax.biz.AdminBiz;
-import org.jeecg.datax.biz.model.HandleCallbackParam;
-import org.jeecg.datax.biz.model.HandleProcessCallbackParam;
-import org.jeecg.datax.biz.model.RegistryParam;
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.enums.IncrementTypeEnum;
-import org.jeecg.datax.handler.IJobHandler;
+import org.jeecg.xxl.biz.AdminBiz;
+import org.jeecg.xxl.biz.model.HandleCallbackParam;
+import org.jeecg.xxl.biz.model.HandleProcessCallbackParam;
+import org.jeecg.xxl.biz.model.RegistryParam;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.enums.IncrementTypeEnum;
+import org.jeecg.xxl.handler.IJobHandler;
 import org.jeecg.modules.datasources.core.kill.KillJob;
 import org.jeecg.modules.datasources.core.thread.JobTriggerPoolHelper;
 import org.jeecg.modules.datasources.core.trigger.TriggerTypeEnum;

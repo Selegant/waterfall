@@ -1,12 +1,12 @@
 package org.jeecg.modules.datasources.controller;
 
 
-import org.jeecg.datax.biz.AdminBiz;
-import org.jeecg.datax.biz.model.HandleCallbackParam;
-import org.jeecg.datax.biz.model.HandleProcessCallbackParam;
-import org.jeecg.datax.biz.model.RegistryParam;
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.util.JobRemotingUtil;
+import org.jeecg.xxl.biz.AdminBiz;
+import org.jeecg.xxl.biz.model.HandleCallbackParam;
+import org.jeecg.xxl.biz.model.HandleProcessCallbackParam;
+import org.jeecg.xxl.biz.model.RegistryParam;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.util.JobRemotingUtil;
 import org.jeecg.modules.datasources.core.conf.JobAdminConfig;
 import org.jeecg.modules.datasources.core.util.JacksonUtil;
 import org.springframework.web.bind.annotation.RequestBody;

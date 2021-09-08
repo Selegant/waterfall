@@ -1,8 +1,8 @@
 package org.jeecg.modules.datasources.core.scheduler;
 
 
-import org.jeecg.datax.biz.ExecutorBiz;
-import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
+import org.jeecg.xxl.biz.ExecutorBiz;
+import org.jeecg.xxl.enums.ExecutorBlockStrategyEnum;
 import org.jeecg.modules.datasources.core.conf.JobAdminConfig;
 import org.jeecg.modules.datasources.core.thread.*;
 import org.jeecg.modules.datasources.core.util.I18nUtil;

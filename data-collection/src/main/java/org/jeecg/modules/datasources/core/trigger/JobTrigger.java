@@ -2,12 +2,12 @@ package org.jeecg.modules.datasources.core.trigger;
 
 
 import org.apache.commons.lang.StringUtils;
-import org.jeecg.datax.biz.ExecutorBiz;
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.biz.model.TriggerParam;
-import org.jeecg.datax.enums.ExecutorBlockStrategyEnum;
-import org.jeecg.datax.enums.IncrementTypeEnum;
-import org.jeecg.datax.glue.GlueTypeEnum;
+import org.jeecg.xxl.biz.ExecutorBiz;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.biz.model.TriggerParam;
+import org.jeecg.xxl.enums.ExecutorBlockStrategyEnum;
+import org.jeecg.xxl.enums.IncrementTypeEnum;
+import org.jeecg.xxl.glue.GlueTypeEnum;
 import org.jeecg.modules.datasources.core.conf.JobAdminConfig;
 import org.jeecg.modules.datasources.core.route.ExecutorRouteStrategyEnum;
 import org.jeecg.modules.datasources.core.scheduler.JobScheduler;
@@ -49,7 +49,7 @@ public class JobTrigger {
           logger.warn(">>>>>>>>>>>> trigger fail, jobId invalid，jobId={}", jobId);
           return;
       }
-      if (GlueTypeEnum.BEAN.getDesc().equals(jobInfo.getGlueType())) {
+      if (GlueTypeEnum.BEAN.getDesc().equals(jobInfo.getGlueType()) && StringUtils.isNotBlank(jobInfo.getTaskExecuteJson())) {
           // 解密账密
           String json = JSONUtils.changeJson(jobInfo.getTaskExecuteJson(), JSONUtils.decrypt);
           jobInfo.setTaskExecuteJson(json);

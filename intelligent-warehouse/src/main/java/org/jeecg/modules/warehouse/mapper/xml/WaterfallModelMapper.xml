@@ -175,4 +175,19 @@
       del_flag = #{delFlag,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getDbInfo" parameterType="java.lang.Integer" resultType="org.jeecg.modules.warehouse.dto.JobDTO">
+    SELECT
+	waterfall_data_source.jdbc_url as jdbcUrl,
+	waterfall_data_source.db_name as dbName,
+	waterfall_data_source.db_type as driver,
+	waterfall_data_source.username,
+	waterfall_data_source.`password`,
+	waterfall_model.folder_id as folderId,
+	waterfall_model.model_name as tableName
+    FROM waterfall_quality_model_with_job_info
+	LEFT JOIN waterfall_model ON waterfall_model.id = waterfall_quality_model_with_job_info.model_id AND waterfall_model.del_flag = 0
+	LEFT JOIN waterfall_data_source ON waterfall_model.publish_db = waterfall_data_source.id
+    WHERE job_info_id = #{jobId,jdbcType=INTEGER}
+  </select>
 </mapper>

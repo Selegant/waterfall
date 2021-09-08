@@ -105,4 +105,14 @@ public class WaterfallJobLog {
      * 日志状态
      */
     private String logStatus;
+
+    /**
+     * 模型id
+     */
+    private Integer modelId;
+
+    /**
+     * 模型名
+     */
+    private String modelName;
 }

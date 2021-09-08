@@ -36,6 +36,7 @@ public class WaterfallJobLogServiceImpl extends
     public IPage<WaterfallJobLog> pages(WebsocketLogPageInput input) {
           WaterfallJobLog log = new WaterfallJobLog();
           log.setTaskName(input.getJobName());
+          log.setJobId(input.getJobId());
           return waterfallJobLogMapper.wapperPageList(new Page<>(input.getPageNo(), input.getPageSize()),log);
 //        QueryWrapper<WaterfallJobLog> logQueryWrapper = new QueryWrapper<>();
 //        if (StringUtils.isBlank(input.getJobName())) {

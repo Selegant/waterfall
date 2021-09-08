@@ -116,4 +116,16 @@
 	INNER JOIN waterfall_job_info ON waterfall_quality_model_with_job_info.job_info_id = waterfall_job_info.id
     WHERE waterfall_quality_model_with_job_info.model_id =  #{modelId,jdbcType=INTEGER}
   </select>
+
+  <select id="checkPlanInfo" resultType="org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO">
+    SELECT
+        waterfall_job_info.id AS jobInfoId,
+        waterfall_job_info.task_name AS taskName,
+        waterfall_job_info.task_corn AS taskCorn,
+        waterfall_job_info.trigger_status AS triggerStatus,
+        waterfall_job_info.create_time AS createTime
+    FROM waterfall_quality_model_with_job_info
+	INNER JOIN waterfall_job_info ON waterfall_quality_model_with_job_info.job_info_id = waterfall_job_info.id
+    WHERE waterfall_quality_model_with_job_info.job_info_id =  #{jobInfoId,jdbcType=INTEGER}
+  </select>
 </mapper>
