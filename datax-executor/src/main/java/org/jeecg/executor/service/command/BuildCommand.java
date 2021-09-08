@@ -1,11 +1,11 @@
 package org.jeecg.executor.service.command;
 
 import cn.hutool.core.util.StrUtil;
-import org.jeecg.datax.biz.model.TriggerParam;
-import org.jeecg.datax.enums.IncrementTypeEnum;
-import org.jeecg.datax.log.JobLogger;
-import org.jeecg.datax.util.Constants;
-import org.jeecg.datax.util.DateUtil;
+import org.jeecg.xxl.biz.model.TriggerParam;
+import org.jeecg.xxl.enums.IncrementTypeEnum;
+import org.jeecg.xxl.log.JobLogger;
+import org.jeecg.xxl.util.Constants;
+import org.jeecg.xxl.util.DateUtil;
 import org.jeecg.executor.util.SystemUtils;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.jeecg.datax.util.Constants.SPLIT_COMMA;
+import static org.jeecg.xxl.util.Constants.SPLIT_COMMA;
 import static org.jeecg.executor.service.jobhandler.DataXConstant.*;
 
 /**

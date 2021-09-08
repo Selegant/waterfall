@@ -1,8 +1,8 @@
 package org.jeecg.executor.service.logparse;
 
 import cn.hutool.core.util.StrUtil;
-import org.jeecg.datax.log.JobLogger;
-import org.jeecg.datax.util.Constants;
+import org.jeecg.xxl.log.JobLogger;
+import org.jeecg.xxl.util.Constants;
 
 
 import java.io.BufferedReader;

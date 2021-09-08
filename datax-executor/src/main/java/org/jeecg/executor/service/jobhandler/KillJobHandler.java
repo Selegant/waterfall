@@ -3,11 +3,11 @@ package org.jeecg.executor.service.jobhandler;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
-import org.jeecg.datax.biz.model.ReturnT;
-import org.jeecg.datax.biz.model.TriggerParam;
-import org.jeecg.datax.handler.IJobHandler;
-import org.jeecg.datax.handler.annotation.JobHandler;
-import org.jeecg.datax.util.ProcessUtil;
+import org.jeecg.xxl.biz.model.ReturnT;
+import org.jeecg.xxl.biz.model.TriggerParam;
+import org.jeecg.xxl.handler.IJobHandler;
+import org.jeecg.xxl.handler.annotation.JobHandler;
+import org.jeecg.xxl.util.ProcessUtil;
 import org.springframework.stereotype.Component;
 
 import java.io.File;

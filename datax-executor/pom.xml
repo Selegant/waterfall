@@ -59,7 +59,7 @@
 
         <dependency>
             <groupId>org.jeecg</groupId>
-            <artifactId>jeecg-boot-base-datax</artifactId>
+            <artifactId>jeecg-boot-base-xxl</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

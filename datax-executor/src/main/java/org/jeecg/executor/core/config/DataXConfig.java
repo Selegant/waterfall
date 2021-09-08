@@ -1,7 +1,7 @@
 package org.jeecg.executor.core.config;
 
 import cn.hutool.core.util.StrUtil;
-import org.jeecg.datax.executor.impl.JobSpringExecutor;
+import org.jeecg.xxl.executor.impl.JobSpringExecutor;
 import org.jeecg.executor.util.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
