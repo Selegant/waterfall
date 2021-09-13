@@ -1,6 +1,5 @@
 package org.jeecg.modules.warehouse.controller;
 
-import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +7,6 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.datasources.core.thread.JobTriggerPoolHelper;
 import org.jeecg.modules.datasources.core.trigger.TriggerTypeEnum;
 import org.jeecg.modules.datasources.service.IOfflineTaskService;
-import org.jeecg.modules.warehouse.dto.JobDTO;
 import org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO;
 import org.jeecg.modules.warehouse.service.ICheckPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,15 +64,7 @@ public class CheckPlanController {
         Result result = new Result<>();
 
         try {
-            final JobDTO checkPlanDTO = checkPlanService.getExecutorParam(jobId);
-
-            // force cover job param
-            String executorParam = JSON.toJSONString(checkPlanDTO);
-            if (executorParam == null) {
-                executorParam = "";
-            }
-            JobTriggerPoolHelper.trigger(jobId, TriggerTypeEnum.MANUAL, -1, null, executorParam);
-            result.setResult(checkPlanDTO);
+            JobTriggerPoolHelper.trigger(jobId, TriggerTypeEnum.MANUAL, -1, null, "");
             result.success("操作成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -91,6 +81,37 @@ public class CheckPlanController {
         try {
             result.setResult(checkPlanService.checkPlanInfo(jobId));
             result.setMessage("query success！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/checkPlanResult/{jobId}")
+    @ApiOperation("校验计划结果")
+    public Result<Object> checkPlanResult(@PathVariable Integer jobId) {
+        Result<Object> result = new Result<>();
+
+        try {
+            result.setResult(checkPlanService.checkPlanResult(jobId));
+            result.setMessage("query success！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
+
+    @PutMapping("/checkPlan")
+    @ApiOperation("编辑校验计划")
+    public Result<Object> updateCheckPlan(@RequestBody WaterfallQualityCheckPlanDTO checkPlanDTO) {
+        Result<Object> result = new Result<>();
+
+        try {
+            checkPlanService.updateCheckPlan(checkPlanDTO);
+            result.setMessage("update success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500(e.getMessage());

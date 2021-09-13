@@ -115,4 +115,9 @@ public class WaterfallJobLog {
      * 模型名
      */
     private String modelName;
+
+    /**
+     * 检查结果
+     */
+    private String checkResult;
 }

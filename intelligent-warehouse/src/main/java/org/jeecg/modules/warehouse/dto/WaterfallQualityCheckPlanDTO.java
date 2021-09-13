@@ -16,8 +16,9 @@ public class WaterfallQualityCheckPlanDTO {
     private Integer jobInfoId;
     private Integer modelId;
     private String taskName;
-    private String dataSourcetype;
-    private String dbName;
+    private String taskDesc;
+    private String dataSourcetype = "HIVE";
+    private String dbName = "DEFAULT";
     private String taskCorn;
     private Integer triggerStatus;
     private Date createTime;

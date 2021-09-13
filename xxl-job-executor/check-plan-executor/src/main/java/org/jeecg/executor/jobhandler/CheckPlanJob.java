@@ -1,109 +1,188 @@
 package org.jeecg.executor.jobhandler;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.executor.dto.CheckResultDTO;
+import org.jeecg.executor.dto.JobDTO;
+import org.jeecg.executor.dto.WaterfallJobLog;
+import org.jeecg.executor.mapper.WaterfallJobLogMapper;
+import org.jeecg.executor.service.ICheckPlanService;
+import org.jeecg.rpc.util.json.BasicJson;
 import org.jeecg.xxl.biz.model.ReturnT;
 import org.jeecg.xxl.biz.model.TriggerParam;
+import org.jeecg.executor.util.JdbcUtil;
 import org.jeecg.xxl.handler.IJobHandler;
 import org.jeecg.xxl.handler.annotation.JobHandler;
-import org.jeecg.executor.util.JdbcUtil;
 import org.jeecg.xxl.log.JobLogger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-/**
- * XxlJob开发示例（Bean模式）
- *
- * 开发步骤：
- *      1、任务开发：在Spring Bean实例中，开发Job方法；
- *      2、注解配置：为Job方法添加注解 "@XxlJob(value="自定义jobhandler名称", init = "JobHandler初始化方法", destroy = "JobHandler销毁方法")"，注解value值对应的是调度中心新建任务的JobHandler属性的值。
- *      3、执行日志：需要通过 "XxlJobHelper.log" 打印执行日志；
- *      4、任务结果：默认任务结果为 "成功" 状态，不需要主动设置；如有诉求，比如设置任务结果为失败，可以通过 "XxlJobHelper.handleFail/handleSuccess" 自主设置任务结果；
- *
- * @author xuxueli 2019-12-11 21:52:51
- */
 @JobHandler(value = "checkPlanJobHandler")
 @Component
 public class CheckPlanJob extends IJobHandler {
-    private static Logger logger = LoggerFactory.getLogger(CheckPlanJob.class);
+
+    @Autowired
+    private ICheckPlanService checkPlanService;
+
+    @Autowired
+    private WaterfallJobLogMapper waterfallJobLogMapper;
+
+    private final String driver = "org.apache.hive.jdbc.HiveDriver";
+
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     @Override
     public ReturnT<String> execute(TriggerParam tgParam) throws Exception {
+        Date startTime = new Date();
+        Map<String, Object> res = new HashMap<>();
+        Map<String, CheckResultDTO> fieldInfo = new HashMap<>();
+
         JobLogger.log("-------------------------------------检查开始---------------------------------");
-        final JSONObject jsonObject = JSONObject.parseObject(tgParam.getExecutorParams());
-        String driver = "org.apache.hive.jdbc.HiveDriver";
-        String url = jsonObject.getString("jdbcUrl");
-        String username = jsonObject.getString("username");
-        String password = jsonObject.getString("password");
-        String folderId = jsonObject.getString("folderId");
-        String tableName = folderId + "_" +jsonObject.getString("tableName");
-        JSONArray emptyCheck = jsonObject.getJSONArray("emptyCheck");
-        JSONObject compareCheck = jsonObject.getJSONObject("compareCheck");
-        final JSONObject cornCheck = jsonObject.getJSONObject("cornCheck");
-        JdbcUtil jdbc = new JdbcUtil(username,password,driver,url);
+        final JobDTO checkPlanDTO = checkPlanService.getExecutorParam(tgParam.getJobId());
+        String url = checkPlanDTO.getJdbcUrl();
+        String username = checkPlanDTO.getUsername();
+        String password = checkPlanDTO.getPassword();
+        String tableName = checkPlanDTO.getFolderId() + "_" + checkPlanDTO.getTableName();
+        JdbcUtil jdbc = new JdbcUtil(username, password, driver, url);
         try {
             jdbc.getConnection();
-            emptyCheck.stream().forEach(e -> {
-                emptyCheck(jdbc, tableName, e.toString());
+            checkPlanDTO.getEmptyCheck().stream().forEach(e -> {
+                CheckResultDTO dto = emptyCheck(jdbc, tableName, e);
+                if (dto != null && StringUtils.isNotBlank(dto.getFieldName())) {
+                    if (fieldInfo.containsKey(dto.getFieldName())) {
+                        CheckResultDTO tmp = fieldInfo.get(dto.getFieldName());
+                        tmp.setTotal(dto.getTotal());
+                        tmp.setEmptySum(dto.getEmptySum());
+                    } else {
+                        fieldInfo.put(dto.getFieldName(), dto);
+                    }
+                }
             });
-            compareCheck.entrySet().stream().forEach(e -> {
-                compareCheck(jdbc, tableName, e.getKey(), e.getValue().toString());
+            checkPlanDTO.getCompareCheck().entrySet().stream().forEach(e -> {
+                CheckResultDTO dto = compareCheck(jdbc, tableName, e.getKey(), e.getValue());
+                if (dto != null && StringUtils.isNotBlank(dto.getFieldName())) {
+                    if (fieldInfo.containsKey(dto.getFieldName())) {
+                        CheckResultDTO tmp = fieldInfo.get(dto.getFieldName());
+                        tmp.setTotal(dto.getTotal());
+                        tmp.setCompareSum(dto.getCompareSum());
+                        tmp.setCompareExpression(dto.getCompareExpression());
+                    } else {
+                        fieldInfo.put(dto.getFieldName(), dto);
+                    }
+                }
             });
-            cornCheck.entrySet().stream().forEach(e -> {
-                cornCheck(jdbc, tableName, e.getKey(), e.getValue().toString());
+            checkPlanDTO.getCornCheck().entrySet().stream().forEach(e -> {
+                CheckResultDTO dto = cornCheck(jdbc, tableName, e.getKey(), e.getValue());
+                if (dto != null && StringUtils.isNotBlank(dto.getFieldName())) {
+                    if (fieldInfo.containsKey(dto.getFieldName())) {
+                        CheckResultDTO tmp = fieldInfo.get(dto.getFieldName());
+                        tmp.setTotal(dto.getTotal());
+                        tmp.setRegularSum(dto.getRegularSum());
+                        tmp.setRegularExpression(dto.getRegularExpression());
+                    } else {
+                        fieldInfo.put(dto.getFieldName(), dto);
+                    }
+                }
             });
-        }catch (Exception e) {
-
-        }finally {
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             jdbc.releaseConn();
         }
 
         JobLogger.log("-------------------------------------检查结束---------------------------------");
 
+
+        //基本信息
+        Map<String, Object> baseInfo = new HashMap<>();
+        baseInfo.put("dataSource", "HIVE");
+//        baseInfo.put("project", tgParam.get);
+        baseInfo.put("tableName", checkPlanDTO.getTableName());
+        baseInfo.put("startTime", sdf.format(startTime));
+        baseInfo.put("endTime", sdf.format(new Date()));
+
+        //表信息
+
+        res.put("baseInfo", baseInfo);
+        res.put("fieldInfo", fieldInfo);
+
+        WaterfallJobLog log = new WaterfallJobLog();
+        log.setId(tgParam.getLogId());
+        log.setCheckResult(BasicJson.toJson(res));
+        log.setModelName(checkPlanDTO.getTableName());
+//        log.setModelId(checkPlanDTO.get);
+        waterfallJobLogMapper.updateByPrimaryKeySelective(log);
+
         return null;
     }
 
 
-    private void emptyCheck(JdbcUtil jdbc, String tableName, String field) {
+    private CheckResultDTO emptyCheck(JdbcUtil jdbc, String tableName, String field) {
+        CheckResultDTO res = new CheckResultDTO();
         String sql = "select count(*) as count, count(" + field + ") as col from " + tableName;
         try {
             final List<Map<String, Object>> result = jdbc.findResult(sql, null);
-            final Integer count = Integer.valueOf(result.get(0).get("count").toString());
-            final Integer col = Integer.valueOf(result.get(0).get("col").toString());
+            final Long count = Long.valueOf(result.get(0).get("count").toString());
+            final Long col = Long.valueOf(result.get(0).get("col").toString());
+
+            res.setFieldName(field);
+            res.setTotal(count);
+            res.setEmptySum(count - col);
+//            res.setFiedlType();
             JobLogger.log("非空检查，表字{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
         } catch (Exception e) {
-            e.printStackTrace();
+            JobLogger.log("非空检查错误：{}", e.getMessage());
         }
+
+        return res;
     }
 
 
-    private void compareCheck(JdbcUtil jdbc, String tableName, String field, String exceptValue) {
+    private CheckResultDTO compareCheck(JdbcUtil jdbc, String tableName, String field, String exceptValue) {
+        CheckResultDTO res = new CheckResultDTO();
         String countSql = "select count(*) as count from " + tableName;
-        String sql = "select count(*) as col from " + tableName +" where " + field +" " + exceptValue;
+        String sql = "select count(*) as col from " + tableName + " where " + field + " " + exceptValue;
         try {
-            final Integer count = Integer.valueOf(jdbc.findResult(countSql, null).get(0).get("count").toString());
-            final Integer col = Integer.valueOf(jdbc.findResult(sql, null).get(0).get("col").toString());
+            final Long count = Long.valueOf(jdbc.findResult(countSql, null).get(0).get("count").toString());
+            final Long col = Long.valueOf(jdbc.findResult(sql, null).get(0).get("col").toString());
+
+            res.setFieldName(field);
+            res.setTotal(count);
+//            res.setFiedlType();
+            res.setCompareSum(col);
+            res.setCompareExpression(exceptValue);
             JobLogger.log("通用比较检查，表字{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
         } catch (Exception e) {
-            e.printStackTrace();
+            JobLogger.log("通用比较检查错误：{}", e.getMessage());
         }
+        return res;
     }
 
 
-    private void cornCheck(JdbcUtil jdbc, String tableName, String field, String regular) {
+    private CheckResultDTO cornCheck(JdbcUtil jdbc, String tableName, String field, String regular) {
+        CheckResultDTO res = new CheckResultDTO();
         String countSql = "select count(*) as count from " + tableName;
-        String sql = "select count(*) as col from " + tableName +" where " + field +" regexp '" + regular +"'";
+        String sql = "select count(*) as col from " + tableName + " where " + field + " regexp '" + regular + "'";
         try {
-            final Integer count = Integer.valueOf(jdbc.findResult(countSql, null).get(0).get("count").toString());
-            final Integer col = Integer.valueOf(jdbc.findResult(sql, null).get(0).get("col").toString());
+            final Long count = Long.valueOf(jdbc.findResult(countSql, null).get(0).get("count").toString());
+            final Long col = Long.valueOf(jdbc.findResult(sql, null).get(0).get("col").toString());
+
+            res.setFieldName(field);
+            res.setTotal(count);
+//            res.setFiedlType();
+            res.setRegularSum(col);
+            res.setRegularExpression(regular);
             JobLogger.log("正则检查，表字{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
         } catch (Exception e) {
-            e.printStackTrace();
+            JobLogger.log("正则检查错误：{}", e.getMessage());
         }
+        return res;
     }
+
 
 }

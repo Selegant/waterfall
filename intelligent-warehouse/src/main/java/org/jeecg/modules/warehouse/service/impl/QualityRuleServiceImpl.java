@@ -60,6 +60,9 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
         ruleEntity.setDelFlag(false);
         ruleEntity.setCreateTime(new Date());
         ruleEntity.setUpdateTime(new Date());
+        if(WaterfallQualityRuleDTO.RULE_PUBLIC.equals(ruleDto.getRuleType())) {
+            ruleEntity.setModelId(null);
+        }
         ruleMapper.insert(ruleEntity);
 
         ruleDto.getRuleFields().stream().forEach(e -> {

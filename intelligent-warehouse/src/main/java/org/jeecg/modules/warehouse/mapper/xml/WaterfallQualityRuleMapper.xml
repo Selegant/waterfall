@@ -130,9 +130,12 @@
   </update>
 
   <select id="getListWithJob" resultMap="BaseResultMap">
-  select *
+  select waterfall_quality_rule.rule_name,
+        waterfall_quality_rule.rule_type,
+        waterfall_quality_rule.create_time,
+        waterfall_quality_rule.update_time
   from waterfall_quality_rule_with_job_info
-  left join waterfall_quality_rule on waterfall_quality_rule_with_job_info.quality_rule_id = waterfall_quality_rule.id
+  inner join waterfall_quality_rule on waterfall_quality_rule_with_job_info.quality_rule_id = waterfall_quality_rule.id
   and waterfall_quality_rule.enable_flag = true and waterfall_quality_rule.del_flag = false
   where waterfall_quality_rule_with_job_info.job_info_id = #{jobId,jdbcType=INTEGER}
   </select>

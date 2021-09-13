@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.datasources.core.cron.CronExpression;
 import org.jeecg.modules.datasources.mapper.WaterfallJobInfoMapper;
+import org.jeecg.modules.datasources.mapper.WaterfallJobLogMapper;
 import org.jeecg.modules.datasources.model.WaterfallJobInfo;
+import org.jeecg.modules.datasources.model.WaterfallJobLog;
 import org.jeecg.modules.warehouse.dto.JobDTO;
 import org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO;
 
 import org.jeecg.modules.warehouse.mapper.*;
 import org.jeecg.modules.warehouse.model.WaterfallQualityModelWithJobInfo;
-import org.jeecg.modules.warehouse.model.WaterfallQualityRule;
 import org.jeecg.modules.warehouse.model.WaterfallQualityRuleField;
 import org.jeecg.modules.warehouse.model.WaterfallQualityRuleWithJobInfo;
 import org.jeecg.modules.warehouse.service.ICheckPlanService;
@@ -57,10 +58,15 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
     @Autowired
     private WaterfallQualityRuleWithJobInfoMapper ruleWithJobInfoMapper;
 
+    @Autowired
+    private WaterfallJobLogMapper waterfallJobLogMapper;
+
 
     @Override
     public List<WaterfallQualityCheckPlanDTO> checkPlanList(Integer modelId) {
-        return modelWithJobInfoMapper.checkPlanList(modelId);
+        //todo 增加数据库信息
+        List<WaterfallQualityCheckPlanDTO> res = modelWithJobInfoMapper.checkPlanList(modelId);
+        return res;
     }
 
 
@@ -75,7 +81,7 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
         }
         jobInfo.setTaskCorn(checkPlanDTO.getTaskCorn());
         jobInfo.setTaskName(checkPlanDTO.getTaskName());
-//        jobInfo.setTaskDesc();
+        jobInfo.setTaskDesc(checkPlanDTO.getTaskDesc());
         jobInfo.setExecutorTimeout(DEFAULT_TIMEOUT);
         jobInfo.setExecutorFailRetryCount(DEFAULT_RETRY_COUNT);
         jobInfo.setGlueType("BEAN");
@@ -86,7 +92,7 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
         jobInfo.setExecutorRouteStrategy("RANDOM");
 //        jobInfo.setExecutorBlockStrategy("SERIAL_EXECUTION");
         jobInfo.setExecutorHandler("checkPlanJobHandler");
-        jobInfo.setUpdateTime(new Date());
+        jobInfo.setGlueUpdatetime(new Date());
         waterfallJobInfoMapper.insert(jobInfo);
 
         //保存model-job中间表
@@ -102,11 +108,6 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
             ruleWithJobInfo.setQualityRuleId(e.getId());
             ruleWithJobInfoMapper.insert(ruleWithJobInfo);
         });
-
-    }
-
-    @Override
-    public void tryRunCheckPlan(Integer jobId) {
 
     }
 
@@ -135,5 +136,43 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
              res.setQualityRules(ruleMapper.getListWithJob(jobId));
          }
         return res;
+    }
+
+    @Override
+    public void updateCheckPlan(WaterfallQualityCheckPlanDTO checkPlanDTO) {
+        //删除计划质量规则
+        ruleWithJobInfoMapper.delete(new LambdaQueryWrapper<WaterfallQualityRuleWithJobInfo>().eq(WaterfallQualityRuleWithJobInfo::getJobInfoId, checkPlanDTO.getJobInfoId()));
+
+        WaterfallJobInfo jobInfo = new WaterfallJobInfo();
+        jobInfo.setId(checkPlanDTO.getJobInfoId());
+        if (!CronExpression.isValidExpression(checkPlanDTO.getTaskCorn())) {
+            throw new RuntimeException("CORN表达式不合法");
+        }
+        jobInfo.setTaskCorn(checkPlanDTO.getTaskCorn());
+        jobInfo.setTaskName(checkPlanDTO.getTaskName());
+        jobInfo.setTaskDesc(checkPlanDTO.getTaskDesc());
+        jobInfo.setExecutorRouteStrategy("RANDOM");
+//        jobInfo.setExecutorBlockStrategy("SERIAL_EXECUTION");
+        jobInfo.setUpdateTime(new Date());
+        waterfallJobInfoMapper.updateByPrimaryKeySelective(jobInfo);
+
+        //保存job-rule中间表
+        checkPlanDTO.getQualityRules().stream().forEach(e -> {
+            WaterfallQualityRuleWithJobInfo ruleWithJobInfo = new WaterfallQualityRuleWithJobInfo();
+            ruleWithJobInfo.setJobInfoId(jobInfo.getId());
+            ruleWithJobInfo.setQualityRuleId(e.getId());
+            ruleWithJobInfoMapper.insert(ruleWithJobInfo);
+        });
+    }
+
+    @Override
+    public String checkPlanResult(Integer jobId) {
+        LambdaQueryWrapper<WaterfallJobLog> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WaterfallJobLog::getJobId, jobId)
+                .orderByDesc(WaterfallJobLog::getTriggerTime);
+
+        WaterfallJobLog res = waterfallJobLogMapper.selectOne(queryWrapper);
+
+        return res == null ? null : res.getCheckResult();
     }
 }

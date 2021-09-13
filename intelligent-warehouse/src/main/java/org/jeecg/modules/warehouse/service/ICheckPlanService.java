@@ -15,9 +15,11 @@ public interface ICheckPlanService {
 
     void addCheckPlan(WaterfallQualityCheckPlanDTO checkPlanDTO);
 
-    void tryRunCheckPlan(Integer jobId);
-
     JobDTO getExecutorParam(Integer jobId);
 
     WaterfallQualityCheckPlanDTO checkPlanInfo(Integer jobId);
+
+    void updateCheckPlan(WaterfallQualityCheckPlanDTO checkPlanDTO);
+
+    String checkPlanResult(Integer jobId);
 }

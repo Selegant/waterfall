@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.jeecg.modules.datasources.mapper.WaterfallJobLogMapper">
-  <resultMap id="BaseResultMap" type="org.jeecg.modules.datasources.model.WaterfallJobLog">
+<mapper namespace="org.jeecg.executor.mapper.WaterfallJobLogMapper">
+  <resultMap id="BaseResultMap" type="org.jeecg.executor.dto.WaterfallJobLog">
     <!--@mbg.generated-->
     <!--@Table waterfall_job_log-->
     <id column="id" jdbcType="BIGINT" property="id" />
@@ -32,12 +32,7 @@
     executor_sharding_param, executor_fail_retry_count, trigger_time, trigger_code, trigger_msg,
     handle_time, handle_code, handle_msg, alarm_status, process_id, max_id, model_id,model_name,check_result
   </sql>
-  <sql id="Base_Page_Column_List">
-    <!--@mbg.generated-->
-    a.id, a.job_group, a.job_id, a.job_desc, a.executor_address, a.executor_handler, a.executor_param,
-    a.executor_sharding_param, a.executor_fail_retry_count, a.trigger_time, a.trigger_code, a.trigger_msg,
-    a.handle_time, a.handle_code, a.handle_msg, a.alarm_status, a.process_id, a.max_id,b.task_name
-  </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select
@@ -50,25 +45,25 @@
     delete from waterfall_job_log
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="org.jeecg.executor.dto.WaterfallJobLog" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_job_log (job_group, job_id, job_desc,
       executor_address, executor_handler, executor_param,
       executor_sharding_param, executor_fail_retry_count,
       trigger_time, trigger_code, trigger_msg,
       handle_time, handle_code, handle_msg,
-      alarm_status, process_id, max_id, model_id,model_name,check_result
+      alarm_status, process_id, max_id,model_id,model_name,check_result
       )
     values (#{jobGroup,jdbcType=INTEGER}, #{jobId,jdbcType=INTEGER}, #{jobDesc,jdbcType=VARCHAR},
       #{executorAddress,jdbcType=VARCHAR}, #{executorHandler,jdbcType=VARCHAR}, #{executorParam,jdbcType=VARCHAR},
       #{executorShardingParam,jdbcType=VARCHAR}, #{executorFailRetryCount,jdbcType=INTEGER},
       #{triggerTime,jdbcType=TIMESTAMP}, #{triggerCode,jdbcType=INTEGER}, #{triggerMsg,jdbcType=LONGVARCHAR},
       #{handleTime,jdbcType=TIMESTAMP}, #{handleCode,jdbcType=INTEGER}, #{handleMsg,jdbcType=LONGVARCHAR},
-      #{alarmStatus,jdbcType=TINYINT}, #{processId,jdbcType=VARCHAR}, #{maxId,jdbcType=BIGINT}, #{modelId,jdbcType=INTEGER},
-      #{modelName,jdbcType=VARCHAR},#{checkResult,jdbcType=VARCHAR}
+      #{alarmStatus,jdbcType=TINYINT}, #{processId,jdbcType=VARCHAR}, #{maxId,jdbcType=BIGINT},#{modelId,jdbcType=INTEGER},
+        #{modelName,jdbcType=VARCHAR},#{checkResult,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="org.jeecg.executor.dto.WaterfallJobLog" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into waterfall_job_log
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -196,7 +191,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog">
+  <update id="updateByPrimaryKeySelective" parameterType="org.jeecg.executor.dto.WaterfallJobLog">
     <!--@mbg.generated-->
     update waterfall_job_log
     <set>
@@ -263,7 +258,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog">
+  <update id="updateByPrimaryKey" parameterType="org.jeecg.executor.dto.WaterfallJobLog">
     <!--@mbg.generated-->
     update waterfall_job_log
     set job_group = #{jobGroup,jdbcType=INTEGER},
@@ -283,256 +278,10 @@
       alarm_status = #{alarmStatus,jdbcType=TINYINT},
       process_id = #{processId,jdbcType=VARCHAR},
       max_id = #{maxId,jdbcType=BIGINT},
-    modle_id = #{modelId,jdbcType=INTEGER},
-    model_name = #{modelName,jdbcType=VARCHAR},
-    check_result = #{checkResult,jdbcType=VARCHAR}
+      modle_id = #{modelId,jdbcType=INTEGER},
+      model_name = #{modelName,jdbcType=VARCHAR},
+      check_result = #{checkResult,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="findFailJobLogIds" resultType="long">
-    SELECT id FROM waterfall_job_log
-    WHERE !(
-    (trigger_code in (0, 200) and handle_code = 0)
-    OR
-    (handle_code = 200)
-    )
-    AND `alarm_status` = 0
-    ORDER BY id ASC
-    LIMIT #{pagesize}
-  </select>
-
-  <update id="updateAlarmStatus">
-    UPDATE waterfall_job_log
-    SET
-    `alarm_status` = #{newAlarmStatus}
-    WHERE `id`= #{logId} AND `alarm_status` = #{oldAlarmStatus}
-  </update>
-
-  <select id="load" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    SELECT <include refid="Base_Column_List" />
-    FROM waterfall_job_log AS t
-    WHERE t.id = #{id}
-  </select>
-
-  <update id="updateTriggerInfo">
-    UPDATE waterfall_job_log
-    SET
-    `trigger_time`= #{triggerTime},
-    `trigger_code`= #{triggerCode},
-    `trigger_msg`= #{triggerMsg},
-    `executor_address`= #{executorAddress},
-    `executor_handler`=#{executorHandler},
-    `executor_param`= #{executorParam},
-    `executor_sharding_param`= #{executorShardingParam},
-    `executor_fail_retry_count`= #{executorFailRetryCount},
-    `max_id` = #{maxId}
-    WHERE `id`= #{id}
-  </update>
-
-  <select id="findLogReport" resultType="java.util.Map" >
-    SELECT
-    COUNT(handle_code) triggerDayCount,
-    COALESCE(SUM(CASE WHEN (trigger_code in (0, 200) and handle_code = 0) then 1 else 0 end),0) as triggerDayCountRunning,
-    COALESCE(SUM(CASE WHEN handle_code = 200 then 1 else 0 end),0) as triggerDayCountSuc
-    FROM waterfall_job_log
-    WHERE trigger_time BETWEEN #{from} and #{to}
-  </select>
-
-  <select id="findClearLogIds" resultType="long" >
-    SELECT id FROM waterfall_job_log
-    <trim prefix="WHERE" prefixOverrides="AND | OR" >
-      <if test="jobGroup gt 0">
-        AND job_group = #{jobGroup}
-      </if>
-      <if test="jobId gt 0">
-        AND job_id = #{jobId}
-      </if>
-      <if test="clearBeforeTime != null">
-        AND trigger_time <![CDATA[ <= ]]> #{clearBeforeTime}
-      </if>
-      <if test="clearBeforeNum gt 0">
-        AND id NOT in(
-        SELECT id FROM(
-        SELECT id FROM waterfall_job_log AS t
-        <trim prefix="WHERE" prefixOverrides="AND | OR" >
-          <if test="jobGroup gt 0">
-            AND t.job_group = #{jobGroup}
-          </if>
-          <if test="jobId gt 0">
-            AND t.job_id = #{jobId}
-          </if>
-        </trim>
-        ORDER BY t.trigger_time desc
-        LIMIT 0, #{clearBeforeNum}
-        ) t1
-        )
-      </if>
-    </trim>
-    order by id asc
-    LIMIT #{pagesize}
-  </select>
-  <select
-    id="pageList"
-    resultType="org.jeecg.modules.datasources.model.WaterfallJobLog">
-    SELECT
-    <include refid="Base_Column_List"/>
-    FROM waterfall_job_log AS t
-    <trim
-      prefix="WHERE"
-      prefixOverrides="AND | OR">
-      <if test="jobId==0 and jobGroup gt 0">
-        AND t.job_group = #{jobGroup}
-      </if>
-      <if test="jobId gt 0">
-        AND t.job_id = #{jobId}
-      </if>
-      <if test="triggerTimeStart != null">
-        AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}
-      </if>
-      <if test="triggerTimeEnd != null">
-        AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}
-      </if>
-      <if test="logStatus == 1">
-        AND t.handle_code = 200
-      </if>
-      <if test="logStatus == 2">
-        AND (
-        t.trigger_code NOT IN (0, 200) OR
-        t.handle_code NOT IN (0, 200)
-        )
-      </if>
-      <if test="logStatus == 3">
-        AND t.trigger_code = 200
-        AND t.handle_code = 0
-      </if>
-    </trim>
-    ORDER BY t.trigger_time DESC
-    LIMIT #{offset}, #{pagesize}
-  </select>
-  <select
-          id="wapperPageList"
-          resultType="org.jeecg.modules.datasources.model.WaterfallJobLog">
-    SELECT
-    <include refid="Base_Page_Column_List"/>
-    FROM waterfall_job_log a, waterfall_job_info b
-    <trim
-            prefix="WHERE"
-            prefixOverrides="AND | OR">
-<!--      <if test="jobId==0 and jobGroup gt 0">-->
-<!--        AND t.job_group = #{jobGroup}-->
-<!--      </if>-->
-<!--      <if test="triggerTimeStart != null">-->
-<!--        AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}-->
-<!--      </if>-->
-<!--      <if test="triggerTimeEnd != null">-->
-<!--        AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}-->
-<!--      </if>-->
-      a.job_id = b.id
-      <if test="ew.jobId != null and ew.jobId gt 0">
-        and b.id = #{ew.jobId,jdbcType=INTEGER}
-      </if>
-      <if test="ew.taskName != null and ew.taskName != ''">
-        and b.task_name like #{ew.taskName,jdbcType=VARCHAR}
-      </if>
-      <if test="ew.logStatus == 1">
-        AND a.handle_code = 200
-      </if>
-      <if test="ew.logStatus == 2">
-        AND (
-        a.trigger_code NOT IN (0, 200) OR
-        a.handle_code NOT IN (0, 200)
-        )
-      </if>
-      <if test="ew.logStatus == 3">
-        AND a.trigger_code = 200
-        AND a.handle_code = 0
-      </if>
-    </trim>
-    ORDER BY a.trigger_time DESC
-  </select>
-  <select
-    id="pageListCount"
-    resultType="java.lang.Integer">
-    SELECT count(1)
-    FROM waterfall_job_log AS t
-    <trim
-      prefix="WHERE"
-      prefixOverrides="AND | OR">
-      <if test="jobId==0 and jobGroup gt 0">
-        AND t.job_group = #{jobGroup}
-      </if>
-      <if test="jobId gt 0">
-        AND t.job_id = #{jobId}
-      </if>
-      <if test="triggerTimeStart != null">
-        AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}
-      </if>
-      <if test="triggerTimeEnd != null">
-        AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}
-      </if>
-      <if test="logStatus == 1">
-        AND t.handle_code = 200
-      </if>
-      <if test="logStatus == 2">
-        AND (
-        t.trigger_code NOT IN (0, 200) OR
-        t.handle_code NOT IN (0, 200)
-        )
-      </if>
-      <if test="logStatus == 3">
-        AND t.trigger_code = 200
-        AND t.handle_code = 0
-      </if>
-    </trim>
-  </select>
-
-  <delete id="clearLog">
-    delete from waterfall_job_log
-    WHERE id in
-    <foreach
-      collection="logIds"
-      item="item"
-      open="("
-      close=")"
-      separator=",">
-      #{item}
-    </foreach>
-  </delete>
-
-  <update id="updateProcessId">
-    UPDATE waterfall_job_log
-    SET
-    `process_id`= #{processId}
-    WHERE `id`= #{id}
-  </update>
-
-  <update id="updateHandleInfo">
-    UPDATE waterfall_job_log
-    SET
-    `handle_time`= #{handleTime},
-    `handle_code`= #{handleCode},
-    `handle_msg`= #{handleMsg}
-    WHERE `id`= #{id}
-  </update>
-
-  <insert id="save" parameterType="org.jeecg.modules.datasources.model.WaterfallJobLog" useGeneratedKeys="true" keyProperty="id" >
-    INSERT INTO waterfall_job_log (
-    `job_group`,
-    `job_id`,
-    `job_desc`,
-    `trigger_time`,
-    `trigger_code`,
-    `handle_code`
-    ) VALUES (
-    #{jobGroup},
-    #{jobId},
-    #{jobDesc},
-    #{triggerTime},
-    #{triggerCode},
-    #{handleCode}
-    );
-    <!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
-        SELECT LAST_INSERT_ID()
-    </selectKey>-->
-  </insert>
 </mapper>
