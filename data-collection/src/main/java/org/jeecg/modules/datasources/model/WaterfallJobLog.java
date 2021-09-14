@@ -106,6 +106,10 @@ public class WaterfallJobLog {
      */
     private String logStatus;
 
+    private String beginTime;
+
+    private String endTime;
+
     /**
      * 模型id
      */

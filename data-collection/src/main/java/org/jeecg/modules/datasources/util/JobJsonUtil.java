@@ -11,10 +11,8 @@ import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE_R
 import static org.jeecg.modules.datasources.constant.DataSourceConstant.ORACLE_WRITER;
 
 import com.alibaba.fastjson.JSONObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import org.jeecg.modules.datasources.dto.JobResultDTO;
 import org.jeecg.modules.datasources.dto.JobResultDTO.ConnectionBean;
@@ -62,7 +60,7 @@ public class JobJsonUtil {
         ContentBean content = new ContentBean();
         ReaderBean readerBean = new ReaderBean();
         // 名称根据数据库类型来赋值
-        String originalType = original.getDbType().toLowerCase();
+        String originalType = original.getDbType().toUpperCase();
         String readerName = "";
         if (MYSQL.equals(originalType)) {
             readerName = MYSQL_READER;
@@ -99,7 +97,7 @@ public class JobJsonUtil {
 
         // 目标表信息
         WriterBean writerBean = new WriterBean();
-        String targetType = target.getDbType().toLowerCase();
+        String targetType = target.getDbType().toUpperCase();
         String writerName = "";
         if (MYSQL.equals(targetType)) {
             writerName = MYSQL_WRITER;
@@ -110,15 +108,17 @@ public class JobJsonUtil {
         // 目标表参数
         ParameterBeanDTO parameterBeanX = new ParameterBeanDTO();
         // 是否打印
-        parameterBeanX.setPrint(true);
+//        parameterBeanX.setPrint(true);
         parameterBeanX.setEncoding("UTF-8");
-        if (HIVE.equals(originalType)) {
+        if (HIVE.equals(targetType)) {
             writerName = HIVE_WRITER;
-            parameterBeanX.setDefaultFS(input.getDefaultFS());
-            parameterBeanX.setPath(input.getPath());
+            parameterBeanX.setDefaultFS(target.getDefaultfs());
+            parameterBeanX.setPath(target.getPath()+'/'+input.getTargetTable());
             parameterBeanX.setFileType("TEXT");
             parameterBeanX.setFileName(input.getTargetTable());
-            parameterBeanX.setHadoopConfig(input.getHadoopConfig());
+            parameterBeanX.setHadoopConfig(JSONObject.parseObject(target.getHadoopConfig()));
+            parameterBeanX.setFieldDelimiter("\001");
+            parameterBeanX.setWriteMode("append");
         } else {
             parameterBeanX.setUsername(target.getUsername());
             parameterBeanX.setPassword(target.getPassword());

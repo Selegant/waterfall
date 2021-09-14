@@ -34,6 +34,8 @@ public class ParameterBeanDTO {
 
     private String writeMode;
 
+    private String fieldDelimiter;
+
     private JSONObject hadoopConfig;
 
     @Data

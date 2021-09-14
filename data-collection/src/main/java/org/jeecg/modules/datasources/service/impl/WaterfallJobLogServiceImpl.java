@@ -1,5 +1,8 @@
 package org.jeecg.modules.datasources.service.impl;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,7 +39,11 @@ public class WaterfallJobLogServiceImpl extends
     public IPage<WaterfallJobLog> pages(WebsocketLogPageInput input) {
           WaterfallJobLog log = new WaterfallJobLog();
           log.setTaskName(input.getJobName());
-          log.setJobId(input.getJobId());
+          log.setLogStatus(input.getLogStatus());
+          if(ObjectUtil.isNotEmpty(input.getTriggerTime())&&!input.getTriggerTime().isEmpty()){
+              log.setBeginTime(DateUtil.format(input.getTriggerTime().get(0), DatePattern.NORM_DATETIME_FORMAT));
+              log.setEndTime(DateUtil.format(input.getTriggerTime().get(1), DatePattern.NORM_DATETIME_FORMAT));
+          }
           return waterfallJobLogMapper.wapperPageList(new Page<>(input.getPageNo(), input.getPageSize()),log);
 //        QueryWrapper<WaterfallJobLog> logQueryWrapper = new QueryWrapper<>();
 //        if (StringUtils.isBlank(input.getJobName())) {

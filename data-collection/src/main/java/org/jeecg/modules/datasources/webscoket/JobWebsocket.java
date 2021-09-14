@@ -54,8 +54,8 @@ public class JobWebsocket {
             webSockets.add(this);
             sessionPool.put(userId, session);
             // 连接后先发送一下日志分页操作
-            String json = JSONObject.toJSONString(WebsocketLogPageInput.builder().pageNo(1).pageSize(10).build());
-            pushMessage(factory.factoryCommand(JOB_LOG_PAGES.getCommand()).perform(json), session);
+//            String json = JSONObject.toJSONString(WebsocketLogPageInput.builder().pageNo(1).pageSize(10).build());
+//            pushMessage(factory.factoryCommand(JOB_LOG_PAGES.getCommand()).perform(json), session);
             log.info("websocket消息 有新的连接，总数为:{}", webSockets.size());
         } catch (Exception e) {
             log.error("websocket连接异常:{}", e.getMessage());

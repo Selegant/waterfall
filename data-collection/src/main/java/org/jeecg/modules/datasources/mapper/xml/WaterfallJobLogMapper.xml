@@ -434,6 +434,9 @@
       <if test="ew.taskName != null and ew.taskName != ''">
         and b.task_name like #{ew.taskName,jdbcType=VARCHAR}
       </if>
+      <if test="ew.beginTime != null and ew.endTime != null">
+        and a.trigger_time <![CDATA[>=]]> #{ew.beginTime,jdbcType=TIMESTAMP} and a.trigger_time <![CDATA[<=]]> #{ew.endTime,jdbcType=TIMESTAMP}
+      </if>
       <if test="ew.logStatus == 1">
         AND a.handle_code = 200
       </if>
