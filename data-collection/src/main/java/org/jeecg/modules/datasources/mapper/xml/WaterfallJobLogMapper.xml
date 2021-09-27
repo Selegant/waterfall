@@ -34,7 +34,7 @@
   </sql>
   <sql id="Base_Page_Column_List">
     <!--@mbg.generated-->
-    a.id, a.job_group, a.job_id, a.job_desc, a.executor_address, a.executor_handler, a.executor_param,
+    a.id, a.model_name, a.job_group, a.job_id, a.job_desc, a.executor_address, a.executor_handler, a.executor_param,
     a.executor_sharding_param, a.executor_fail_retry_count, a.trigger_time, a.trigger_code, a.trigger_msg,
     a.handle_time, a.handle_code, a.handle_msg, a.alarm_status, a.process_id, a.max_id,b.task_name
   </sql>

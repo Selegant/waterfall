@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @JobHandler(value = "checkPlanJobHandler")
 @Component
@@ -109,7 +110,7 @@ public class CheckPlanJob extends IJobHandler {
         //表信息
 
         res.put("baseInfo", baseInfo);
-        res.put("fieldInfo", fieldInfo);
+        res.put("fieldInfo", fieldInfo.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList()));
 
         WaterfallJobLog log = new WaterfallJobLog();
         log.setId(tgParam.getLogId());

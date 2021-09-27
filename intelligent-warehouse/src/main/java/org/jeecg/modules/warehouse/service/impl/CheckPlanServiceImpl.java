@@ -1,6 +1,8 @@
 package org.jeecg.modules.warehouse.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.datasources.core.cron.CronExpression;
@@ -63,10 +65,15 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
 
 
     @Override
-    public List<WaterfallQualityCheckPlanDTO> checkPlanList(Integer modelId) {
+    public IPage<WaterfallQualityCheckPlanDTO> queryCheckPlanPage(Integer modelId, Page<WaterfallQualityCheckPlanDTO> page) {
         //todo 增加数据库信息
-        List<WaterfallQualityCheckPlanDTO> res = modelWithJobInfoMapper.checkPlanList(modelId);
+        IPage<WaterfallQualityCheckPlanDTO> res = modelWithJobInfoMapper.checkPlanList(page, modelId);
         return res;
+    }
+
+    @Override
+    public void deleteCheckPlan(Integer id) {
+        modelWithJobInfoMapper.deleteByPrimaryKey(id);
     }
 
 
@@ -166,9 +173,9 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
     }
 
     @Override
-    public String checkPlanResult(Integer jobId) {
+    public String checkPlanResult(Integer jobLogId) {
         LambdaQueryWrapper<WaterfallJobLog> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WaterfallJobLog::getJobId, jobId)
+        queryWrapper.select(WaterfallJobLog::getCheckResult).eq(WaterfallJobLog::getId, jobLogId)
                 .orderByDesc(WaterfallJobLog::getTriggerTime);
 
         WaterfallJobLog res = waterfallJobLogMapper.selectOne(queryWrapper);

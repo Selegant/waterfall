@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Data
 public class WaterfallQualityCheckPlanDTO {
+    private Integer id;
     private Integer jobInfoId;
     private Integer modelId;
     private String taskName;

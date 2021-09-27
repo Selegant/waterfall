@@ -381,10 +381,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
             ps = connection.prepareStatement(sql);
             ps.executeUpdate();
         } catch (SQLException se) {
-            log.error("创建Hive表错误-SQLException:{}", se.getMessage());
+            log.error("Hive表SQL错误:{}", se.getMessage());
             throw new JeecgBootException(se.getMessage());
         } catch (Exception e) {
-            log.error("创建Hive表错误-Exception:{}", e.getMessage());
+            log.error("Hive连接错误:{}", e.getMessage());
             throw new JeecgBootException(e.getMessage());
         } finally {
             instance.releaseConnection(connection);
