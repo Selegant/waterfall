@@ -15,6 +15,7 @@
 
     <modules>
         <module>check-plan-executor</module>
+        <module>datax-executor</module>
     </modules>
 
     <repositories>

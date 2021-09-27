@@ -20,7 +20,7 @@ spring:
 # log config
 logging:
     config: classpath:logback.xml
-    path: /Users/detective/Desktop/work_files
+    path: /Users/selegant/Downloads/datax/datax/work_files
     #path: ./data/applogs/executor/jobhandler
 
 datax:
@@ -36,7 +36,7 @@ datax:
             port: 9999
             ### job log path
             #logpath: ./data/applogs/executor/jobhandler
-            logpath: /Users/detective/Desktop/work_files/executor
+            logpath: /Users/selegant/Downloads/datax/datax/executor
             ### job log retention days
             logretentiondays: 30
         ### job, access token
@@ -44,7 +44,7 @@ datax:
 
     executor:
         #jsonpath: D:\\temp\\executor\\json\\
-        jsonpath: /Users/detective/Downloads/datax/job/
+        jsonpath: /Users/selegant/Downloads/datax/datax/job/
 
     #pypath: F:\tools\datax\bin\datax.py
-    pypath: /Users/detective/Downloads/datax/bin/datax.py
+    pypath: /Users/selegant/Downloads/datax/datax/bin/datax.py

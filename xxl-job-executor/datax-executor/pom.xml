@@ -9,9 +9,9 @@
     <description>Demo project for Spring Boot</description>
 
     <parent>
-        <groupId>org.jeecgframework.boot</groupId>
-        <artifactId>jeecg-boot-base</artifactId>
-        <version>2.4.3</version>
+        <artifactId>xxl-job-executor</artifactId>
+        <groupId>org.jeecg</groupId>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <repositories>
