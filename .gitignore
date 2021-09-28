@@ -1,4 +1,6 @@
 */target/
+*/*/target/
+jeecg-boot-base/jeecg-boot-base-api/jeecg-system-local-api/target/
 /.idea/
 *.iml
 rebel.xml
