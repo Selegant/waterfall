@@ -18,6 +18,11 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-base-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jeecg</groupId>
+            <artifactId>workflow</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <!--引入微服务启动依赖 starter
       <dependency>
           <groupId>org.jeecgframework.boot</groupId>

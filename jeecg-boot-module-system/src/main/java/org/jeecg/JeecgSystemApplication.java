@@ -14,6 +14,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,6 +24,7 @@ import java.net.UnknownHostException;
 */
 @Slf4j
 @SpringBootApplication
+@EnableTransactionManagement
 @EnableScheduling
 public class JeecgSystemApplication extends SpringBootServletInitializer {
 

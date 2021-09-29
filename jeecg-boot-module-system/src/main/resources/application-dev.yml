@@ -131,9 +131,9 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://selegant.synology.me:33306/waterfall?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://172.16.255.157:3306/waterfall?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: 12345678
+          password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -309,3 +309,10 @@ datax:
 datasource:
   aes:
     key: AD42F6697B035B75
+
+dolphin:
+  scheduler:
+    url: http://172.16.255.157:12345/dolphinscheduler/
+    token: 8fee707d02fc25d52e410ee6d514a3da
+    username: waterfall_001
+    password: Root@2021
