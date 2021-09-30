@@ -182,7 +182,7 @@
 	waterfall_data_source.db_name as dbName,
 	waterfall_data_source.db_type as driver,
 	waterfall_data_source.username,
-	`waterfall_data_source`.`password` as password,
+	waterfall_data_source.password as password,
 	waterfall_model.folder_id as folderId,
 	waterfall_model.model_name as tableName
     FROM waterfall_quality_model_with_job_info

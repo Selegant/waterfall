@@ -41,8 +41,7 @@ public class JdbcUtil {
         return connection;
     }
 
-    public List<Map<String, Object>> findResult(String sql, List<?> params)
-            throws Exception {
+    public List<Map<String, Object>> findResult(String sql, List<?> params) throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         int index = 1;
         pstmt = connection.prepareStatement(sql);
