@@ -56,4 +56,6 @@ public interface IDataSourceService {
     void createHiveTableByInput(CreateHiveTableInput input);
 
     String getDbType(Integer dbId);
+
+    WaterfallDataSource getDefault();
 }

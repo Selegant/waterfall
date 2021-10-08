@@ -14,6 +14,7 @@ import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -469,6 +470,18 @@ public class DataSourceServiceImpl implements IDataSourceService {
             throw new JeecgBootException("数据库不可用！");
         }
         return waterfallDataSource.getDbType();
+    }
+
+    @Override
+    public WaterfallDataSource getDefault() {
+        LambdaQueryWrapper<WaterfallDataSource> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(WaterfallDataSource::getDbType, "HIVE")
+                .eq(WaterfallDataSource::getDbName, "default");
+        List<WaterfallDataSource> waterfallDataSources = waterfallDataSourceMapper.selectList(queryWrapper);
+        if (waterfallDataSources != null && waterfallDataSources.size() > 0) {
+            return waterfallDataSources.get(0);
+        }
+        return null;
     }
 
     private void updateAmount(MyDatasourcePoolUtil datasourcePool, List<WaterfallDataSourceAmount> lstAmount) {
