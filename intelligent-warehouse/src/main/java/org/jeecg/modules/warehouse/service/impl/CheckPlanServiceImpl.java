@@ -113,7 +113,7 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
 
         jobInfo.setExecutorRouteStrategy("RANDOM");
 //        jobInfo.setExecutorBlockStrategy("SERIAL_EXECUTION");
-        jobInfo.setExecutorHandler("checkPlanJobHandler2");
+        jobInfo.setExecutorHandler("checkPlanJobHandler");
         jobInfo.setGlueUpdatetime(new Date());
         waterfallJobInfoMapper.insert(jobInfo);
 
@@ -155,7 +155,6 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
     public WaterfallQualityCheckPlanDTO checkPlanInfo(Integer jobId) {
         WaterfallQualityCheckPlanDTO res = modelWithJobInfoMapper.checkPlanInfo(jobId);
         if (res != null) {
-//            res.setQualityRules(ruleMapper.getListWithJob(jobId));
             List<WaterfallQualityRule> waterfallQualityRules = queryRuleList(res.getModelId(), jobId);
             List<Integer> hasSelect = waterfallQualityRules.stream().filter(e -> e.getHasSelect() != null).map(e -> e.getId()).collect(Collectors.toList());
             res.setQualityRules(waterfallQualityRules);
