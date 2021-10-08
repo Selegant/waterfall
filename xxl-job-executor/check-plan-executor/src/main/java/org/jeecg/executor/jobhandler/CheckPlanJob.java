@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JobHandler(value = "checkPlanJobHandler2")
+@JobHandler(value = "checkPlanJobHandler")
 @Component
 public class CheckPlanJob extends IJobHandler {
 
