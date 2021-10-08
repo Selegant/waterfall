@@ -1,7 +1,6 @@
 package org.jeecg.executor.jobhandler;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.executor.dto.CheckResultDTO;
 import org.jeecg.executor.dto.JobDTO;
@@ -22,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JobHandler(value = "checkPlanJobHandler")
+@JobHandler(value = "checkPlanJobHandler2")
 @Component
 public class CheckPlanJob extends IJobHandler {
 
@@ -135,7 +134,7 @@ public class CheckPlanJob extends IJobHandler {
             res.setTotal(count);
             res.setEmptySum(count - col);
 //            res.setFiedlType();
-            JobLogger.log("非空检查，表字{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
+            JobLogger.log("非空检查，表名{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
         } catch (Exception e) {
             JobLogger.log("非空检查错误：{}", e.getMessage());
         }

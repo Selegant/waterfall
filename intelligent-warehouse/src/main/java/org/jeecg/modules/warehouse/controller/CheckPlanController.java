@@ -10,9 +10,15 @@ import org.jeecg.modules.datasources.core.thread.JobTriggerPoolHelper;
 import org.jeecg.modules.datasources.core.trigger.TriggerTypeEnum;
 import org.jeecg.modules.datasources.service.IOfflineTaskService;
 import org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO;
+import org.jeecg.modules.warehouse.model.WaterfallQualityRule;
 import org.jeecg.modules.warehouse.service.ICheckPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author liansongye
@@ -157,6 +163,27 @@ public class CheckPlanController {
             log.error(e.getMessage(), e);
             result.error500("操作失败");
         }
+        return result;
+    }
+
+    @GetMapping("/rule/list")
+    @ApiOperation("质量规则列表")
+    public Result<Object> ruleListByModelId(@RequestParam Integer modelId,
+                                            @RequestParam(required = false) Integer jobId) {
+        Result<Object> result = new Result<>();
+        try {
+            List<WaterfallQualityRule> waterfallQualityRules = checkPlanService.queryRuleList(modelId, jobId);
+            List<Integer> hasSelect = waterfallQualityRules.stream().filter(e -> e.getHasSelect() != null).map(e -> e.getId()).collect(Collectors.toList());
+            Map<String, Object> res = new HashMap<>(2);
+            res.put("hasSelect",  hasSelect);
+            res.put("data", waterfallQualityRules);
+            result = Result.OK("query success!", res);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+
         return result;
     }
 

@@ -20,4 +20,6 @@ public interface WaterfallQualityRuleMapper extends BaseMapper<WaterfallQualityR
     int updateByPrimaryKey(WaterfallQualityRule record);
 
     List<WaterfallQualityRule> getListWithJob(@Param(value = "jobId") Integer jobId);
+
+    List<WaterfallQualityRule> selectListWithSelect(@Param(value = "modelId")Integer modelId,@Param(value = "jobId") Integer jobId);
 }

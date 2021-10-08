@@ -25,5 +25,6 @@ public class WaterfallQualityCheckPlanDTO {
     private Date createTime;
 
     private List<WaterfallQualityRule> qualityRules;
+    private List<Integer> hasSelect;
 
 }

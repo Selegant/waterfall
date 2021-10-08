@@ -120,6 +120,7 @@
 
   <select id="checkPlanInfo" resultType="org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO">
     SELECT
+        waterfall_quality_model_with_job_info.model_id as modelId,
         waterfall_job_info.id AS jobInfoId,
         waterfall_job_info.task_name AS taskName,
         waterfall_job_info.task_corn AS taskCorn,
