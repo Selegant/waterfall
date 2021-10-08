@@ -1,12 +1,12 @@
 package org.jeecg.executor.jobhandler;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.executor.dto.CheckResultDTO;
 import org.jeecg.executor.dto.JobDTO;
-import org.jeecg.executor.dto.NewCheckResultDTO;
 import org.jeecg.executor.dto.WaterfallJobLog;
+import org.jeecg.executor.dto.check.BaseCheckResult;
+import org.jeecg.executor.dto.check.CheckEmptyWithFields;
 import org.jeecg.executor.mapper.WaterfallJobLogMapper;
 import org.jeecg.executor.service.ICheckPlanService;
 import org.jeecg.rpc.util.json.BasicJson;
@@ -41,7 +41,7 @@ public class CheckPlanJob extends IJobHandler {
     public ReturnT<String> execute(TriggerParam tgParam) throws Exception {
         Date startTime = new Date();
         Map<String, Object> res = new HashMap<>();
-        Map<String, CheckResultDTO> fieldInfo = new HashMap<>();
+        Map<String, BaseCheckResult> fieldInfo = new HashMap<>();
 
         JobLogger.log("-------------------------------------检查开始---------------------------------");
         // 获取校验信息和校验表信息
@@ -57,52 +57,19 @@ public class CheckPlanJob extends IJobHandler {
         try {
             // 注册驱动，获取连接
             jdbc.getConnection();
-            /*checkPlanDTO.getEmptyCheck().stream().forEach(e -> {
-
-                CheckResultDTO dto = emptyCheck(jdbc, tableName, e);
-
-                if (dto != null && StringUtils.isNotBlank(dto.getFieldName())) {
-                    if (fieldInfo.containsKey(dto.getFieldName())) {
-                        CheckResultDTO tmp = fieldInfo.get(dto.getFieldName());
-                        tmp.setTotal(dto.getTotal());
-                        tmp.setEmptySum(dto.getEmptySum());
-                    } else {
-                        fieldInfo.put(dto.getFieldName(), dto);
-                    }
-                }
-            });*/
             // 遍历判空规则，进行判空检测
-            NewCheckResultDTO emptyDto = emptyCheck(jdbc, tableName, checkPlanDTO.getEmptyCheck());
+            BaseCheckResult emptyDto = EmptyCheckHandler.emptyCheck(jdbc, tableName, checkPlanDTO.getEmptyCheck());
             // 结果检测、封装
-            if (emptyDto != null && !emptyDto.getEmptySums().isEmpty())
-                    fieldInfo.put(tableName, emptyDto);
-
-            checkPlanDTO.getCompareCheck().entrySet().stream().forEach(e -> {
-                CheckResultDTO dto = compareCheck(jdbc, tableName, e.getKey(), e.getValue());
-                if (dto != null && StringUtils.isNotBlank(dto.getFieldName())) {
-                    if (fieldInfo.containsKey(dto.getFieldName())) {
-                        CheckResultDTO tmp = fieldInfo.get(dto.getFieldName());
-                        tmp.setTotal(dto.getTotal());
-                        tmp.setCompareSum(dto.getCompareSum());
-                        tmp.setCompareExpression(dto.getCompareExpression());
-                    } else {
-                        fieldInfo.put(dto.getFieldName(), dto);
-                    }
-                }
-            });
-            checkPlanDTO.getCornCheck().entrySet().stream().forEach(e -> {
-                CheckResultDTO dto = cornCheck(jdbc, tableName, e.getKey(), e.getValue());
-                if (dto != null && StringUtils.isNotBlank(dto.getFieldName())) {
-                    if (fieldInfo.containsKey(dto.getFieldName())) {
-                        CheckResultDTO tmp = fieldInfo.get(dto.getFieldName());
-                        tmp.setTotal(dto.getTotal());
-                        tmp.setRegularSum(dto.getRegularSum());
-                        tmp.setRegularExpression(dto.getRegularExpression());
-                    } else {
-                        fieldInfo.put(dto.getFieldName(), dto);
-                    }
-                }
-            });
+            if (emptyDto != null && !emptyDto.getResultSums().isEmpty())
+                fieldInfo.put(tableName+"_empty", emptyDto);
+            // 对比规则
+            BaseCheckResult compareDto = CompareCheckHandler.compareCheck(jdbc, tableName, checkPlanDTO.getCompareCheck());
+            if (compareDto != null && !compareDto.getResultSums().isEmpty())
+                fieldInfo.put(tableName+"_compare", compareDto);
+            // 正则规则
+            BaseCheckResult regularDto = RegularCheckHandler.regularCheck(jdbc, tableName, checkPlanDTO.getCornCheck());
+            if (regularDto != null && !regularDto.getResultSums().isEmpty())
+                fieldInfo.put(tableName+"_regular", regularDto);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -111,17 +78,14 @@ public class CheckPlanJob extends IJobHandler {
 
         JobLogger.log("-------------------------------------检查结束---------------------------------");
 
-
         //基本信息
         Map<String, Object> baseInfo = new HashMap<>();
         baseInfo.put("dataSource", "HIVE");
-//        baseInfo.put("project", tgParam.get);
         baseInfo.put("tableName", checkPlanDTO.getTableName());
         baseInfo.put("startTime", sdf.format(startTime));
         baseInfo.put("endTime", sdf.format(new Date()));
 
         //表信息
-
         res.put("baseInfo", baseInfo);
         res.put("fieldInfo", fieldInfo);
 
@@ -129,42 +93,12 @@ public class CheckPlanJob extends IJobHandler {
         log.setId(tgParam.getLogId());
         log.setCheckResult(BasicJson.toJson(res));
         log.setModelName(checkPlanDTO.getTableName());
-//        log.setModelId(checkPlanDTO.get);
         waterfallJobLogMapper.updateByPrimaryKeySelective(log);
 
         return null;
     }
 
-    private NewCheckResultDTO emptyCheck(JdbcUtil jdbc, String tableName, List<String> list) {
-        if(list.isEmpty())
-            return null;
-        NewCheckResultDTO res = new NewCheckResultDTO();
-
-        // 查询语句拼接
-        String sql = "select sum(1) as count";
-        for (String field : list){
-            sql += ", sum(if(" + field + " is null or " + field + " = '',1,0)) as " + field;
-        }
-        sql += " from " + tableName;
-
-        try {
-            final List<Map<String, Object>> result = jdbc.findResult(sql, null);
-            res.setFieldNames(list);
-            res.setTotal(Long.valueOf(String.valueOf(result.get(0).get("count"))));
-            res.setEmptySums(result.get(0));
-
-            // 打印日志
-            String resInfo = "";
-            for (String field : list)
-                resInfo += (field + ":" + res.getEmptySums().get(field));
-            JobLogger.log("非空检查，表{},检查总行数目{},字段名和其空值数{}", tableName, res.getTotal(), resInfo);
-        } catch (Exception e) {
-            JobLogger.log("非空检查错误：{}", e.getMessage());
-        }
-
-        return res;
-    }
-
+    // 优化后暂时不使用以下方法
     private CheckResultDTO emptyCheck(JdbcUtil jdbc, String tableName, String field) {
         CheckResultDTO res = new CheckResultDTO();
         String sql = "select count(*) as count, count(" + field + ") as col from " + tableName;
@@ -184,8 +118,6 @@ public class CheckPlanJob extends IJobHandler {
 
         return res;
     }
-
-
     private CheckResultDTO compareCheck(JdbcUtil jdbc, String tableName, String field, String exceptValue) {
         CheckResultDTO res = new CheckResultDTO();
         String countSql = "select count(*) as count from " + tableName;
@@ -205,8 +137,6 @@ public class CheckPlanJob extends IJobHandler {
         }
         return res;
     }
-
-
     private CheckResultDTO cornCheck(JdbcUtil jdbc, String tableName, String field, String regular) {
         CheckResultDTO res = new CheckResultDTO();
         String countSql = "select count(*) as count from " + tableName;
