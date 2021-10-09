@@ -24,9 +24,9 @@ public class QualityRuleController {
     @Autowired
     private IQualityRuleService qualityRuleService;
 
-    @GetMapping("/rule/list")
-    @ApiOperation("质量规则列表")
-    public Result<Object> ruleList(@RequestParam Integer modelId,
+    @GetMapping("/rule/pageList")
+    @ApiOperation("质量规则分页列表")
+    public Result<Object> rulePageList(@RequestParam Integer modelId,
                                    @RequestParam(value = "ruleName", required = false) String ruleName,
                                    @RequestParam(value = "ruleType", required = false) Integer ruleType,
                                    @RequestParam(value = "enableFlag", required = false) Boolean enableFlag,

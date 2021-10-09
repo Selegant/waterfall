@@ -14,6 +14,7 @@ import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.TableType;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,6 +30,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
@@ -51,8 +53,10 @@ import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.datasources.util.DatasourcePool;
 import org.jeecg.modules.datasources.util.MyDBUtil;
 import org.jeecg.modules.datasources.util.MyDatasourcePoolUtil;
+import org.jeecg.modules.workflow.service.DsDataSourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author selegant
@@ -76,13 +80,18 @@ public class DataSourceServiceImpl implements IDataSourceService {
     @Autowired
     private WaterfallDataTypeMapper waterfallDataTypeMapper;
 
+    @Autowired
+    private DsDataSourceService dsDataSourceService;
+
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(20, 30, 10, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(100));
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public void saveDataSource(WaterfallDataSource dataSource) throws Exception {
         dataSource.setJdbcUrl(concatUrl(dataSource));
         connection(dataSource);
+        dsDataSourceService.createDsDataSource(JSONObject.toJSONString(dataSource));
         waterfallDataSourceMapper.insertSelective(dataSource);
         DatasourcePool.add(dataSource);
     }
@@ -112,7 +121,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public void deleteDataSource(List<Integer> ids) {
+        WaterfallDataSource waterfallDataSource = waterfallDataSourceMapper.selectById(ids.get(0));
+        dsDataSourceService.deleteDsDataSource(waterfallDataSource.getDataSourceName());
         waterfallDataSourceMapper.deleteBatchIds(ids);
     }
 
@@ -381,10 +393,10 @@ public class DataSourceServiceImpl implements IDataSourceService {
             ps = connection.prepareStatement(sql);
             ps.executeUpdate();
         } catch (SQLException se) {
-            log.error("创建Hive表错误-SQLException:{}", se.getMessage());
+            log.error("Hive表SQL错误:{}", se.getMessage());
             throw new JeecgBootException(se.getMessage());
         } catch (Exception e) {
-            log.error("创建Hive表错误-Exception:{}", e.getMessage());
+            log.error("Hive连接错误:{}", e.getMessage());
             throw new JeecgBootException(e.getMessage());
         } finally {
             instance.releaseConnection(connection);
@@ -458,6 +470,18 @@ public class DataSourceServiceImpl implements IDataSourceService {
             throw new JeecgBootException("数据库不可用！");
         }
         return waterfallDataSource.getDbType();
+    }
+
+    @Override
+    public WaterfallDataSource getDefault() {
+        LambdaQueryWrapper<WaterfallDataSource> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(WaterfallDataSource::getDbType, "HIVE")
+                .eq(WaterfallDataSource::getDbName, "default");
+        List<WaterfallDataSource> waterfallDataSources = waterfallDataSourceMapper.selectList(queryWrapper);
+        if (waterfallDataSources != null && waterfallDataSources.size() > 0) {
+            return waterfallDataSources.get(0);
+        }
+        return null;
     }
 
     private void updateAmount(MyDatasourcePoolUtil datasourcePool, List<WaterfallDataSourceAmount> lstAmount) {

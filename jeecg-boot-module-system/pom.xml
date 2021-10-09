@@ -35,11 +35,6 @@
 			<artifactId>jeecg-system-local-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-module-demo</artifactId>
-			<version>${jeecgboot.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jeecg</groupId>
 			<artifactId>data-collection</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

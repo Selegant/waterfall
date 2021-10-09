@@ -66,9 +66,6 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
         ruleMapper.insert(ruleEntity);
 
         ruleDto.getRuleFields().stream().forEach(e -> {
-            if (StringUtils.isNotBlank(e.getRegularExpression()) && !CronExpression.isValidExpression(e.getRegularExpression())) {
-                throw new RuntimeException("CORN表达式不合法");
-            }
             e.setRuleId(ruleEntity.getId());
             e.setDelFlag(false);
             e.setCreateTime(new Date());

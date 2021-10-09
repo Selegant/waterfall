@@ -1,7 +1,10 @@
 package org.jeecg.modules.warehouse.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.warehouse.dto.JobDTO;
 import org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO;
+import org.jeecg.modules.warehouse.model.WaterfallQualityRule;
 
 import java.util.List;
 
@@ -11,8 +14,6 @@ import java.util.List;
  */
 public interface ICheckPlanService {
 
-    List<WaterfallQualityCheckPlanDTO> checkPlanList(Integer modelId);
-
     void addCheckPlan(WaterfallQualityCheckPlanDTO checkPlanDTO);
 
     JobDTO getExecutorParam(Integer jobId);
@@ -21,5 +22,11 @@ public interface ICheckPlanService {
 
     void updateCheckPlan(WaterfallQualityCheckPlanDTO checkPlanDTO);
 
-    String checkPlanResult(Integer jobId);
+    String checkPlanResult(Integer jobLogId);
+
+    IPage<WaterfallQualityCheckPlanDTO> queryCheckPlanPage(Integer modelId, Page<WaterfallQualityCheckPlanDTO> page);
+
+    void deleteCheckPlan(Integer id);
+
+    List<WaterfallQualityRule> queryRuleList(Integer modelId, Integer jobId);
 }

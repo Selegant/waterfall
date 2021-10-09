@@ -1,11 +1,11 @@
 package org.jeecg.modules.warehouse.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO;
 import org.jeecg.modules.warehouse.model.WaterfallQualityModelWithJobInfo;
 import org.mapstruct.Mapper;
-
-import java.util.List;
 
 @Mapper
 public interface WaterfallQualityModelWithJobInfoMapper extends BaseMapper<WaterfallQualityModelWithJobInfo> {
@@ -21,7 +21,7 @@ public interface WaterfallQualityModelWithJobInfoMapper extends BaseMapper<Water
 
     int updateByPrimaryKey(WaterfallQualityModelWithJobInfo record);
 
-    List<WaterfallQualityCheckPlanDTO> checkPlanList(Integer modelId);
+    IPage<WaterfallQualityCheckPlanDTO> checkPlanList(Page<WaterfallQualityCheckPlanDTO> page, Integer modelId);
 
     WaterfallQualityCheckPlanDTO checkPlanInfo(Integer jobInfoId);
 }

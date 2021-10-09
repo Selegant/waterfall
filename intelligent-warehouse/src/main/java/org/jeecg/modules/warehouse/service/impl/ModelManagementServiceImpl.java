@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.datasources.dto.TableColumnInfoDTO;
 import org.jeecg.modules.datasources.input.TableColumnInput;
+import org.jeecg.modules.datasources.model.WaterfallDataSource;
 import org.jeecg.modules.datasources.service.IDataSourceService;
 import org.jeecg.modules.datasources.util.DataTypeUtil;
 import org.jeecg.modules.warehouse.mapper.WaterfallFolderMapper;
@@ -317,7 +318,12 @@ public class ModelManagementServiceImpl implements IModelManagementService {
 
     @Override
     public Map<String, String> modelToDb(Integer dbId, List<Integer> modelIds) {
+        //获取hive defaul库
+        WaterfallDataSource dataSourceDefault = dataSourceService.getDefault();
+        dbId = dataSourceDefault.getId();
+
         Map<String, String> errorMsg = new HashMap<>(modelIds.size());
+        final Integer finalDbId = dbId;
         modelIds.stream().forEach(e -> {
             DataModuleDTO dataModuleDTO = queryDataMoudle(e);
             if (!dataModuleDTO.getModelStatusCode().equals(DataModuleDTO.PUBLISHED)) {
@@ -327,11 +333,11 @@ public class ModelManagementServiceImpl implements IModelManagementService {
                         dataModuleDTO.getFolderId() + "_" + dataModuleDTO.getModelName();
                 dataModuleDTO.setModelName(modelName);
                 String createSql = DdlConvertUtil.modelToHiveDdl(dataModuleDTO);
-                boolean success = dataSourceService.executeHiveSqlNoInterrupt(dbId, errorMsg, modelName, createSql);
+                boolean success = dataSourceService.executeHiveSqlNoInterrupt(finalDbId, errorMsg, modelName, createSql);
                 if (success) {
                     WaterfallModel model = new WaterfallModel();
                     model.setId(dataModuleDTO.getId());
-                    model.setPublishDb(dbId);
+                    model.setPublishDb(finalDbId);
                     model.setUpdateTime(new Date());
                     waterfallModelMapper.updateByPrimaryKeySelective(model);
                 }

@@ -1,5 +1,7 @@
 package org.jeecg.modules.warehouse.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +10,15 @@ import org.jeecg.modules.datasources.core.thread.JobTriggerPoolHelper;
 import org.jeecg.modules.datasources.core.trigger.TriggerTypeEnum;
 import org.jeecg.modules.datasources.service.IOfflineTaskService;
 import org.jeecg.modules.warehouse.dto.WaterfallQualityCheckPlanDTO;
+import org.jeecg.modules.warehouse.model.WaterfallQualityRule;
 import org.jeecg.modules.warehouse.service.ICheckPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author liansongye
@@ -30,11 +38,14 @@ public class CheckPlanController {
 
     @GetMapping("/checkPlanList/{modelId}")
     @ApiOperation("校验计划列表")
-    public Result<Object> checkPlanList(@PathVariable Integer modelId) {
-        Result<Object> result = new Result<>();
+    public Result checkPlanList(@PathVariable Integer modelId,
+                                @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+                                @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        Result<IPage<WaterfallQualityCheckPlanDTO>> result = new Result<>();
 
         try {
-            result.setResult(checkPlanService.checkPlanList(modelId));
+            Page<WaterfallQualityCheckPlanDTO> page = new Page<>(pageNo, pageSize);
+            result.setResult(checkPlanService.queryCheckPlanPage(modelId, page));
             result.setMessage("query success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -88,13 +99,13 @@ public class CheckPlanController {
         return result;
     }
 
-    @GetMapping("/checkPlanResult/{jobId}")
+    @GetMapping("/checkPlanResult/{jobLogId}")
     @ApiOperation("校验计划结果")
-    public Result<Object> checkPlanResult(@PathVariable Integer jobId) {
+    public Result<Object> checkPlanResult(@PathVariable Integer jobLogId) {
         Result<Object> result = new Result<>();
 
         try {
-            result.setResult(checkPlanService.checkPlanResult(jobId));
+            result.setResult(checkPlanService.checkPlanResult(jobLogId));
             result.setMessage("query success！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -119,13 +130,35 @@ public class CheckPlanController {
         return result;
     }
 
-    @PostMapping(value = "/checkPlan/stop/{id}")
-    @ApiOperation("停止任务")
-    public Result<String> pause(@PathVariable Integer id) {
+    @DeleteMapping("/checkPlan/{id}")
+    @ApiOperation("删除校验计划")
+    public Result<Object> deleteCheckPlan(@PathVariable Integer id) {
+        Result<Object> result = new Result<>();
+
+        try {
+            checkPlanService.deleteCheckPlan(id);
+            result.setMessage("delete success！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500(e.getMessage());
+        }
+        return result;
+    }
+
+    @PutMapping(value = "/checkPlan/{action}/{planId}")
+    @ApiOperation("开启/关闭任务")
+    public Result<String> start(@PathVariable String action,
+                                @PathVariable Integer planId) {
         Result<String> result = new Result<>();
         try {
-            offlineTaskService.stop(id);
             result.success("操作成功！");
+            if (action.equals("start")) {
+                offlineTaskService.start(planId);
+            } else if (action.equals("stop")) {
+                offlineTaskService.stop(planId);
+            } else {
+                result.error500("不支持操作：" + action);
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500("操作失败");
@@ -133,17 +166,24 @@ public class CheckPlanController {
         return result;
     }
 
-    @PostMapping(value = "/checkPlan/start/{id}")
-    @ApiOperation("开启任务")
-    public Result<String> start(@PathVariable Integer id) {
-        Result<String> result = new Result<>();
+    @GetMapping("/rule/list")
+    @ApiOperation("质量规则列表")
+    public Result<Object> ruleListByModelId(@RequestParam Integer modelId,
+                                            @RequestParam(required = false) Integer jobId) {
+        Result<Object> result = new Result<>();
         try {
-            offlineTaskService.start(id);
-            result.success("操作成功！");
+            List<WaterfallQualityRule> waterfallQualityRules = checkPlanService.queryRuleList(modelId, jobId);
+            List<Integer> hasSelect = waterfallQualityRules.stream().filter(e -> e.getHasSelect() != null).map(e -> e.getId()).collect(Collectors.toList());
+            Map<String, Object> res = new HashMap<>(2);
+            res.put("hasSelect",  hasSelect);
+            res.put("data", waterfallQualityRules);
+            result = Result.OK("query success!", res);
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            result.error500("操作失败");
+            result.error500(e.getMessage());
         }
+
         return result;
     }
 

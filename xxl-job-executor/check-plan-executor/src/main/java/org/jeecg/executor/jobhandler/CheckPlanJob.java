@@ -1,12 +1,10 @@
 package org.jeecg.executor.jobhandler;
 
 
-import org.apache.commons.lang.StringUtils;
 import org.jeecg.executor.dto.CheckResultDTO;
 import org.jeecg.executor.dto.JobDTO;
 import org.jeecg.executor.dto.WaterfallJobLog;
 import org.jeecg.executor.dto.check.BaseCheckResult;
-import org.jeecg.executor.dto.check.CheckEmptyWithFields;
 import org.jeecg.executor.mapper.WaterfallJobLogMapper;
 import org.jeecg.executor.service.ICheckPlanService;
 import org.jeecg.rpc.util.json.BasicJson;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @JobHandler(value = "checkPlanJobHandler")
 @Component
@@ -87,7 +86,7 @@ public class CheckPlanJob extends IJobHandler {
 
         //表信息
         res.put("baseInfo", baseInfo);
-        res.put("fieldInfo", fieldInfo);
+        res.put("fieldInfo", fieldInfo.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList()));
 
         WaterfallJobLog log = new WaterfallJobLog();
         log.setId(tgParam.getLogId());
@@ -111,7 +110,7 @@ public class CheckPlanJob extends IJobHandler {
             res.setTotal(count);
             res.setEmptySum(count - col);
 //            res.setFiedlType();
-            JobLogger.log("非空检查，表字{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
+            JobLogger.log("非空检查，表名{},字段名{}，检查总行数目{}，符合行数{}", tableName, field, count, col);
         } catch (Exception e) {
             JobLogger.log("非空检查错误：{}", e.getMessage());
         }

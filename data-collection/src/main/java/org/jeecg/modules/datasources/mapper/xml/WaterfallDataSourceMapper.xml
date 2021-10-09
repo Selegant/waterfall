@@ -63,7 +63,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from waterfall_data_source
     where id = #{id,jdbcType=INTEGER}
@@ -127,6 +127,15 @@
       <if test="serverName != null">
         `server_name`,
       </if>
+      <if test="defaultfs != null">
+        `defaultfs`,
+      </if>
+      <if test="hadoopConfig != null">
+        `hadoop_config`,
+      </if>
+      <if test="path != null">
+        `path`,
+      </if>
       <if test="createTime != null">
         create_time,
       </if>
@@ -170,6 +179,15 @@
       </if>
       <if test="serverName != null">
         #{serverName,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultfs != null">
+        #{defaultfs,jdbcType=VARCHAR},
+      </if>
+      <if test="hadoopConfig != null">
+        #{hadoopConfig,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},

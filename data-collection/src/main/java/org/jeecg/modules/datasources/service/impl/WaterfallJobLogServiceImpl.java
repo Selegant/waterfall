@@ -38,6 +38,9 @@ public class WaterfallJobLogServiceImpl extends
     @Override
     public IPage<WaterfallJobLog> pages(WebsocketLogPageInput input) {
           WaterfallJobLog log = new WaterfallJobLog();
+          if (input.getJobId() != null && input.getJobId() != 0) {
+              log.setJobId(input.getJobId());
+          }
           log.setTaskName(input.getJobName());
           log.setLogStatus(input.getLogStatus());
           if(ObjectUtil.isNotEmpty(input.getTriggerTime())&&!input.getTriggerTime().isEmpty()){

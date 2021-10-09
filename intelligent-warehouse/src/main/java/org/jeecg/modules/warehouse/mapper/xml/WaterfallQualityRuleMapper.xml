@@ -139,4 +139,54 @@
   and waterfall_quality_rule.enable_flag = true and waterfall_quality_rule.del_flag = false
   where waterfall_quality_rule_with_job_info.job_info_id = #{jobId,jdbcType=INTEGER}
   </select>
+
+  <select id="selectListWithSelect" resultType="org.jeecg.modules.warehouse.model.WaterfallQualityRule">
+    <choose>
+      <when test="jobId == null">
+        SELECT
+        waterfall_quality_rule.id,
+        waterfall_quality_rule.rule_name,
+        waterfall_quality_rule.rule_type,
+        waterfall_quality_rule.create_time,
+        waterfall_quality_rule.update_time
+        FROM waterfall_quality_rule
+        WHERE waterfall_quality_rule.model_id = #{modelId,jdbcType=INTEGER}
+        AND waterfall_quality_rule.enable_flag = 1
+        AND waterfall_quality_rule.del_flag = 0
+      </when>
+      <otherwise>
+        SELECT
+        t1.id,
+        t1.rule_name,
+        t1.rule_type,
+        t1.create_time,
+        t1.update_time,
+        t2.hasSelect
+        FROM
+        (
+        SELECT
+        waterfall_quality_rule.id,
+        waterfall_quality_rule.rule_name,
+        waterfall_quality_rule.rule_type,
+        waterfall_quality_rule.create_time,
+        waterfall_quality_rule.update_time
+        FROM
+        waterfall_quality_rule
+        WHERE
+        waterfall_quality_rule.model_id = #{modelId,jdbcType=INTEGER}
+        AND waterfall_quality_rule.enable_flag = 1
+        AND waterfall_quality_rule.del_flag = 0
+        ) t1
+        LEFT JOIN (
+        SELECT
+        waterfall_quality_rule_with_job_info.quality_rule_id AS id,
+        '1' AS hasSelect
+        FROM
+        waterfall_quality_rule_with_job_info
+        WHERE
+        waterfall_quality_rule_with_job_info.job_info_id = #{jobId,jdbcType=INTEGER}
+        ) t2 ON t1.id = t2.id
+      </otherwise>
+    </choose>
+  </select>
 </mapper>

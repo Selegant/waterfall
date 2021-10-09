@@ -309,3 +309,10 @@ datax:
 datasource:
   aes:
     key: AD42F6697B035B75
+
+dolphin:
+  scheduler:
+    url: http://172.16.255.157:12345/dolphinscheduler/
+    token: 8fee707d02fc25d52e410ee6d514a3da
+    username: waterfall_001
+    password: Root@2021
