@@ -89,9 +89,6 @@ public class QualityRuleServiceImpl implements IQualityRuleService {
         fieldQueryWrapper.eq(WaterfallQualityRuleField::getRuleId, ruleDto.getId());
         ruleFieldMapper.delete(fieldQueryWrapper);
         ruleDto.getRuleFields().stream().forEach(e -> {
-            if (StringUtils.isNotBlank(e.getRegularExpression()) && !CronExpression.isValidExpression(e.getRegularExpression())) {
-                throw new RuntimeException("CORN表达式不合法");
-            }
             e.setId(null);
             e.setRuleId(ruleEntity.getId());
             if (e.getDelFlag() == null) {

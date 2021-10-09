@@ -81,8 +81,8 @@ public class CheckPlanJob extends IJobHandler {
         Map<String, Object> baseInfo = new HashMap<>();
         baseInfo.put("dataSource", "HIVE");
         baseInfo.put("tableName", checkPlanDTO.getTableName());
-        baseInfo.put("startTime", sdf.format(startTime));
-        baseInfo.put("endTime", sdf.format(new Date()));
+        baseInfo.put("startTime", startTime);
+        baseInfo.put("endTime", new Date());
 
         //表信息
         res.put("baseInfo", baseInfo);
