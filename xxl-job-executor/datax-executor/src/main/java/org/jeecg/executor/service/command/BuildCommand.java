@@ -32,7 +32,7 @@ public class BuildCommand {
      * @param dataXPyPath
      * @return
      */
-    public static String[] buildDataXExecutorCmd(TriggerParam tgParam, String tmpFilePath, String dataXPyPath) {
+    public static String[] buildDataXExecutorCmd(TriggerParam tgParam, String tmpFilePath, String dataXPyPath,String hadoopUser) {
         // command process
         //"--loglevel=debug"
         List<String> cmdArr = new ArrayList<>();
@@ -42,6 +42,8 @@ public class BuildCommand {
             dataXPyPath = dataXHomePath.contains("bin") ? dataXHomePath + DEFAULT_DATAX_PY : dataXHomePath + "bin" + File.separator + DEFAULT_DATAX_PY;
         }
         cmdArr.add(dataXPyPath);
+        cmdArr.add("-p");
+        cmdArr.add("\"-DHADOOP_USER_NAME="+hadoopUser+"\"");
         String doc = buildDataXParam(tgParam);
         if (StrUtil.isNotBlank(doc)) {
             cmdArr.add(doc.replaceAll(SPLIT_SPACE, TRANSFORM_SPLIT_SPACE));

@@ -41,6 +41,8 @@ datax:
             logretentiondays: 30
         ### job, access token
         accessToken:
+    hadoop:
+        user: hadoop
 
     executor:
         #jsonpath: D:\\temp\\executor\\json\\
