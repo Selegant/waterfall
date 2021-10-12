@@ -15,19 +15,19 @@ xxl:
       #port: 9999
       port: 9998
       ### job log path
-      #logpath: ./data/applogs/executor/jobhandler
+      logpath: /server/log/executor/jobhandler
       #  Mac 配置
 #      logpath: /Users/ye/Downloads/checkplanlog/executor
       #  Windows 配置
-      logpath: D:/wowjoy/src/logs/checkplanlog/executor
+#      logpath: D:/wowjoy/src/logs/checkplanlog/executor
       ### job log retention days
       logretentiondays: 30
     ### job, access token
     accessToken:
 
   executor:
-    jsonpath:  /server/xxl-log/log
-#    jsonpath: /Users/detective/Downloads/datax/job/
+    jsonpath:  /server/logs
+#    jsonpath: D:/wowjoy/src/logs
 #    jsonpath: /Users/ye/work/xxl-job/log
 
 spring:

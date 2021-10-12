@@ -21,7 +21,7 @@ public class RegularCheckHandler {
         for (Map.Entry ent : map.entrySet()){
             String field = (String) ent.getKey();
             String regular = (String) ent.getValue();
-            sql += ", sum(if(" + field + " regexp " + regular + " ,1,0)) as " + field;
+            sql += ", sum(if(" + field + " regexp \'" + regular + "\' ,1,0)) as " + field;
         }
         sql += " from " + tableName;
 

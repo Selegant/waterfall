@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.executor.mapper.HiveMetastoreMapper">
+
+  <select id="getColumnInfo" parameterType="java.lang.String" resultType="java.util.List">
+    select column_name, type_name, integer_idx
+    from COLUMNS_V2 col
+    left join SDS s on col.cd_id = s.cd_id
+    where s.sd_id in (
+        select tbl_id
+        from TBLS t
+        left join DBS d on t.db_id = d.db_id
+        where d.name = #{databaseName,jdbcType=VARCHAR} and t.tbl_name = #{tableName,jdbcType=VARCHAR}
+    )
+  </select>
+</mapper>

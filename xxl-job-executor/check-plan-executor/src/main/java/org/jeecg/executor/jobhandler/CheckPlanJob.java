@@ -5,7 +5,10 @@ import org.jeecg.executor.dto.CheckResultDTO;
 import org.jeecg.executor.dto.JobDTO;
 import org.jeecg.executor.dto.WaterfallJobLog;
 import org.jeecg.executor.dto.check.BaseCheckResult;
+import org.jeecg.executor.dto.check.CheckCompareWithFields;
+import org.jeecg.executor.dto.check.CheckRegularWithFields;
 import org.jeecg.executor.mapper.WaterfallJobLogMapper;
+import org.jeecg.executor.service.HiveMetastoreService;
 import org.jeecg.executor.service.ICheckPlanService;
 import org.jeecg.rpc.util.json.BasicJson;
 import org.jeecg.xxl.biz.model.ReturnT;
@@ -31,16 +34,17 @@ public class CheckPlanJob extends IJobHandler {
     @Autowired
     private WaterfallJobLogMapper waterfallJobLogMapper;
 
+    @Autowired
+    private HiveMetastoreService hiveMetastoreService;
     private final String driver = "org.apache.hive.jdbc.HiveDriver";
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 
     @Override
     public ReturnT<String> execute(TriggerParam tgParam) throws Exception {
         Date startTime = new Date();
         Map<String, Object> res = new HashMap<>();
-        Map<String, BaseCheckResult> fieldInfo = new HashMap<>();
+        Map<String, CheckResultDTO> fieldInfo = new HashMap<>();
 
         JobLogger.log("-------------------------------------检查开始---------------------------------");
         // 获取校验信息和校验表信息
@@ -59,16 +63,36 @@ public class CheckPlanJob extends IJobHandler {
             // 遍历判空规则，进行判空检测
             BaseCheckResult emptyDto = EmptyCheckHandler.emptyCheck(jdbc, tableName, checkPlanDTO.getEmptyCheck());
             // 结果检测、封装
-            if (emptyDto != null && !emptyDto.getResultSums().isEmpty())
-                fieldInfo.put(tableName+"_empty", emptyDto);
+            if (haveResult(emptyDto))
+                for(String field : emptyDto.getFieldNames()){
+                    CheckResultDTO tmp = fieldInfo.getOrDefault(field, new CheckResultDTO());
+                    tmp.setEmptySum(Long.parseLong(emptyDto.getResultSums().get(field).toString()));
+                    tmp.setTotal(emptyDto.getTotal());
+                    tmp.setFieldName(field);
+                    fieldInfo.put(field,tmp);
+                }
             // 对比规则
             BaseCheckResult compareDto = CompareCheckHandler.compareCheck(jdbc, tableName, checkPlanDTO.getCompareCheck());
-            if (compareDto != null && !compareDto.getResultSums().isEmpty())
-                fieldInfo.put(tableName+"_compare", compareDto);
+            if (haveResult(compareDto))
+                for(String field : compareDto.getFieldNames()){
+                    CheckResultDTO tmp = fieldInfo.getOrDefault(field, new CheckResultDTO());
+                    tmp.setEmptySum(Long.parseLong(compareDto.getResultSums().get(field).toString()));
+                    tmp.setTotal(compareDto.getTotal());
+                    tmp.setFieldName(field);
+                    tmp.setCompareExpression(((CheckCompareWithFields)compareDto).getCompareExpressions().get(field));
+                    fieldInfo.put(field,tmp);
+                }
             // 正则规则
             BaseCheckResult regularDto = RegularCheckHandler.regularCheck(jdbc, tableName, checkPlanDTO.getCornCheck());
-            if (regularDto != null && !regularDto.getResultSums().isEmpty())
-                fieldInfo.put(tableName+"_regular", regularDto);
+            if (haveResult(regularDto))
+                for(String field : regularDto.getFieldNames()){
+                    CheckResultDTO tmp = fieldInfo.getOrDefault(field, new CheckResultDTO());
+                    tmp.setEmptySum(Long.parseLong(regularDto.getResultSums().get(field).toString()));
+                    tmp.setTotal(regularDto.getTotal());
+                    tmp.setFieldName(field);
+                    tmp.setRegularExpression(((CheckRegularWithFields)regularDto).getRegularExpression().get(field));
+                    fieldInfo.put(field,tmp);
+                }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -95,6 +119,10 @@ public class CheckPlanJob extends IJobHandler {
         waterfallJobLogMapper.updateByPrimaryKeySelective(log);
 
         return null;
+    }
+    // 判断是否检验有结果    即 hsql执行，且执行正常
+    private Boolean haveResult(BaseCheckResult res){
+        return res != null && res.getResultSums() != null && !res.getResultSums().isEmpty();
     }
 
     // 优化后暂时不使用以下方法
