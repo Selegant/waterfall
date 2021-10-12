@@ -25,9 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -115,6 +113,7 @@ public class CheckPlanServiceImpl implements ICheckPlanService {
 //        jobInfo.setExecutorBlockStrategy("SERIAL_EXECUTION");
         jobInfo.setExecutorHandler("checkPlanJobHandler");
         jobInfo.setGlueUpdatetime(new Date());
+        jobInfo.setIncrementType(0);
         waterfallJobInfoMapper.insert(jobInfo);
 
         //保存model-job中间表

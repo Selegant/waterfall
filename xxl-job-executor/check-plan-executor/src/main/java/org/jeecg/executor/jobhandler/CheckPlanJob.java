@@ -1,6 +1,7 @@
 package org.jeecg.executor.jobhandler;
 
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.jeecg.executor.dto.CheckResultDTO;
 import org.jeecg.executor.dto.JobDTO;
 import org.jeecg.executor.dto.WaterfallJobLog;
@@ -112,13 +113,14 @@ public class CheckPlanJob extends IJobHandler {
         res.put("baseInfo", baseInfo);
         res.put("fieldInfo", fieldInfo.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList()));
 
-        WaterfallJobLog log = new WaterfallJobLog();
-        log.setId(tgParam.getLogId());
-        log.setCheckResult(BasicJson.toJson(res));
-        log.setModelName(checkPlanDTO.getTableName());
-        waterfallJobLogMapper.updateByPrimaryKeySelective(log);
+        LambdaUpdateWrapper<WaterfallJobLog> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(WaterfallJobLog::getId, tgParam.getLogId())
+                            .set(WaterfallJobLog::getCheckResult, BasicJson.toJson(res))
+                            .set(WaterfallJobLog::getModelName, checkPlanDTO.getTableName());
 
-        return null;
+        waterfallJobLogMapper.update(null, lambdaUpdateWrapper);
+
+        return ReturnT.SUCCESS;
     }
     // 判断是否检验有结果    即 hsql执行，且执行正常
     private Boolean haveResult(BaseCheckResult res){
