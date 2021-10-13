@@ -29,7 +29,7 @@ import static org.jeecg.executor.service.logparse.AnalysisStatistics.analysisSta
  * @author jingwk 2019-11-16
  */
 
-@JobHandler(value = "executorJobHandler")
+@JobHandler(value = "dataxJobHandler")
 @Component
 public class ExecutorJobHandler extends IJobHandler {
 

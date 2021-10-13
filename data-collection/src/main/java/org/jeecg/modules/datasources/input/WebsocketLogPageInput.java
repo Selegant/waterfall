@@ -29,4 +29,6 @@ public class WebsocketLogPageInput {
     private List<Date> triggerTime;
 
     private String logStatus;
+
+    private String executorHandler;
 }

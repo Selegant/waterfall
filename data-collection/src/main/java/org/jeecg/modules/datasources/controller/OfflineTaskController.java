@@ -47,6 +47,7 @@ public class OfflineTaskController {
         if(StrUtil.isNotBlank(queryParam)){
             queryWrapper.like("task_name",queryParam).or().like("original_table",queryParam).or().like("target_table",queryParam);
         }
+        queryWrapper.eq("executor_handler","dataxJobHandler");
         queryWrapper.orderByDesc("update_time");
         Page<WaterfallJobInfo> page = new Page<>(pageNo, pageSize);
         IPage<WaterfallJobInfo> pageList = offlineTaskService.page(page, queryWrapper);

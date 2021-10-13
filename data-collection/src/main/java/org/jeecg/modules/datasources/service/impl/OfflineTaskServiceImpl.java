@@ -88,7 +88,7 @@ public class OfflineTaskServiceImpl extends ServiceImpl<WaterfallJobInfoMapper, 
         task.setIncrementType(offlineTask.getIncrementType());
         task.setExecutorFailRetryCount(DEFAULT_RETRY_COUNT);
         task.setExecutorTimeout(DEFAULT_TIMEOUT);
-        task.setExecutorHandler("executorJobHandler");
+        task.setExecutorHandler("dataxJobHandler");
         task.setGlueType("BEAN");
         if (ObjectUtil.isNotNull(task.getId())) {
             return jobInfoMapper.updateByPrimaryKeySelective(task) > 0;
